@@ -9,7 +9,7 @@ let data = [
     { country: "Nambia", year: 2017, total_liter: 11.0, beer_share: 6.7, wine_share: 3.1, spirit_share: 0.7 },
     { country: "Syrian Arab Republic", year: 2020, total_liter: 0.1, beer_share: 0.0, wine_share: 0.0, spirit_share: 0.1 },
     { country: "Philippines", year: 2020, total_liter: 4.5, beer_share: 0.9, wine_share: 0.0, spirit_share: 3.5 },
-    { country: "Philippines", year: 2019, total_liter: 5.0, beer_share: 1.5, wine_share: 0.0, spirit_share: 3.5 }, // Nota: Corregido "51.5" a "5.0" o "5.1" por contexto, asumo 5.0
+    { country: "Philippines", year: 2019, total_liter: 5.1, beer_share: 1.5, wine_share: 0.0, spirit_share: 3.5 }, 
     { country: "Philippines", year: 2016, total_liter: 5.2, beer_share: 1.6, wine_share: 0.0, spirit_share: 3.1 }
 ];
 
