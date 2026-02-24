@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cool = require("cool-ascii-faces");
 
 const port = process.env.PORT || 8080; 
 
@@ -7,8 +8,10 @@ const port = process.env.PORT || 8080;
 app.get("/", (req, res) => {
     res.send("¡Hola! El servidor del Grupo 25 está funcionando 🚀");
 });
-
-// Aquí irán tus rutas (ej: /cool, /api/v1/...)
+app.use("/about", express.static("public"))
+app.get("/cool", (req, res) => {
+    res.send("<html><body><h1>" + cool() + "</h1></body></html>");
+});
 
 app.listen(port, () => {
     console.log(`Servidor corriendo en el puerto ${port}`);
