@@ -9,9 +9,9 @@ const port = process.env.PORT || 8082;
 const jlraCalc = require("./index-JLRA.js");
 
 let JLRAdata = [];
-const BASE_API_URL = "/api/v1/social-drinking-behaviors";
+const BASE_API_URL_JLRA = "/api/v1/social-drinking-behaviors";
 
-app.get(`${BASE_API_URL}/loadInitialData`, (req, res) => {
+app.get(`${BASE_API_URL_JLRA}/loadInitialData`, (req, res) => {
     if (JLRAdata.length === 0){
         // Hacemos una copia de los datos importados
         JLRAdata = [...jlraCalc.dataJLRA];
@@ -23,12 +23,12 @@ app.get(`${BASE_API_URL}/loadInitialData`, (req, res) => {
 
 
 // GET: Leer toda la lista
-app.get(BASE_API_URL, (req, res) => {
+app.get(BASE_API_URL_JLRA, (req, res) => {
     res.status(200).json(JLRAdata); 
 });
 
 // POST: Crear un nuevo recurso
-app.post(BASE_API_URL, (req, res) => {
+app.post(BASE_API_URL_JLRA, (req, res) => {
     const newData = req.body;
     
     // Comprobar que nos envían los datos mínimos
@@ -47,19 +47,19 @@ app.post(BASE_API_URL, (req, res) => {
 });
 
 // PUT: Actualizar lista (No permitido)
-app.put(BASE_API_URL, (req, res) => {
+app.put(BASE_API_URL_JLRA, (req, res) => {
     res.status(405).send("Method Not Allowed: No se puede hacer PUT a la lista de recursos");
 });
 
 // DELETE: Borrar toda la lista
-app.delete(BASE_API_URL, (req, res) => {
+app.delete(BASE_API_URL_JLRA, (req, res) => {
     JLRAdata = [];
     res.status(200).send("Ok: Se han borrado todos los recursos");
 });
 
 
 // GET: Leer un recurso concreto
-app.get(`${BASE_API_URL}/:country`, (req, res) => {
+app.get(`${BASE_API_URL_JLRA}/:country`, (req, res) => {
     const countryName = req.params.country;
     const resource = JLRAdata.filter(n => n.country === countryName);
 
@@ -71,12 +71,12 @@ app.get(`${BASE_API_URL}/:country`, (req, res) => {
 });
 
 // POST: Crear en un recurso concreto (No permitido)
-app.post(`${BASE_API_URL}/:country`, (req, res) => {
+app.post(`${BASE_API_URL_JLRA}/:country`, (req, res) => {
     res.status(405).send("Method Not Allowed: No puedes hacer POST a un recurso concreto");
 });
 
 // PUT: Actualizar un recurso concreto
-app.put(`${BASE_API_URL}/:country`, (req, res) => {
+app.put(`${BASE_API_URL_JLRA}/:country`, (req, res) => {
     const countryName = req.params.country;
     const updatedData = req.body;
     
@@ -96,7 +96,7 @@ app.put(`${BASE_API_URL}/:country`, (req, res) => {
 });
 
 // DELETE: Borrar un recurso concreto
-app.delete(`${BASE_API_URL}/:country`, (req, res) => {
+app.delete(`${BASE_API_URL_JLRA}/:country`, (req, res) => {
     const countryName = req.params.country;
     const initialLength = JLRAdata.length;
     
@@ -134,12 +134,7 @@ app.get("/cool", (req, res) => {
 });
 
 
-const express = require("express");
-const app = express();
-const cool = require("cool-ascii-faces");
-const path = require("path");
-
-const port = process.env.PORT || 8082; 
+ 
 
 // --- DATOS Y ALGORITMO (PSA) ---
 
