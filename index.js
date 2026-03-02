@@ -166,11 +166,14 @@ app.delete(`${BASE_API_URL_PSA}/:country`, (req, res) => {
 
 // SAMPLE PSA
 app.get("/samples/PSA", (req, res) => {
-    const dataToUse = PSAdata.length > 0 ? PSAdata : PSAdata_initial;
-    let germany = dataToUse.filter((n) => n.country === "Germany");
-    let co2 = germany.map((n) => n.co2_emission);
-    let average = co2.reduce((n, b) => n + b, 0) / co2.length;
-    res.status(200).send(`<html><body><h1>Average CO2 Emission for Germany: ${average}</h1></body></html>`);
+    if (PSAdata.length === 0) {
+        res.status(409).send("Conflict: Carga los datos de PSA primero");
+    } else {
+        let germany = PSAdata.filter((n) => n.country === "Germany");
+        let co2 = germany.map((n) => n.co2_emission);
+        let average = co2.reduce((n, b) => n + b, 0) / co2.length;
+        res.status(200).send(String(average)); 
+    }
 });
 
 // =========================================================================
