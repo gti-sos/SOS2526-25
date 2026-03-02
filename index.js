@@ -182,7 +182,7 @@ app.get("/samples/PSA", (req, res) => {
 // =========================================================================
 const agbCalc = require("./index-AGB.js");
 let AGBdata = [];
-const BASE_API_URL_AGB = "/api/v1/arrivals";
+const BASE_API_URL_AGB = "/api/v1/international-tourist-arrivals";
 
 app.get(`${BASE_API_URL_AGB}/loadInitialData`, (req, res) => {
     if (AGBdata.length === 0){
