@@ -243,12 +243,14 @@ app.delete(`${BASE_API_URL_AGB}/:country`, (req, res) => {
 // SAMPLE AGB
 app.get("/samples/AGB", (req, res) => {
     if (AGBdata.length === 0) {
-        res.status(200).send(`<html><body><h1>Average Air Arrivals (India): ${agbCalc.average_data(agbCalc.dataAGB)}</h1></body></html>`);
+        res.status(409).send("Conflict: Carga los datos de AGB primero");
     } else {
-        res.status(200).send(`<html><body><h1>Average Air Arrivals (India): ${agbCalc.average_data(AGBdata)}</h1></body></html>`);
+        let india = AGBdata.filter((n) => n.country === "India");
+        let arrivals = india.map((n) => n.air_arrival);
+        let average = arrivals.reduce((n, b) => n + b, 0) / arrivals.length;
+        res.status(200).send(String(average)); 
     }
 });
-
 // =========================================================================
 // RUTAS COMUNES Y ARRANQUE
 // =========================================================================
