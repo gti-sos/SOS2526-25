@@ -1,4 +1,4 @@
-let data = [
+    let dataAGB = [
     { country: "Germany", year: 2021, air_arrival: 34307, water_arrival: 3110, land_arrival: 0 },
     { country: "India", year: 2020, air_arrival: 2170, water_arrival: 41, land_arrival: 528 },
     { country: "India", year: 2021, air_arrival: 1267, water_arrival: 8, land_arrival: 243 },
@@ -14,12 +14,11 @@ let data = [
 
 function average_data(data){
     let targetCountry = data.filter( (n) => n.country === "India");
-    
     let arrivals = targetCountry.map( (n) => n.air_arrival);
-    
     let numerator = arrivals.reduce( (n, b) => n += b);
-    
     return numerator / arrivals.length;
 }
 
-console.log(average_data(data));
+console.log(average_data(dataAGB));
+
+module.exports = {average_data, dataAGB};
