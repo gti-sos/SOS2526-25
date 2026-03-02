@@ -151,4 +151,35 @@ app.get("/samples/JLRA", (req, res) => {
 // Sample de PSA
 app.get("/samples/PSA", (req, res) => {
     const result = average_data_psa(data_psa);
-    res.send(`<html><body><p>The average CO2 emission for Germany is: ${result}</p></body></html>
+    res.send(`<html><body><p>The average CO2 emission for Germany is: ${result}</p></body></html>`);
+});
+
+// Sample de AGB (Tu parte añadida aquí) <--
+app.get("/samples/AGB", (req, res) => {
+    let average = agbCalc.average_data(agbCalc.dataAGB);
+    res.status(200).send(String(average));
+});
+
+
+// ==========================================
+// RUTAS GENÉRICAS DEL GRUPO (Unificadas)
+// ==========================================
+app.get("/", (req, res) => {
+    res.send("¡Hola! El servidor del Grupo 25 está funcionando 🚀");
+});
+
+app.get("/about", (req, res) => {
+    res.status(200).sendFile(path.join(__dirname, "public", "about.html"));
+});
+
+app.get("/cool", (req, res) => {
+    res.status(200).send("<html><body><h1>" + cool() + "</h1></body></html>");
+});
+
+
+// ==========================================
+// ARRANQUE DEL SERVIDOR
+// ==========================================
+app.listen(port, () => {
+    console.log(`Servidor corriendo en el puerto ${port}`);
+});
