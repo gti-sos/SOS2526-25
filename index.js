@@ -22,8 +22,20 @@ app.get(`${BASE_API_URL_JLRA}/loadInitialData`, (req, res) => {
     } 
 });
 
-// GET LISTA
-app.get(BASE_API_URL_JLRA, (req, res) => res.status(200).json(JLRAdata));
+app.get(BASE_API_URL_JLRA, (req, res) => {
+    let resultados = JLRAdata;
+
+    if (req.query.country) {
+        resultados = resultados.filter(n => n.country === req.query.country);
+    }
+
+    if (req.query.year) {
+        // req.query.year llega como texto, lo convertimos a número con parseInt
+        resultados = resultados.filter(n => n.year === parseInt(req.query.year));
+    }
+
+    res.status(200).json(resultados);
+});
 
 // POST LISTA
 app.post(BASE_API_URL_JLRA, (req, res) => {
