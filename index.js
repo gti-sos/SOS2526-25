@@ -1,3 +1,4 @@
+
 const express = require("express");
 const app = express();
 const cool = require("cool-ascii-faces");
@@ -6,13 +7,12 @@ app.use(express.json());
 
 const port = process.env.PORT || 8082; 
 
-// =========================================================================
-// 1. RECURSO: JLRA (Social Drinking Behaviors)
-// =========================================================================
+
 const jlraCalc = require("./index-JLRA.js"); 
 let JLRAdata = []; 
 const BASE_API_URL_JLRA = "/api/v1/social-drinking-behaviors";
 
+// CARGA INICIAL
 app.get(`${BASE_API_URL_JLRA}/loadInitialData`, (req, res) => {
     if (JLRAdata.length === 0){
         JLRAdata = [...jlraCalc.dataJLRA]; 
@@ -22,6 +22,7 @@ app.get(`${BASE_API_URL_JLRA}/loadInitialData`, (req, res) => {
     } 
 });
 
+// GET LISTA Y BÚSQUEDAS (Filtros)
 app.get(BASE_API_URL_JLRA, (req, res) => {
     let resultados = JLRAdata;
 
@@ -40,14 +41,28 @@ app.get(BASE_API_URL_JLRA, (req, res) => {
 // POST LISTA
 app.post(BASE_API_URL_JLRA, (req, res) => {
     const newData = req.body;
-    if (!newData || !newData.country) return res.status(400).send("Bad Request");
-    const exists = JLRAdata.find(n => n.country === newData.country);
+    
+    // Validación estricta: Exactamente 6 campos y todos obligatorios
+    if (!newData || 
+        Object.keys(newData).length !== 6 ||
+        newData.country === undefined || 
+        newData.year === undefined || 
+        newData.total_liter === undefined || 
+        newData.beer_share === undefined || 
+        newData.wine_share === undefined || 
+        newData.spirit_share === undefined) {
+        return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
+    }
+    
+    // Comprobar duplicado por Clave Compuesta (País + Año)
+    const exists = JLRAdata.find(n => n.country === newData.country && n.year === newData.year);
     if (exists) return res.status(409).send("Conflict: El recurso ya existe");
+    
     JLRAdata.push(newData);
     res.status(201).send("Created");
 });
 
-// PUT LISTA
+// PUT LISTA (Bloqueado)
 app.put(BASE_API_URL_JLRA, (req, res) => res.status(405).send("Method Not Allowed"));
 
 // DELETE LISTA
@@ -56,36 +71,63 @@ app.delete(BASE_API_URL_JLRA, (req, res) => {
     res.status(200).send("Ok: Recursos borrados");
 });
 
-// GET RECURSO
-app.get(`${BASE_API_URL_JLRA}/:country`, (req, res) => {
-    const resource = JLRAdata.filter(n => n.country === req.params.country);
-    if (resource.length > 0) res.status(200).json(resource);
+
+// GET RECURSO CONCRETO
+app.get(`${BASE_API_URL_JLRA}/:country/:year`, (req, res) => {
+    const countryName = req.params.country;
+    const year = parseInt(req.params.year); 
+    
+    const resource = JLRAdata.find(n => n.country === countryName && n.year === year);
+    if (resource) res.status(200).json(resource);
     else res.status(404).send("Not Found");
 });
 
-// POST RECURSO
-app.post(`${BASE_API_URL_JLRA}/:country`, (req, res) => res.status(405).send("Method Not Allowed"));
+// POST RECURSO CONCRETO (Bloqueado)
+app.post(`${BASE_API_URL_JLRA}/:country/:year`, (req, res) => {
+    res.status(405).send("Method Not Allowed");
+});
 
-// PUT RECURSO
-app.put(`${BASE_API_URL_JLRA}/:country`, (req, res) => {
+// PUT RECURSO CONCRETO
+app.put(`${BASE_API_URL_JLRA}/:country/:year`, (req, res) => {
     const countryName = req.params.country;
+    const year = parseInt(req.params.year);
     const updatedData = req.body;
-    const index = JLRAdata.findIndex(n => n.country === countryName);
+    
+    const index = JLRAdata.findIndex(n => n.country === countryName && n.year === year);
     if (index === -1) return res.status(404).send("Not Found");
-    if (updatedData.country && updatedData.country !== countryName) return res.status(400).send("Bad Request");
-    JLRAdata[index] = { ...JLRAdata[index], ...updatedData };
+
+    if (!updatedData || 
+        Object.keys(updatedData).length !== 6 ||
+        updatedData.country === undefined || 
+        updatedData.year === undefined || 
+        updatedData.total_liter === undefined || 
+        updatedData.beer_share === undefined || 
+        updatedData.wine_share === undefined || 
+        updatedData.spirit_share === undefined) {
+        return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
+    }
+
+    if (updatedData.country !== countryName || updatedData.year !== year) {
+        return res.status(400).send("Bad Request: El ID de la URL y el del cuerpo deben coincidir");
+    }
+
+    JLRAdata[index] = updatedData;
     res.status(200).send("Ok: Recurso actualizado");
 });
 
-// DELETE RECURSO
-app.delete(`${BASE_API_URL_JLRA}/:country`, (req, res) => {
+// DELETE RECURSO CONCRETO
+app.delete(`${BASE_API_URL_JLRA}/:country/:year`, (req, res) => {
+    const countryName = req.params.country;
+    const year = parseInt(req.params.year);
     const initialLength = JLRAdata.length;
-    JLRAdata = JLRAdata.filter(n => n.country !== req.params.country);
+    
+    JLRAdata = JLRAdata.filter(n => !(n.country === countryName && n.year === year));
+
     if (JLRAdata.length < initialLength) res.status(200).send("Ok: Recurso borrado");
     else res.status(404).send("Not Found");
 });
 
-// SAMPLE JLRA
+//sample JLRA
 app.get("/samples/JLRA", (req, res) => {
     if (JLRAdata.length === 0) {
         res.status(409).send("Conflict: Carga los datos de JLRA primero");
