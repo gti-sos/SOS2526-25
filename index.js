@@ -129,16 +129,12 @@ app.delete(`${BASE_API_URL_JLRA}/:country/:year`, (req, res) => {
 
 //sample JLRA
 app.get("/samples/JLRA", (req, res) => {
-    if (JLRAdata.length === 0) {
-        res.status(409).send("Conflict: Carga los datos de JLRA primero");
-    } else {
         let datos = jlraCalc.dataJLRA;
         let philippines = datos.filter((n) => n.country === "Philippines");
         let beer = philippines.map((n) => n.beer_share);
         let average = beer.reduce((n, b) => n + b, 0) / beer.length;
         res.status(200).send(String(average)); 
-    }
-});
+    });
 
 // =========================================================================
 // 2. RECURSO: PSA (CO2 Emissions)
