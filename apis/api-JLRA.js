@@ -27,17 +27,35 @@ export const loadJLRA = (app) => {
     });
 
     // GET LISTA Y BÚSQUEDAS
+    // GET LISTA, BÚSQUEDAS Y PAGINACIÓN (Buenas prácticas L05)
     app.get(BASE_API_URL_JLRA, (req, res) => {
-        let query = {}; // Objeto vacío = buscar todo
-        
-        // Si nos pasan filtros por la URL, los añadimos a la búsqueda de la BD
+        let query = {};
+
         if (req.query.country) query.country = req.query.country;
         if (req.query.year) query.year = parseInt(req.query.year);
 
-        // El { _id: 0 } es la PROYECCIÓN: Le dice a NeDB que oculte el campo _id
-        db.find(query, { _id: 0 }, function (err, docs) {
-            if (err) return res.status(500).send("Internal Server Error");
-            res.status(200).json(docs); // Devuelve un array
+        let offset = 0;
+        let limit = 0;
+
+        if (req.query.offset) {
+            offset = parseInt(req.query.offset);
+            if (isNaN(offset) || offset < 0) {
+                return res.status(400).send("Bad Request: El parámetro 'offset' debe ser un número entero positivo");
+            }
+        }
+
+        if (req.query.limit) {
+            limit = parseInt(req.query.limit);
+           if (isNaN(limit) || limit <= 0) {
+                return res.status(400).send("Bad Request: El parámetro 'limit' debe ser un número entero mayor que 0");
+            }
+        }
+        db.find(query, { _id: 0 }).skip(offset).limit(limit).exec(function (err, docs) {
+            if (err) {
+                console.log("❌ Error en el GET de la lista:", err);
+                return res.status(500).send("Internal Server Error");
+            }
+            res.status(200).json(docs);
         });
     });
 
