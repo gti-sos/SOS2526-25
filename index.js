@@ -308,9 +308,6 @@ app.get("/samples/AGB", (req, res) => {
 // =========================================================================
 // RUTAS COMUNES Y ARRANQUE
 // =========================================================================
-app.get("/", (req, res) => {
-    res.send("Servidor Grupo 25. Rutas: /samples/PSA, /samples/JLRA, /samples/AGB");
-});
 
 app.use("/", express.static("./public"));
 
