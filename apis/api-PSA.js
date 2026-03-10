@@ -2,7 +2,7 @@
 import { PSAdata_initial, average_PSA } from "../index-PSA.js";
 
 let PSAdata = [];
-const BASE_API_URL_PSA = "/api/v1/co2-emissions";
+const BASE_API_URL_PSA = "/api/v1/average-annual-temperatures ";
 
 export const loadPSA = (app) => {
 
