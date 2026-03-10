@@ -1,3 +1,4 @@
+
 let dataJLRA = [
     { country: "Germany", year: 2021, total_liter: 10.4, beer_share: 4.7, wine_share: 3.3, spirit_share: 2.4 },
     { country: "Albania", year: 2022, total_liter: 4.6, beer_share: 1.8, wine_share: 1.6, spirit_share: 1.1 },
@@ -20,6 +21,6 @@ function average_data(data){
     return numerator/beer.length;
 }
 
-console.log(average_data(dataJLRA))
+// console.log(average_data(dataJLRA))
 
-module.exports = {average_data, dataJLRA};
+export { dataJLRA, average_data };

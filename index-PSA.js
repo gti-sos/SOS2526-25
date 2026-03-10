@@ -1,3 +1,5 @@
+// Archivo: index-PSA.js
+
 let data = [
     { country: "Germany", year: 2021, co2_emission: 679, precipitation: 772.59, temperature: 9.48 },
     { country: "Austria", year: 2021, co2_emission: 65.5, precipitation: 1090, temperature: 7.29 },
@@ -12,11 +14,13 @@ let data = [
     { country: "China", year: 2021, co2_emission: 12.7, precipitation: 654.33, temperature: 8.23 }
 ];
 
-function average_data(data){
-    let Germany = data.filter( (n) => n.country === "Germany");
+function average_data(datos){
+    let Germany = datos.filter( (n) => n.country === "Germany");
     let co2 = Germany.map( (n) => n.co2_emission);
     let numerator = co2.reduce( (n, b) => n +=b);
     return numerator/co2.length;
 }
 
-console.log(average_data(data))
+// console.log(average_data(data)); 
+
+export { data as PSAdata_initial, average_data as average_PSA };

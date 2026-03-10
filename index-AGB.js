@@ -1,4 +1,6 @@
-    let dataAGB = [
+// Archivo: index-AGB.js
+
+let dataAGB = [
     { country: "Germany", year: 2021, air_arrival: 34307, water_arrival: 3110, land_arrival: 0 },
     { country: "India", year: 2020, air_arrival: 2170, water_arrival: 41, land_arrival: 528 },
     { country: "India", year: 2021, air_arrival: 1267, water_arrival: 8, land_arrival: 243 },
@@ -19,6 +21,6 @@ function average_data(data){
     return numerator / arrivals.length;
 }
 
-console.log(average_data(dataAGB));
+// console.log(average_data(dataAGB)); 
 
-module.exports = {average_data, dataAGB};
+export { dataAGB, average_data as average_AGB };
