@@ -312,9 +312,7 @@ app.get("/", (req, res) => {
     res.send("Servidor Grupo 25. Rutas: /samples/PSA, /samples/JLRA, /samples/AGB");
 });
 
-app.get("/about", (req, res) => {
-    res.status(200).sendFile(path.join(__dirname, "public", "about.html"));
-});
+app.use("/", express.static("./public"));
 
 app.get("/cool", (req, res) => {
     res.status(200).send("<html><body><h1>" + cool() + "</h1></body></html>");
