@@ -16,6 +16,11 @@ export const loadPSA = (app) => {
         } 
     });
 
+        //Postman documentación
+    app.get(`${BASE_API_URL_PSA}/docs`, (req, res) => {
+        res.redirect("https://documenter.getpostman.com/view/52345894/2sBXigKYGM");
+    });
+
     // GET LISTA Y BÚSQUEDAS
     app.get(BASE_API_URL_PSA, (req, res) => {
         let resultados = PSAdata;

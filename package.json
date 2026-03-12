@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "description": "package of the repository",
   "homepage": "https://github.com/gti-sos/SOS2526-25#readme",
-    "scripts": {
+  "scripts": {
     "start": "node index.js",
-    "test-social-drinking-behaviors": "newman run tests/JLRA/test-JLRA.json -e tests/JLRA/local.json"
+    "test-social-drinking-behaviors": "npx newman run tests/JLRA/test-JLRA.json -e tests/JLRA/local.json",
+    "test-average-annual-temperatures": "npx newman run tests/PSA/test-PSA.json -e tests/PSA/Local.json "
   },
   "bugs": {
     "url": "https://github.com/gti-sos/SOS2526-25/issues"
@@ -25,6 +26,7 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
-    "newman": "^6.2.2"
+    "newman": "^6.2.2",
+    "start-server-and-test": "^2.1.5"
   }
 }
