@@ -33,9 +33,13 @@ export const loadJLRA = (app) => {
     // GET LISTA, BÚSQUEDAS Y PAGINACIÓN
     app.get(BASE_API_URL_JLRA, (req, res) => {
         let query = {};
-
+        
         if (req.query.country) query.country = req.query.country;
         if (req.query.year) query.year = parseInt(req.query.year);
+        if (req.query.total_liter) query.total_liter = parseFloat(req.query.total_liter);
+        if (req.query.beer_share) query.beer_share = parseFloat(req.query.beer_share);
+        if (req.query.wine_share) query.wine_share = parseFloat(req.query.wine_share);
+        if (req.query.spirit_share) query.spirit_share = parseFloat(req.query.spirit_share);
 
         let offset = 0;
         let limit = 0;
