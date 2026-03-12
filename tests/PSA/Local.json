@@ -1,0 +1,16 @@
+{
+	"id": "44e51b68-cf32-4f24-9d8a-82d81b5518b7",
+	"name": "Local",
+	"values": [
+		{
+			"key": "URL",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"color": null,
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2026-03-12T17:07:28.514Z",
+	"_postman_exported_using": "Postman/12.1.3-260312-0232"
+}

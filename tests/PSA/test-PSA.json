@@ -1,0 +1,395 @@
+{
+  "info": {
+    "_postman_id": "5dce9aa9-3de5-41a8-85bf-85fbe666bf27",
+    "name": "Pablo Seco Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52345894",
+    "_collection_link": "https://go.postman.co/collection/52345894-5dce9aa9-3de5-41a8-85bf-85fbe666bf27?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - Exitos (2xx)",
+      "item": [
+        {
+          "name": "GET(Lista)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST(Lista)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"country\": \"Spain\", \"year\": 2024, \"co2_emission\": 200}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures ",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures "
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get(Uno)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures /Germany",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures ",
+                "Germany"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Put(Actualizar)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"country\": \"France\",\r\n    \"year\": 2023,\r\n    \"co2_emission\": 290.0,\r\n    \"precipitation\": 820.0,\r\n    \"temperature\": 11.5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures /1?",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures ",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": null
+                }
+              ]
+            },
+            "description": "StartFragmentModificamos los datos de \"France\", manteniendo el mismo país en la URL y en el JSON.EndFragment"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete(Borrar)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures /Spain",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures ",
+                "Spain"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Errores (4xx)",
+      "item": [
+        {
+          "name": "Error 400 - Bad Request (ID Desparejo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"country\": \"Spain\",\r\n    \"year\": 2021,\r\n    \"co2_emission\": 100\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures /Germany",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures ",
+                "Germany"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error 400 - JSON Incorrecto",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"year\": 2024,\r\n    \"co2_emission\": 500,\r\n    \"campo_inventado\": \"hola\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures",
+                ""
+              ]
+            },
+            "description": "StartFragmentSegún tu código `if (!newData || !newData.country)`, el campo obligatorio que detona este error en tu API es la falta del campo `country`.EndFragment"
+          },
+          "response": []
+        },
+        {
+          "name": "Error 404 - Not Found",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures /Atlantis",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures ",
+                "Atlantis"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error 405 - Method Not Allowed",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures ",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures "
+              ]
+            },
+            "description": "StartFragmentLa \"tabla azul\" tradicional no permite hacer un `PUT` a la lista completa de recursos, ni un `POST` a un recurso específico. Tu código bloquea esto perfectamente.EndFragment"
+          },
+          "response": []
+        },
+        {
+          "name": "Error 409 - Conflict (Duplicado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"country\": \"Germany\",\r\n    \"year\": 2021,\r\n    \"co2_emission\": 679,\r\n    \"precipitation\": 772.59,\r\n    \"temperature\": 9.48\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures ",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures "
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "InitialData",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{URL}}/api/v1/international-tourist-arrivals",
+          "host": [
+            "{{URL}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "international-tourist-arrivals"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "About",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{URL}}/about",
+          "host": [
+            "{{URL}}"
+          ],
+          "path": [
+            "about"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
