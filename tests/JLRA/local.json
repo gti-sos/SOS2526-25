@@ -1,0 +1,22 @@
+{
+	"id": "511e323d-af8a-4509-aaa4-03fdba9a31b4",
+	"name": "local_pruebas",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8082",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "api_v1",
+			"value": "api/v1/social-drinking-behaviors",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"color": 120,
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2026-03-12T09:50:09.129Z",
+	"_postman_exported_using": "Postman/12.1.2-260311-0232"
+}

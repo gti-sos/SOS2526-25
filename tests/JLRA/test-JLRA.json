@@ -1,0 +1,595 @@
+{
+  "info": {
+    "_postman_id": "680c87d9-e27b-4a0a-a673-f6ae1aabcac1",
+    "name": "My Collection",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52398088",
+    "_collection_link": "https://go.postman.co/collection/52398088-680c87d9-e27b-4a0a-a673-f6ae1aabcac1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Download Samples",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}/loadInitialData",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}",
+            "loadInitialData"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test(\"Devuelve un Array\", () => {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}"
+          ]
+        },
+        "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+      },
+      "response": []
+    },
+    {
+      "name": "Get data query",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test(\"Devuelve un Array\", () => {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}?country=Philippines&year=2019",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}"
+          ],
+          "query": [
+            {
+              "key": "country",
+              "value": "Philippines"
+            },
+            {
+              "key": "year",
+              "value": "2019"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Error - Fileds incompleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 400 Bad Request\", () => pm.response.to.have.status(400));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n        \"country\": \"Philippines\",\n        \"year\": 2025\n    }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Error - Post duplicated object",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 409 Conflict\", () => pm.response.to.have.status(409));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n        \"country\": \"Philippines\",\n        \"year\": 2019,\n        \"total_liter\": 5.1,\n        \"beer_share\": 1.5,\n        \"wine_share\": 0,\n        \"spirit_share\": 3.5\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post new object",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "",
+              "pm.test(\"Status es 201 Created\", () => pm.response.to.have.status(201));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n        \"country\": \"Spain\",\n        \"year\": 2025,\n        \"total_liter\": 105.2,\n        \"beer_share\": 89.6,\n        \"wine_share\": 15,\n        \"spirit_share\": 1.1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}"
+          ]
+        },
+        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+      },
+      "response": []
+    },
+    {
+      "name": "Get specific data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Devuelve un objeto JSON válido (no un array)\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.false;",
+              "    pm.expect(typeof jsonData).to.eql(\"object\");",
+              "});",
+              "pm.test(\"Los campos devueltos coinciden exactamente\", () => {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.country).to.eql(\"Spain\");",
+              "    pm.expect(jsonData.year).to.eql(2025);",
+              "    pm.expect(jsonData.total_liter).to.eql(105.2);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n        \"country\": \"Philippines\",\n        \"year\": 1992,\n        \"total_liter\": 5.2,\n        \"beer_share\": 1.6,\n        \"wine_share\": 0,\n        \"spirit_share\": 3.1\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}/Spain/2025",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}",
+            "Spain",
+            "2025"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Put specific data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\n        \"country\": \"Spain\",\n        \"year\": 2025,\n        \"total_liter\": 67.1,\n        \"beer_share\": 64.7,\n        \"wine_share\": 0,\n        \"spirit_share\": 2.1\n    }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}/Spain/2025",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}",
+            "Spain",
+            "2025"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Error - Put to all data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 405 Method Not Allowed\", () => pm.response.to.have.status(405));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete single data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}/Spain/2025",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}",
+            "Spain",
+            "2025"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Error - Get Data invented",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 404 Not Found\", () => pm.response.to.have.status(404));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}/Narnia/2050",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}",
+            "Narnia",
+            "2050"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Error - Post to a single object",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 405 Method Not Allowed\", () => pm.response.to.have.status(405));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}/Spain/2023",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}",
+            "Spain",
+            "2023"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Error- Change has to get the same id than the data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 400 Bad Request\", () => pm.response.to.have.status(400));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\n        \"country\": \"Philippines\",\n        \"year\": 2015,\n        \"total_liter\": 5.1,\n        \"beer_share\": 1.6,\n        \"wine_share\": 0,\n        \"spirit_share\": 3.1\n    }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}/Philippines/2019",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}",
+            "Philippines",
+            "2019"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete all data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
