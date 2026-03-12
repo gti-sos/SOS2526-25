@@ -6,7 +6,13 @@
   "scripts": {
     "start": "node index.js",
     "test-social-drinking-behaviors": "npx newman run tests/JLRA/test-JLRA.json -e tests/JLRA/local.json",
-    "test-average-annual-temperatures": "npx newman run tests/PSA/test-PSA.json -e tests/PSA/Local.json "
+    "test-local-social-drinking-behaviors": "start-server-and-test start http://localhost:8082 test-social-drinking-behaviors",
+    "test-online-social-drinking-behaviors": "start-server-and-test start http://localhost8082: test-social-drinking-behaviors",
+    "test-average-annual-temperatures": "npx newman run tests/PSA/test-PSA.json -e tests/PSA/Local.json ",
+    "test-local-average-annual-temperatures": "start-server-and-test start http://localhost:8082 test-average-annual-temperatures",
+    "test-online-average-annual-temperatures": "start-server-and-test start http://localhost8082: test-average-annual-temperatures",
+    "testJLRA" : "npm run test-local-social-drinking-behaviors",
+    "testPSA" : "npm run test-local-average-annual-temperatures"
   },
   "bugs": {
     "url": "https://github.com/gti-sos/SOS2526-25/issues"
