@@ -11,6 +11,43 @@
       "name": "01 - Exitos (2xx)",
       "item": [
         {
+          "name": "About",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/about",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "about"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "InitialData",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/loadInitialData",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures",
+                "loadInitialData"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "GET(Lista)",
           "request": {
             "method": "GET",
@@ -36,7 +73,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\"country\": \"Spain\", \"year\": 2024, \"co2_emission\": 200}",
+              "raw": "{\"country\": \"Spain\", \"year\": 2024, \"co2_emission\": 200, \"precipitation\": 772.59, \"temperature\": 9.48}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -44,14 +81,15 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures ",
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "average-annual-temperatures "
+                "average-annual-temperatures",
+                ""
               ]
             }
           },
@@ -59,19 +97,27 @@
         },
         {
           "name": "Get(Uno)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "GET",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures /Germany",
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/Germany/2021",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "average-annual-temperatures ",
-                "Germany"
+                "average-annual-temperatures",
+                "Germany",
+                "2021"
               ]
             }
           },
@@ -84,7 +130,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"country\": \"France\",\r\n    \"year\": 2023,\r\n    \"co2_emission\": 290.0,\r\n    \"precipitation\": 820.0,\r\n    \"temperature\": 11.5\r\n}",
+              "raw": "{\r\n    \"country\": \"Mexico\",\r\n    \"year\": 2020,\r\n    \"co2_emission\": 290.0,\r\n    \"precipitation\": 820.0,\r\n    \"temperature\": 11.5\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -92,21 +138,16 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures /1?",
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/Mexico/2020",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "average-annual-temperatures ",
-                "1"
-              ],
-              "query": [
-                {
-                  "key": "",
-                  "value": null
-                }
+                "average-annual-temperatures",
+                "Mexico",
+                "2020"
               ]
             },
             "description": "StartFragmentModificamos los datos de \"France\", manteniendo el mismo país en la URL y en el JSON.EndFragment"
@@ -118,16 +159,21 @@
           "request": {
             "method": "DELETE",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures /Spain",
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/Spain/2024",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "average-annual-temperatures ",
-                "Spain"
+                "average-annual-temperatures",
+                "Spain",
+                "2024"
               ]
             }
           },
@@ -166,15 +212,16 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures /Germany",
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/Germany/2021",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "average-annual-temperatures ",
-                "Germany"
+                "average-annual-temperatures",
+                "Germany",
+                "2021"
               ]
             }
           },
@@ -265,14 +312,14 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures /Atlantis",
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/Atlantis",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "average-annual-temperatures ",
+                "average-annual-temperatures",
                 "Atlantis"
               ]
             }
@@ -298,14 +345,15 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures ",
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "average-annual-temperatures "
+                "average-annual-temperatures",
+                ""
               ]
             },
             "description": "StartFragmentLa \"tabla azul\" tradicional no permite hacer un `PUT` a la lista completa de recursos, ni un `POST` a un recurso específico. Tu código bloquea esto perfectamente.EndFragment"
@@ -340,56 +388,21 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures ",
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "average-annual-temperatures "
+                "average-annual-temperatures",
+                ""
               ]
             }
           },
           "response": []
         }
       ]
-    },
-    {
-      "name": "InitialData",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{URL}}/api/v1/international-tourist-arrivals",
-          "host": [
-            "{{URL}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "international-tourist-arrivals"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "About",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{URL}}/about",
-          "host": [
-            "{{URL}}"
-          ],
-          "path": [
-            "about"
-          ]
-        }
-      },
-      "response": []
     }
   ]
 }
