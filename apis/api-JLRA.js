@@ -16,7 +16,6 @@ export const loadJLRA = (app) => {
             if (docs.length === 0) {
                 db.insert(dataJLRA, function (err, newDocs) {
                     if (err) return res.sendStatus(500);
-                    // Cumplimos la norma enviando solo el código de estado
                     res.sendStatus(200); 
                 });
             } else {
@@ -47,14 +46,14 @@ export const loadJLRA = (app) => {
         if (req.query.offset) {
             offset = parseInt(req.query.offset);
             if (isNaN(offset) || offset < 0) {
-                return res.sendStatus(400); // Enviamos status limpio
+                return res.sendStatus(400); 
             }
         }
 
         if (req.query.limit) {
             limit = parseInt(req.query.limit);
            if (isNaN(limit) || limit <= 0) {
-                return res.sendStatus(400); // Enviamos status limpio
+                return res.sendStatus(400); 
             }
         }
         
@@ -68,7 +67,6 @@ export const loadJLRA = (app) => {
     app.post(BASE_API_URL_JLRA, (req, res) => {
         const newData = req.body;
         
-        // Validación estricta L06 (Estructura exacta de campos)
         if (!newData || Object.keys(newData).length !== 6 || newData.country === undefined || newData.year === undefined || newData.total_liter === undefined || newData.beer_share === undefined || newData.wine_share === undefined || newData.spirit_share === undefined) {
             return res.sendStatus(400);
         }
