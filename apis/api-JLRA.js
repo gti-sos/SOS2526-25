@@ -2,6 +2,7 @@
 import { dataJLRA } from "../index-JLRA.js";
 import Datastore from "nedb";
 
+//comentario puesto para probar los test del pull
 // 1. Configuramos la Base de Datos
 const db = new Datastore({ filename: './jlra.db', autoload: true });
 const BASE_API_URL_JLRA = "/api/v1/social-drinking-behaviors";
