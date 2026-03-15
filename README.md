@@ -8,7 +8,7 @@
 - **Project description**: Our proyeect is going to be an analyze about the consum of alcohol in different countries, the temperatures and the tourism.
 - **Repository**: [gti-sos/SOS2526-25](https://github.com/gti-sos/SOS2526-25)
 - **Render**: https://sos2526-25.onrender.com/
-- **APIs**:
+- **APIs**: <br>
     http://sos2526-25.onrender.com/api/v1/social-drinking-behaviors/docs (developed by Juan Luis Rodríguez Artiaga) <br>
     http://sos2526-25.onrender.com/api/v1/average-annual-temperatures/docs (developed by Pablo Seco Amores) <br>
     http://sos2526-25.onrender.com/api/v1/arrivals/docs (developed by Aimar García Borrego) <br>
