@@ -1,11 +1,11 @@
-{"country":"Germany","year":2021,"co2_emission":679,"precipitation":772.59,"temperature":9.48,"_id":"b1mOPmqseh8tHvit"}
-{"country":"Austria","year":2021,"co2_emission":65.5,"precipitation":1090,"temperature":7.29,"_id":"EPMAfFtfF5RoaYdq"}
-{"country":"Belgium","year":2017,"co2_emission":99.1,"precipitation":876.48,"temperature":11.02,"_id":"QLqfThxYhlh6PYDt"}
 {"country":"Italy","year":2017,"co2_emission":353,"precipitation":685.54,"temperature":13.51,"_id":"7bVTDla6klwgxZfa"}
-{"country":"Turkey","year":2022,"co2_emission":481,"precipitation":536.14,"temperature":12.24,"_id":"ECNVqAkTKtqOKvZO"}
-{"country":"Turkey","year":2021,"co2_emission":467,"precipitation":559.24,"temperature":12.56,"_id":"hsFKrZrogfjJB0cw"}
-{"country":"Mexico","year":2020,"co2_emission":423,"precipitation":691.32,"temperature":22.21,"_id":"NEFbg6C3BtzMvGcS"}
-{"country":"United Kingdom","year":2018,"co2_emission":380,"precipitation":1100,"temperature":9.53,"_id":"rcb7najD6OarTRPm"}
-{"country":"Germany","year":2015,"co2_emission":780,"precipitation":654.88,"temperature":10.33,"_id":"GAaG48Pcqn0hyIeS"}
-{"country":"China","year":2019,"co2_emission":11.8,"precipitation":615.63,"temperature":8.04,"_id":"QEmR2hNyYLj8BCVJ"}
 {"country":"China","year":2021,"co2_emission":12.7,"precipitation":654.33,"temperature":8.23,"_id":"8R1lgdT4UBdVljay"}
+{"country":"Turkey","year":2022,"co2_emission":481,"precipitation":536.14,"temperature":12.24,"_id":"ECNVqAkTKtqOKvZO"}
+{"country":"Austria","year":2021,"co2_emission":65.5,"precipitation":1090,"temperature":7.29,"_id":"EPMAfFtfF5RoaYdq"}
+{"country":"Germany","year":2015,"co2_emission":780,"precipitation":654.88,"temperature":10.33,"_id":"GAaG48Pcqn0hyIeS"}
+{"country":"Mexico","year":2020,"co2_emission":423,"precipitation":691.32,"temperature":22.21,"_id":"NEFbg6C3BtzMvGcS"}
+{"country":"China","year":2019,"co2_emission":11.8,"precipitation":615.63,"temperature":8.04,"_id":"QEmR2hNyYLj8BCVJ"}
+{"country":"Belgium","year":2017,"co2_emission":99.1,"precipitation":876.48,"temperature":11.02,"_id":"QLqfThxYhlh6PYDt"}
+{"country":"Germany","year":2021,"co2_emission":679,"precipitation":772.59,"temperature":9.48,"_id":"b1mOPmqseh8tHvit"}
+{"country":"Turkey","year":2021,"co2_emission":467,"precipitation":559.24,"temperature":12.56,"_id":"hsFKrZrogfjJB0cw"}
+{"country":"United Kingdom","year":2018,"co2_emission":380,"precipitation":1100,"temperature":9.53,"_id":"rcb7najD6OarTRPm"}

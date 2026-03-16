@@ -29,6 +29,7 @@ export const loadPSA = (app) => {
     });
 
     // GET LISTA Y BÚSQUEDAS CON PAGINACIÓN
+    // GET LISTA Y BÚSQUEDAS CON PAGINACIÓN ARREGLADA
     app.get(BASE_API_URL_PSA, (req, res) => {
         let query = {};
 
@@ -39,18 +40,22 @@ export const loadPSA = (app) => {
         if (req.query.precipitation) query.precipitation = parseFloat(req.query.precipitation);
         if (req.query.temperature) query.temperature = parseFloat(req.query.temperature);
 
-        // 2. Paginación
-        let offset = 0;
-        let limit = 0; // 0 en NeDB significa "sin límite"
+        // 2. Preparamos la consulta base (Cursor)
+        let cursor = db.find(query);
 
-        if (req.query.offset) offset = parseInt(req.query.offset);
-        if (req.query.limit) limit = parseInt(req.query.limit);
+        // 3. Aplicamos paginación SOLO si vienen en la URL
+        if (req.query.offset) {
+            cursor = cursor.skip(parseInt(req.query.offset));
+        }
+        if (req.query.limit) {
+            cursor = cursor.limit(parseInt(req.query.limit));
+        }
 
-        // Ejecutar consulta en NeDB con paginación
-        db.find(query).skip(offset).limit(limit).exec((err, docs) => {
+        // 4. Ejecutamos la consulta final
+        cursor.exec((err, docs) => {
             if (err) return res.status(500).send("Internal Server Error");
             
-            // Eliminamos el _id interno de NeDB para no romper los tests de Newman
+            // Eliminamos el _id interno de NeDB
             docs.forEach(d => delete d._id);
             res.status(200).json(docs);
         });
