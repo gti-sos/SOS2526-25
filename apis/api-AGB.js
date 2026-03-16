@@ -27,7 +27,7 @@ export const loadAGB = (app) => {
     //Postman documentación
     app.get(`${BASE_API_URL_AGB}/docs`, (req, res) => {
         // TODO: SUSTITUYE ESTE ENLACE POR EL DE TU DOCUMENTACIÓN DE POSTMAN
-        res.redirect("https://documenter.getpostman.com/view/TU_ID_AQUI/TU_ENLACE");
+        res.redirect("https://documenter.getpostman.com/view/52411500/2sBXigNZNT");
     });
 
     // GET LISTA, BÚSQUEDAS Y PAGINACIÓN
