@@ -97,10 +97,10 @@
             "exec": [
               "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
               "",
-              "pm.test(\"Devuelve un Array de 11 elementos\", () => {",
+              "pm.test(\"Devuelve un Array de 12 elementos\", () => {",
               "    var jsonData = pm.response.json();",
               "    pm.expect(Array.isArray(jsonData)).to.be.true;",
-              "    pm.expect(jsonData).to.have.lengthOf(11);",
+              "    pm.expect(jsonData).to.have.lengthOf(12);",
               "});"
             ],
             "type": "text/javascript",
@@ -621,6 +621,52 @@
           ],
           "path": [
             "{{api_v1}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Download Samples Copy",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
+              "",
+              "pm.test(\"No devuelve ningún JSON (Cumple la regla L06)\", () => {",
+              "    pm.expect(() => { pm.response.json(); }).to.throw();",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/{{api_v1}}/loadInitialData",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{api_v1}}",
+            "loadInitialData"
           ]
         }
       },
