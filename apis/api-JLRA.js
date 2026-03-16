@@ -27,7 +27,7 @@ export const loadJLRA = (app) => {
 
     //Postman documentación
     app.get(`${BASE_API_URL_JLRA}/docs`, (req, res) => {
-        res.redirect("https://juanlu-s-team.docs.buildwithfern.com/my-collection/get-data-query");
+        res.redirect("https://documenter.getpostman.com/view/52398088/2sBXigNZg3");
     });
 
     // GET LISTA, BÚSQUEDAS Y PAGINACIÓN
