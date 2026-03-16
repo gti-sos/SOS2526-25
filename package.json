@@ -5,7 +5,7 @@
   "homepage": "https://github.com/gti-sos/SOS2526-25#readme",
 "scripts": {
     "start": "node index.js",
-    "test": "npm run testJLRA && npm run testPSA && npm run testAGB",
+    "test": "npm run test-JLRA && npm run test-PSA && npm run test-AGB",
     
     "test-social-drinking-behaviors": "npx newman run tests/JLRA/test-JLRA.json -e tests/JLRA/local.json",
     "test-local-social-drinking-behaviors": "start-server-and-test start http://localhost:8082 test-social-drinking-behaviors",
