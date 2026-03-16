@@ -19,9 +19,9 @@
     "test-local-international-tourist-arrivals": "start-server-and-test start http://localhost:8082 test-international-tourist-arrivals",
     "test-online-international-tourist-arrivals": "start-server-and-test start http://localhost:8082 test-international-tourist-arrivals",
     
-    "testJLRA": "npm run test-local-social-drinking-behaviors",
-    "testPSA": "npm run test-local-average-annual-temperatures",
-    "testAGB": "npm run test-local-international-tourist-arrivals"
+    "test-JLRA": "npm run test-local-social-drinking-behaviors",
+    "test-PSA": "npm run test-local-average-annual-temperatures",
+    "test-AGB": "npm run test-local-international-tourist-arrivals"
   },
   "bugs": {
     "url": "https://github.com/gti-sos/SOS2526-25/issues"
