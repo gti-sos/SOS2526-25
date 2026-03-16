@@ -1,0 +1,22 @@
+{
+    "id": "79f589f2-f4c3-4493-8f20-c9def35340e1",
+    "name": "local",
+    "values": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8082",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "api_v1",
+            "value": "api/v1/international-tourist-arrivals",
+            "type": "default",
+            "enabled": true
+        }
+    ],
+    "color": null,
+    "_postman_variable_scope": "environment",
+    "_postman_exported_at": "2026-03-16T11:15:48.189Z",
+    "_postman_exported_using": "Postman/12.2.0-260316-0232"
+}

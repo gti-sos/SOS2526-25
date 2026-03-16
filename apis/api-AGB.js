@@ -1,101 +1,162 @@
 // Archivo: apis/api-AGB.js
-import { dataAGB, average_AGB } from "../index-AGB.js";
+import { dataAGB } from "../index-AGB.js";
+import Datastore from "nedb";
 
-let AGBdata = [];
+// 1. Configuramos la Base de Datos
+const db = new Datastore({ filename: './agb.db', autoload: true });
 const BASE_API_URL_AGB = "/api/v1/international-tourist-arrivals";
 
 export const loadAGB = (app) => {
 
     // CARGA INICIAL
     app.get(`${BASE_API_URL_AGB}/loadInitialData`, (req, res) => {
-        if (AGBdata.length === 0){
-            AGBdata = [...dataAGB];
-            res.status(200).send("Ok: Recursos de AGB cargados");
-        } else {
-            res.status(409).send("Conflict: Datos ya en memoria");
-        } 
+        db.find({}, function (err, docs) {
+            if (err) return res.sendStatus(500);
+            
+            if (docs.length === 0) {
+                db.insert(dataAGB, function (err, newDocs) {
+                    if (err) return res.sendStatus(500);
+                    res.sendStatus(200); 
+                });
+            } else {
+                res.sendStatus(409);
+            }
+        });
     });
 
-    // GET LISTA Y BÚSQUEDAS
+    //Postman documentación
+    app.get(`${BASE_API_URL_AGB}/docs`, (req, res) => {
+        // TODO: SUSTITUYE ESTE ENLACE POR EL DE TU DOCUMENTACIÓN DE POSTMAN
+        res.redirect("https://documenter.getpostman.com/view/TU_ID_AQUI/TU_ENLACE");
+    });
+
+    // GET LISTA, BÚSQUEDAS Y PAGINACIÓN
     app.get(BASE_API_URL_AGB, (req, res) => {
-        let resultados = AGBdata;
-        if (req.query.country) resultados = resultados.filter(n => n.country === req.query.country);
-        if (req.query.year) resultados = resultados.filter(n => n.year === parseInt(req.query.year));
-        res.status(200).json(resultados);
+        let query = {};
+        
+        if (req.query.country) query.country = req.query.country;
+        if (req.query.year) query.year = parseInt(req.query.year);
+        if (req.query.air_arrival) query.air_arrival = parseInt(req.query.air_arrival);
+        if (req.query.water_arrival) query.water_arrival = parseInt(req.query.water_arrival);
+        if (req.query.land_arrival) query.land_arrival = parseInt(req.query.land_arrival);
+
+        let offset = 0;
+        let limit = 0;
+
+        if (req.query.offset) {
+            offset = parseInt(req.query.offset);
+            if (isNaN(offset) || offset < 0) {
+                return res.sendStatus(400); 
+            }
+        }
+
+        if (req.query.limit) {
+            limit = parseInt(req.query.limit);
+           if (isNaN(limit) || limit <= 0) {
+                return res.sendStatus(400); 
+            }
+        }
+        
+        // El { _id: 0 } es la clave para que NeDB no devuelva ese campo (igual que JLRA)
+        db.find(query, { _id: 0 }).skip(offset).limit(limit).exec(function (err, docs) {
+            if (err) return res.sendStatus(500);
+            res.status(200).json(docs); 
+        });
     });
 
     // POST LISTA
     app.post(BASE_API_URL_AGB, (req, res) => {
         const newData = req.body;
         
-        // Validación estricta de sus 5 campos
+        // Validación con tus 5 campos (country, year, air, water, land)
         if (!newData || Object.keys(newData).length !== 5 || newData.country === undefined || newData.year === undefined || newData.air_arrival === undefined || newData.water_arrival === undefined || newData.land_arrival === undefined) {
-            return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
+            return res.sendStatus(400);
         }
         
-        const exists = AGBdata.find(n => n.country === newData.country && n.year === newData.year);
-        if (exists) return res.status(409).send("Conflict: El recurso ya existe");
-        
-        AGBdata.push(newData);
-        res.status(201).send("Created");
+        db.find({ country: newData.country, year: newData.year }, function (err, docs) {
+            if (err) return res.sendStatus(500);
+            
+            if (docs.length > 0) {
+                return res.sendStatus(409);
+            } else {
+                db.insert(newData, function (err, newDoc) {
+                    if (err) return res.sendStatus(500);
+                    res.sendStatus(201);
+                });
+            }
+        });
     });
 
     // PUT LISTA
-    app.put(BASE_API_URL_AGB, (req, res) => res.status(405).send("Method Not Allowed"));
+    app.put(BASE_API_URL_AGB, (req, res) => res.sendStatus(405));
 
     // DELETE LISTA
     app.delete(BASE_API_URL_AGB, (req, res) => {
-        AGBdata = [];
-        res.status(200).send("Ok: Recursos borrados");
+        db.remove({}, { multi: true }, function (err, numRemoved) {
+            if (err) return res.sendStatus(500);
+            res.sendStatus(200);
+        });
     });
 
-    // GET RECURSO CONCRETO (Mejorado con Año)
+    // GET RECURSO CONCRETO
     app.get(`${BASE_API_URL_AGB}/:country/:year`, (req, res) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
-        const resource = AGBdata.find(n => n.country === countryName && n.year === year);
-        if (resource) res.status(200).json(resource);
-        else res.status(404).send("Not Found");
+        
+        // Igual que JLRA: busca y filtra el _id
+        db.find({ country: countryName, year: year }, { _id: 0 }, function (err, docs) {
+            if (err) return res.sendStatus(500);
+            
+            if (docs.length > 0) {
+                res.status(200).json(docs[0]); 
+            } else {
+                res.sendStatus(404);
+            }
+        });
     });
 
     // POST RECURSO CONCRETO
-    app.post(`${BASE_API_URL_AGB}/:country/:year`, (req, res) => res.status(405).send("Method Not Allowed"));
+    app.post(`${BASE_API_URL_AGB}/:country/:year`, (req, res) => res.sendStatus(405));
 
-    // PUT RECURSO CONCRETO (Mejorado con Año)
+    // PUT RECURSO CONCRETO
     app.put(`${BASE_API_URL_AGB}/:country/:year`, (req, res) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
         const updatedData = req.body;
         
-        const index = AGBdata.findIndex(n => n.country === countryName && n.year === year);
-        if (index === -1) return res.status(404).send("Not Found");
-        
+        // Validación con tus 5 campos
         if (!updatedData || Object.keys(updatedData).length !== 5 || updatedData.country === undefined || updatedData.year === undefined || updatedData.air_arrival === undefined || updatedData.water_arrival === undefined || updatedData.land_arrival === undefined) {
-            return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
+            return res.sendStatus(400);
         }
         
         if (updatedData.country !== countryName || updatedData.year !== year) {
-            return res.status(400).send("Bad Request: El ID de la URL y el del cuerpo deben coincidir");
+            return res.sendStatus(400);
         }
 
-        AGBdata[index] = updatedData;
-        res.status(200).send("Ok: Recurso actualizado");
+        db.update({ country: countryName, year: year }, updatedData, {}, function (err, numReplaced) {
+            if (err) return res.sendStatus(500);
+            
+            if (numReplaced === 0) {
+                return res.sendStatus(404);
+            } else {
+                res.sendStatus(200);
+            }
+        });
     });
 
-    // DELETE RECURSO CONCRETO (Mejorado con Año)
+    // DELETE RECURSO CONCRETO
     app.delete(`${BASE_API_URL_AGB}/:country/:year`, (req, res) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
-        const initialLength = AGBdata.length;
         
-        AGBdata = AGBdata.filter(n => !(n.country === countryName && n.year === year));
-        if (AGBdata.length < initialLength) res.status(200).send("Ok: Recurso borrado");
-        else res.status(404).send("Not Found");
-    });
-
-    // SAMPLE AGB
-    app.get("/samples/AGB", (req, res) => {
-        let average = average_AGB(dataAGB);
-        res.status(200).send(String(average)); 
+        db.remove({ country: countryName, year: year }, {}, function (err, numRemoved) {
+            if (err) return res.sendStatus(500);
+            
+            if (numRemoved === 0) {
+                return res.sendStatus(404);
+            } else {
+                res.sendStatus(200);
+            }
+        });
     });
 };

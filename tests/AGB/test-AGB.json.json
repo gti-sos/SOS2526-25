@@ -1,0 +1,428 @@
+{
+  "info": {
+    "_postman_id": "47313984-0a1e-4fd4-8ad4-2463934f6f63",
+    "name": "Pruebas F06 AGB - International Tourist Arrivals",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52411500",
+    "_collection_link": "https://go.postman.co/collection/52411500-47313984-0a1e-4fd4-8ad4-2463934f6f63?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "00 - PRE SETUP",
+      "item": [
+        {
+          "name": "DELETE Limpiar Dummy Previo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Puede dar 200 o 404, solo queremos limpiar\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals",
+                "Spain",
+                "2099"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01 - Happy Path",
+      "item": [
+        {
+          "name": "POST Crear Dummy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado es 201\", function () { pm.response.to.have.status(201); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"country\": \"Spain\",\n    \"year\": 2099,\n    \"air_arrival\": 10,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Lista General (Test Arrays y Sin _id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado es 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Devuelve un Array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+                  "});",
+                  "pm.test(\"No expone _id\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if(jsonData.length > 0) {",
+                  "        pm.expect(jsonData[0]).to.not.have.property('_id');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Uno (Test Objeto y Datos)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado es 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Devuelve un Objeto con el país y año correctos\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(Array.isArray(jsonData)).to.be.false;",
+                  "    pm.expect(jsonData.country).to.eql('Spain');",
+                  "    pm.expect(jsonData.year).to.eql(2099);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals",
+                "Spain",
+                "2099"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Actualizar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado es 200\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"country\": \"Spain\",\n    \"year\": 2099,\n    \"air_arrival\": 999,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals",
+                "Spain",
+                "2099"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Errores",
+      "item": [
+        {
+          "name": "POST Error 409 (Conflicto, el dummy ya existe)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado 409 Conflict\", function () { pm.response.to.have.status(409); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"country\": \"Spain\",\n    \"year\": 2099,\n    \"air_arrival\": 10,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Error 400 (Campos y URL no coinciden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado 400 Bad Request\", function () { pm.response.to.have.status(400); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"country\": \"France\",\n    \"year\": 2099,\n    \"air_arrival\": 10,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals",
+                "Spain",
+                "2099"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Error 404 (No existe)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado 404 Not Found\", function () { pm.response.to.have.status(404); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Inventado/0000",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals",
+                "Inventado",
+                "0000"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Error 405 (No permitido a lista)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado 405 Method Not Allowed\", function () { pm.response.to.have.status(405); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"country\": \"Spain\",\n    \"year\": 2099,\n    \"air_arrival\": 10,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - POST SETUP (Limpieza)",
+      "item": [
+        {
+          "name": "DELETE Borrar Dummy (Hace idempotente la prueba)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"El test termina limpio (200)\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals",
+                "Spain",
+                "2099"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
