@@ -6,7 +6,7 @@ const db = new Datastore({ filename: './data/PSA.db', autoload: true });
 const BASE_API_URL_PSA = "/api/v1/average-annual-temperatures";
 
 
-let data = [
+let PSAdata_initial = [
     { country: "Germany", year: 2021, co2_emission: 679, precipitation: 772.59, temperature: 9.48 },
     { country: "Austria", year: 2021, co2_emission: 65.5, precipitation: 1090, temperature: 7.29 },
     { country: "Belgium", year: 2017, co2_emission: 99.1, precipitation: 876.48, temperature: 11.02 },
@@ -20,7 +20,7 @@ let data = [
     { country: "China", year: 2021, co2_emission: 12.7, precipitation: 654.33, temperature: 8.23 }
 ];
 
-function average_data(datos){
+function average_PSA(datos){
     let Germany = datos.filter( (n) => n.country === "Germany");
     let co2 = Germany.map( (n) => n.co2_emission);
     let numerator = co2.reduce( (n, b) => n +=b);
