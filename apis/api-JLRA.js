@@ -5,14 +5,7 @@ import Datastore from "nedb";
 // 1. Configuramos la Base de Datos
 const db = new Datastore({ filename: './jlra.db', autoload: true });
 const BASE_API_URL_JLRA = "/api/v1/social-drinking-behaviors";
-
-export const loadJLRA = (app) => {
-
-    // CARGA INICIAL
-    app.get(`${BASE_API_URL_JLRA}/loadInitialData`, (req, res) => {
-        db.find({}, function (err, docs) {
-            if (err) return res.sendStatus(500);
-            dataJLRA = [
+const dataJLRA = [
             { country: "Germany", year: 2021, total_liter: 10.4, beer_share: 4.7, wine_share: 3.3, spirit_share: 2.4 },
             { country: "Albania", year: 2022, total_liter: 4.6, beer_share: 1.8, wine_share: 1.6, spirit_share: 1.1 },
             { country: "Albania", year: 2021, total_liter: 4.5, beer_share: 1.8, wine_share: 1.5, spirit_share: 1.2 },
@@ -25,7 +18,14 @@ export const loadJLRA = (app) => {
             { country: "Philippines", year: 2020, total_liter: 4.5, beer_share: 0.9, wine_share: 0.0, spirit_share: 3.5 },
             { country: "Philippines", year: 2019, total_liter: 5.1, beer_share: 1.5, wine_share: 0.0, spirit_share: 3.5 }, 
             { country: "Philippines", year: 2016, total_liter: 5.2, beer_share: 1.6, wine_share: 0.0, spirit_share: 3.1 }
-            ]
+            ];
+export const loadJLRA = (app) => {
+
+    // CARGA INICIAL
+    app.get(`${BASE_API_URL_JLRA}/loadInitialData`, (req, res) => {
+        db.find({}, function (err, docs) {
+            if (err) return res.sendStatus(500);
+            
             if (docs.length === 0) {
                 db.insert(dataJLRA, function (err, newDocs) {
                     if (err) return res.sendStatus(500);
@@ -39,7 +39,7 @@ export const loadJLRA = (app) => {
 
     //Postman documentación
     app.get(`${BASE_API_URL_JLRA}/docs`, (req, res) => {
-        res.redirect("https://documenter.getpostman.com/view/52398088/2sBXigNZg3");
+        res.redirect("https://juanlu-s-team.docs.buildwithfern.com/my-collection/get-data-query");
     });
 
     // GET LISTA, BÚSQUEDAS Y PAGINACIÓN
