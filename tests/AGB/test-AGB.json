@@ -52,6 +52,39 @@
       "name": "01 - Happy Path",
       "item": [
         {
+          "name": "GET loadInitialData",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado es 200 o 201\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/loadInitialData",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "international-tourist-arrivals",
+                "loadInitialData"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "POST Crear Dummy",
           "event": [
             {

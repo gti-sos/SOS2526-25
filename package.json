@@ -15,7 +15,7 @@
     "test-local-average-annual-temperatures": "start-server-and-test start http://localhost:8082 test-average-annual-temperatures",
     "test-online-average-annual-temperatures": "start-server-and-test start http://localhost:8082 test-average-annual-temperatures",
     
-    "test-international-tourist-arrivals": "npx newman run tests/AGB/test-AGB.json.json -e tests/AGB/local.json",
+    "test-international-tourist-arrivals": "npx newman run tests/AGB/test-AGB.json -e tests/AGB/local.json",
     "test-local-international-tourist-arrivals": "start-server-and-test start http://localhost:8082 test-international-tourist-arrivals",
     "test-online-international-tourist-arrivals": "start-server-and-test start http://localhost:8082 test-international-tourist-arrivals",
     
