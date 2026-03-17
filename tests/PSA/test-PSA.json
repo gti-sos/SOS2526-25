@@ -12,6 +12,19 @@
       "item": [
         {
           "name": "About",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -49,6 +62,32 @@
         },
         {
           "name": "GET(Lista)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "\r",
+                  "pm.test(\"Los objetos tienen los campos correctos y tambien el tipo de dato\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    if (jsonData.length > 0) {\r",
+                  "        // Comprobamos que el primer elemento tiene los campos obligatorios\r",
+                  "        pm.expect(jsonData[0]).to.have.property(\"country\");\r",
+                  "        pm.expect(jsonData[0]).to.have.property(\"year\");\r",
+                  "        pm.expect(jsonData[0]).to.have.property(\"co2_emission\");\r",
+                  "        \r",
+                  "        // Comprobar también el tipo de dato\r",
+                  "        pm.expect(jsonData[0].year).to.be.a(\"number\");\r",
+                  "        pm.expect(jsonData[0].country).to.be.a(\"string\");\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -68,6 +107,27 @@
         },
         {
           "name": "POST(Lista)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Comprobar que el estado es 201 Created (Éxito)\r",
+                  "pm.test(\"El código de estado es 201 Created\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "// 2. Comprobar que el mensaje devuelto es el correcto (según tu código)\r",
+                  "pm.test(\"El mensaje confirma la creación\", function () {\r",
+                  "    pm.expect(pm.response.text()).to.include(\"Created\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
@@ -97,6 +157,31 @@
         },
         {
           "name": "Get(Uno)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Los objetos tienen los campos correctos y tambien el tipo de dato\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    if (jsonData.length > 0) {\r",
+                  "        // Comprobamos que el primer elemento tiene los campos obligatorios\r",
+                  "        pm.expect(jsonData[0]).to.have.property(\"country\");\r",
+                  "        pm.expect(jsonData[0]).to.have.property(\"year\");\r",
+                  "        pm.expect(jsonData[0]).to.have.property(\"co2_emission\");\r",
+                  "        \r",
+                  "        // Comprobar también el tipo de dato\r",
+                  "        pm.expect(jsonData[0].year).to.be.a(\"number\");\r",
+                  "        pm.expect(jsonData[0].country).to.be.a(\"string\");\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "protocolProfileBehavior": {
             "disableBodyPruning": true
           },
@@ -125,6 +210,26 @@
         },
         {
           "name": "Put(Actualizar)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"El estado es 200 OK, se han cambiado los valores co2_emission, precipitation y temperature \", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Como tu PUT (según tu código de Express anterior) devuelve un texto \"Ok: Recurso actualizado\", comprobamos eso:\r",
+                  "pm.test(\"El mensaje de respuesta es el esperado\", function () {\r",
+                  "    pm.expect(pm.response.text()).to.include(\"actualizado\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [],
@@ -156,6 +261,27 @@
         },
         {
           "name": "Delete(Borrar)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Comprobamos que el servidor nos da el OK\r",
+                  "pm.test(\"El código de estado debe ser 200 OK, se ha borrado el recurso concreto\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// 2. Comprobamos que el mensaje es el esperado\r",
+                  "pm.test(\"El cuerpo de la respuesta confirma el borrado\", function () {\r",
+                  "    pm.expect(pm.response.text()).to.include(\"borrado\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [],
@@ -191,6 +317,9 @@
               "listen": "test",
               "script": {
                 "exec": [
+                  "pm.test(\"El código de estado presenta un ID desparejo, no coincide\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
                   ""
                 ],
                 "type": "text/javascript",
@@ -245,7 +374,13 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  ""
+                  "pm.test(\"El código de estado debe ser 400 Bad Request\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"El cuerpo de la respuesta avisa de que el JSON es incorrecto o faltan campos\", function () {\r",
+                  "    pm.expect(pm.response.text()).to.include(\"campos esperados\"); \r",
+                  "});"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -288,6 +423,21 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"El estado es 404 Not Found, no se encuentra ese pais\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
                   ""
                 ],
                 "type": "text/javascript",
@@ -339,6 +489,19 @@
                 "packages": {},
                 "requests": {}
               }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"El código de estado debe ser 405 Method Not Allowed, no se le puede hacer un put a la collecion entera\", function () {\r",
+                  "    pm.response.to.have.status(405);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
             }
           ],
           "request": {
@@ -367,7 +530,13 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  ""
+                  "pm.test(\"El código de estado debe ser 409 Conflict, ya existe en la base de datos este recurso\", function () {\r",
+                  "    pm.response.to.have.status(409);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"El mensaje advierte de que hay un conflicto de duplicidad\", function () {\r",
+                  "    pm.expect(pm.response.text()).to.include(\"ya existe\"); \r",
+                  "});"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -401,8 +570,89 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Error 404 Not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"El código de estado debe ser 404 Not Found, no se puede borrar un recurso que ya existe\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/v1/average-annual-temperatures/Atlantis",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "average-annual-temperatures",
+                "Atlantis"
+              ]
+            }
+          },
+          "response": []
         }
       ]
+    },
+    {
+      "name": "Borrar Pagina",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Comprobamos que el servidor nos da el OK\r",
+              "pm.test(\"El código de estado debe ser 200 OK, eliminado la base de datos\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Comprobamos que el mensaje es el esperado\r",
+              "pm.test(\"El cuerpo de la respuesta confirma el borrado\", function () {\r",
+              "    pm.expect(pm.response.text()).to.include(\"borrado\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{URL}}/api/v1/average-annual-temperatures",
+          "host": [
+            "{{URL}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "average-annual-temperatures"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
