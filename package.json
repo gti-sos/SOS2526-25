@@ -4,6 +4,8 @@
   "description": "package of the repository",
   "homepage": "https://github.com/gti-sos/SOS2526-25#readme",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
     "start": "node index.js",
     "test": "npm run test-JLRA && npm run test-PSA && npm run test-AGB",
     "test-social-drinking-behaviors": "npx newman run tests/JLRA/test-JLRA.json -e tests/JLRA/local.json",
@@ -35,10 +37,13 @@
     "express": "^5.2.1",
     "nedb": "^1.8.0",
     "path": "^0.12.7",
+    "svelte": "^5.54.0",
     "svelte-spa-router": "^5.0.0"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "newman": "^6.2.2",
-    "start-server-and-test": "^2.1.5"
+    "start-server-and-test": "^2.1.5",
+    "vite": "^8.0.0"
   }
 }

@@ -15,7 +15,8 @@ const port = process.env.PORT || 8082;
 // 2. Configurar la ruta estática para la página web
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/", express.static(path.join(__dirname, "public")));
+// Ahora Express servirá la carpeta 'dist' que genera Svelte
+app.use("/", express.static(path.join(__dirname, "dist")));
 
 // 3. Cargar las tres APIs pasándoles la app
 loadJLRA(app);
