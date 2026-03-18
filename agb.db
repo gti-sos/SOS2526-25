@@ -1,3 +1,14 @@
-{"country":"Spain","year":2099,"air_arrival":10,"water_arrival":20,"land_arrival":30,"_id":"I2dyj729D1Uvy6Wc"}
-{"country":"Spain","year":2099,"air_arrival":999,"water_arrival":20,"land_arrival":30,"_id":"I2dyj729D1Uvy6Wc"}
-{"$$deleted":true,"_id":"I2dyj729D1Uvy6Wc"}
+{"country":"Germany","year":2021,"air_arrival":34307,"water_arrival":3110,"land_arrival":0,"_id":"P1knmksdsAPJwH9E"}
+{"country":"India","year":2020,"air_arrival":2170,"water_arrival":41,"land_arrival":528,"_id":"lNKJFO7C7scJ2KWq"}
+{"country":"India","year":2021,"air_arrival":1267,"water_arrival":8,"land_arrival":243,"_id":"8itskbxfkrUTHIwL"}
+{"country":"Maldives","year":2020,"air_arrival":555,"water_arrival":0,"land_arrival":0,"_id":"4sjggmEgQtR94nSD"}
+{"country":"Maldives","year":2021,"air_arrival":1321,"water_arrival":1,"land_arrival":0,"_id":"N5CoVPaFERL9lC4p"}
+{"country":"Nepal","year":2020,"air_arrival":230,"water_arrival":0,"land_arrival":0,"_id":"Nc0PUnpx9bZIsjhP"}
+{"country":"Nepal","year":2021,"air_arrival":150,"water_arrival":0,"land_arrival":0,"_id":"XMLOCQOv4BCtViTw"}
+{"country":"Sri Lanka","year":2020,"air_arrival":507,"water_arrival":0,"land_arrival":0,"_id":"tV7D5YpAZ3zYvMJL"}
+{"country":"Sri Lanka","year":2021,"air_arrival":194,"water_arrival":0,"land_arrival":0,"_id":"ZLwIhwgfUxDhI5qS"}
+{"country":"Philippines","year":2020,"air_arrival":1482,"water_arrival":0,"land_arrival":0,"_id":"SoE89nttwi0m51aN"}
+{"country":"Philippines","year":2021,"air_arrival":164,"water_arrival":0,"land_arrival":0,"_id":"KgsAgolWbwOifrY9"}
+{"country":"Spain","year":2099,"air_arrival":10,"water_arrival":20,"land_arrival":30,"_id":"Y53H5a4hpNqTLDlO"}
+{"country":"Spain","year":2099,"air_arrival":999,"water_arrival":20,"land_arrival":30,"_id":"Y53H5a4hpNqTLDlO"}
+{"$$deleted":true,"_id":"Y53H5a4hpNqTLDlO"}

@@ -3,7 +3,7 @@ import Datastore from "nedb";
 
 //comentario puesto para probar los test del pull.
 // 1. Configuramos la Base de Datos
-const db = new Datastore({ filename: './jlra.db', autoload: true });
+const db = new Datastore({ filename: './data/jlra.db', autoload: true });
 const BASE_API_URL_JLRA = "/api/v1/social-drinking-behaviors";
 const dataJLRA = [
             { country: "Germany", year: 2021, total_liter: 10.4, beer_share: 4.7, wine_share: 3.3, spirit_share: 2.4 },

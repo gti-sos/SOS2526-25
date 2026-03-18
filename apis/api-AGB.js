@@ -3,7 +3,7 @@ import { dataAGB } from "../index-AGB.js";
 import Datastore from "nedb";
 
 // 1. Configuramos la Base de Datos
-const db = new Datastore({ filename: './agb.db', autoload: true });
+const db = new Datastore({ filename: './data/agb.db', autoload: true });
 const BASE_API_URL_AGB = "/api/v1/international-tourist-arrivals";
 
 export const loadAGB = (app) => {
