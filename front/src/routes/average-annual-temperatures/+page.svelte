@@ -1,14 +1,15 @@
 <script>
     import { onMount } from 'svelte';
 
-    let temperatures = [];
-    let newEntry = { country: "", year: "", co2_emission: "", precipitation: "", temperature: "" };
-    let message = ""; 
+    // 1. Usamos $state() para que SvelteKit 5 actualice la pantalla cuando cambien
+    let temperatures = $state([]);
+    let newEntry = $state({ country: "", year: "", co2_emission: "", precipitation: "", temperature: "" });
+    let message = $state(""); 
     
     // Variables para el PUT (Edición)
-    let isEditing = false;
-    let originalCountry = "";
-    let originalYear = "";
+    let isEditing = $state(false);
+    let originalCountry = $state("");
+    let originalYear = $state("");
 
     const API_URL = "/api/v1/average-annual-temperatures";
 
@@ -91,7 +92,7 @@
 </script>
 
 <main>
-    <a href="/#/" class="back-btn">⬅ Volver al Inicio</a>
+    <a href="/" class="back-btn">⬅ Volver al Inicio</a>
     
     <h2>📊 Average Annual Temperatures (Pablo Seco)</h2>
 
@@ -153,6 +154,14 @@
 </main>
 
 <style>
+    /* Aplicamos global body color para que no tenga bordes blancos extraños */
+    :global(body) {
+        margin: 0;
+        background-color: #0f172a;
+        color: white;
+        font-family: sans-serif;
+    }
+    
     main { max-width: 1000px; margin: 0 auto; padding: 2rem; }
     h2 { text-align: center; margin-bottom: 2rem; color: #00f2fe; }
     
@@ -178,7 +187,6 @@
     .btn-delete { background: rgba(255, 50, 50, 0.2); color: #ff5252; border: 1px solid #ff5252; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; }
     .btn-delete:hover { background: #ff5252; color: white; }
 
-    /* ESTILOS NUEVOS PARA EDITAR/CANCELAR */
     .btn-edit { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; margin-right: 0.5rem; }
     .btn-edit:hover { background: #ffc107; color: #000; }
 

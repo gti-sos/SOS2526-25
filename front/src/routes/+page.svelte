@@ -1,5 +1,5 @@
 <script>
-    // Vista principal del equipo SOS2526-25
+    // Vista principal del equipo SOS2526-25 (SvelteKit 5)
 </script>
 
 <main>
@@ -21,7 +21,7 @@
             <p class="resource-name">Data: <strong>social-drinking-behaviors</strong></p>
             
             <div class="links-container">
-                <a href="/#/social-drinking-behaviors" class="btn btn-frontend">🖥️ Front-End</a>
+                <a href="/social-drinking-behaviors" class="btn btn-frontend">🖥️ Front-End</a>
                 <a href="/api/v1/social-drinking-behaviors" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v1/social-drinking-behaviors/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
             </div>
@@ -33,7 +33,7 @@
             <p class="resource-name">Data: <strong>international-tourist-arrivals</strong></p>
             
             <div class="links-container">
-                <a href="/#/international-tourist-arrivals" class="btn btn-frontend">🖥️ Front-End</a>
+                <a href="/international-tourist-arrivals" class="btn btn-frontend">🖥️ Front-End</a>
                 <a href="/api/v1/international-tourist-arrivals" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v1/international-tourist-arrivals/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
             </div>
@@ -45,7 +45,7 @@
             <p class="resource-name">Data: <strong>average-annual-temperatures</strong></p>
             
             <div class="links-container">
-                <a href="/#/average-annual-temperatures" class="btn btn-frontend">🖥️ Front-End</a>
+                <a href="/average-annual-temperatures" class="btn btn-frontend">🖥️ Front-End</a>
                 <a href="/api/v1/average-annual-temperatures" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v1/average-annual-temperatures/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
             </div>
