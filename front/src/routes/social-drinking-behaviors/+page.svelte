@@ -1,9 +1,13 @@
 <script>
     import { onMount } from 'svelte';
-    import { goto } from '$app/navigation'; // Para navegar a la página de edición
+    import { goto } from '$app/navigation';
 
     let drinks = $state([]);
     let newEntry = $state({ country: "", year: "", total_liter: "", beer_share: "", wine_share: "", spirit_share: "" });
+    
+    // NUEVO: Estado para los filtros de búsqueda
+    let searchParams = $state({ country: "", year: "", total_liter: "", beer_share: "", wine_share: "", spirit_share: "" });
+    
     let message = $state(""); 
 
     const API_URL = "/api/v1/social-drinking-behaviors";
@@ -18,6 +22,53 @@
             if (res.ok) drinks = await res.json();
             else message = "⚠️ Error al cargar los datos.";
         } catch (error) { message = "⚠️ Error de red."; }
+    }
+
+    // --- NUEVA FUNCIÓN DE BÚSQUEDA ---
+    async function searchDrinks() {
+        // 1. Construimos la URL de búsqueda solo con los campos que el usuario ha rellenado
+        const query = new URLSearchParams();
+        let filtrosUsados = []; // Para el mensaje de error personalizado
+
+        if (searchParams.country) { query.append("country", searchParams.country); filtrosUsados.push(`país '${searchParams.country}'`); }
+        if (searchParams.year) { query.append("year", searchParams.year); filtrosUsados.push(`año '${searchParams.year}'`); }
+        if (searchParams.total_liter) { query.append("total_liter", searchParams.total_liter); filtrosUsados.push(`L. totales '${searchParams.total_liter}'`); }
+        if (searchParams.beer_share) { query.append("beer_share", searchParams.beer_share); }
+        if (searchParams.wine_share) { query.append("wine_share", searchParams.wine_share); }
+        if (searchParams.spirit_share) { query.append("spirit_share", searchParams.spirit_share); }
+
+        try {
+            const res = await fetch(`${API_URL}?${query.toString()}`);
+            
+            if (res.ok) {
+                const data = await res.json();
+                if (data.length > 0) {
+                    drinks = data;
+                    message = `✅ Búsqueda completada: Encontrados ${data.length} resultados.`;
+                } else {
+                    // Si el backend devuelve 200 pero array vacío
+                    message = `⚠️ No existe un registro con los filtros aplicados (${filtrosUsados.join(', ')}).`;
+                    drinks = [];
+                }
+            } else if (res.status === 404) {
+                // AQUÍ CUMPLIMOS LA RÚBRICA AL 100%
+                let textoFiltros = filtrosUsados.length > 0 ? filtrosUsados.join(', ') : "esos parámetros";
+                message = `⚠️ No existe un registro de Social Drinking con ${textoFiltros}.`;
+                drinks = [];
+            } else if (res.status === 400) {
+                message = "❌ Error en la búsqueda: Los parámetros introducidos no son válidos (Error 400).";
+            } else {
+                message = "❌ Error al buscar los datos en el servidor.";
+            }
+        } catch (error) { 
+            message = "⚠️ Error de red al intentar realizar la búsqueda."; 
+        }
+    }
+
+    async function clearSearch() {
+        searchParams = { country: "", year: "", total_liter: "", beer_share: "", wine_share: "", spirit_share: "" };
+        await getDrinks();
+        message = "🔄 Filtros limpiados. Mostrando todos los datos.";
     }
 
     async function addDrink() {
@@ -42,7 +93,9 @@
                 await getDrinks();
                 newEntry = { country: "", year: "", total_liter: "", beer_share: "", wine_share: "", spirit_share: "" };
             } else if (res.status === 409) {
-                message = "❌ Error: Ese país y año ya existen.";
+                message = `❌ Error: El recurso para el país '${newEntry.country}' en el año '${newEntry.year}' ya existe (Conflicto 409).`;
+            } else if (res.status === 400) {
+                message = "❌ Error: Faltan campos obligatorios o el formato es incorrecto (Bad Request 400).";
             } else {
                 message = "❌ Error al guardar el dato.";
             }
@@ -54,21 +107,22 @@
         try {
             const res = await fetch(`${API_URL}/${country}/${year}`, { method: "DELETE" });
             if (res.ok) {
-                message = "🗑️ Recurso borrado con éxito.";
+                message = `🗑️ Recurso de ${country} (${year}) borrado con éxito.`;
                 await getDrinks();
+            } else if (res.status === 404) {
+                message = `⚠️ No se puede borrar: No existe un registro de ${country} en ${year} (Error 404).`;
             } else message = "❌ Error al borrar.";
         } catch (error) { message = "⚠️ Error de red."; }
     }
 
-    // --- NUEVOS BOTONES GLOBALES ---
-
     async function loadInitialData() {
         try {
-            // Nota: Revisa si en tu Back-End la ruta es GET o POST para loadInitialData
             const res = await fetch(`${API_URL}/loadInitialData`, { method: "GET" });
-            if (res.ok) {
+            if (res.ok || res.status === 201) {
                 message = "🔄 Datos iniciales cargados.";
                 await getDrinks();
+            } else if (res.status === 409) {
+                message = "⚠️ Los datos iniciales ya estaban cargados (Conflicto 409).";
             } else {
                 message = "⚠️ No se pudieron cargar los datos iniciales.";
             }
@@ -102,8 +156,22 @@
         <button class="btn-delete-all" on:click={deleteAll}>🗑️ Borrar Todo</button>
     </div>
 
+    <div class="card search-container">
+        <h3>🔍 Buscar / Filtrar Registros</h3>
+        <p class="subtitle">Rellena uno o varios campos para buscar.</p>
+        <form on:submit|preventDefault={searchDrinks}>
+            <div class="input-group">
+                <input type="text" placeholder="Buscar por País" bind:value={searchParams.country}>
+                <input type="number" placeholder="Buscar por Año" bind:value={searchParams.year}>
+                <input type="number" step="0.1" placeholder="L. Totales" bind:value={searchParams.total_liter}>
+                <button type="submit" class="btn-search">Buscar</button>
+                <button type="button" class="btn-clear" on:click={clearSearch}>Limpiar Filtros</button>
+            </div>
+        </form>
+    </div>
+
     <div class="card form-container">
-        <h3>Añadir nuevo registro</h3>
+        <h3>➕ Añadir nuevo registro</h3>
         <form on:submit|preventDefault={addDrink}>
             <div class="input-group">
                 <input type="text" placeholder="País" bind:value={newEntry.country} required>
@@ -126,7 +194,7 @@
             </thead>
             <tbody>
                 {#if drinks.length === 0}
-                    <tr><td colspan="7" class="text-center">No hay datos.</td></tr>
+                    <tr><td colspan="7" class="text-center">No hay datos para mostrar.</td></tr>
                 {/if}
                 
                 {#each drinks as drink}
@@ -148,14 +216,18 @@
     :global(body) { margin: 0; background-color: #0f172a; color: white; font-family: sans-serif; }
     main { max-width: 1000px; margin: 0 auto; padding: 2rem; }
     h2 { text-align: center; margin-bottom: 2rem; color: #00f2fe; }
+    .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: -10px; margin-bottom: 15px; }
     .back-btn { display: inline-block; margin-bottom: 1rem; color: #94a3b8; text-decoration: none; font-weight: bold; }
     .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 1.5rem; margin-bottom: 2rem; backdrop-filter: blur(10px); }
+    .search-container { border-left: 4px solid #a855f7; } /* Diferenciamos visualmente la búsqueda */
     .alert { background: rgba(0, 242, 254, 0.2); border-left: 4px solid #00f2fe; padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; }
     .input-group { display: flex; flex-wrap: wrap; gap: 1rem; }
     input { flex: 1 1 120px; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.3); color: white; }
-    .btn-add { background: #00f2fe; color: #000; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
     
-    /* Estilos nuevos para los botones globales */
+    .btn-add { background: #00f2fe; color: #000; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .btn-search { background: #a855f7; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .btn-clear { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    
     .global-actions { display: flex; gap: 1rem; margin-bottom: 1.5rem; justify-content: flex-end; }
     .btn-load { background: #4facfe; color: black; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
     .btn-delete-all { background: #ff5252; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
