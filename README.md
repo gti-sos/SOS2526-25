@@ -1,6 +1,6 @@
 # SOS2526-25
 
-
+a
 - **Team**
   - Juan Luis Rodríguez Artiaga (https://github.com/juarodart) API: https://sos2526-25.onrender.com/api/v1/social-drinking-behaviors
   - Aimar García Borrego (https://github.com/aimargarcia) API: https://sos2526-25.onrender.com/api/v1/international-tourist-arrivals
