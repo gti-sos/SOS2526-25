@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { push } from 'svelte-spa-router'; // Para la navegación de la edición
+    import { goto } from '$app/navigation'; // <-- CAMBIADO A SVELTEKIT
 
     // Variables de estado usando Svelte 5 ($state)
     let temperatures = $state([]);
@@ -11,7 +11,7 @@
     
     let message = $state(""); 
 
-    const API_URL = "/api/v2/average-annual-temperatures";
+    const API_URL = "/api/v1/average-annual-temperatures";
 
     onMount(async () => {
         await getTemperatures();
@@ -26,7 +26,9 @@
     }
 
     // --- FUNCIÓN DE BÚSQUEDA ---
-    async function searchTemperatures() {
+    async function searchTemperatures(event) {
+        event.preventDefault(); // <-- SVELTE 5 MANERA CORRECTA
+
         const query = new URLSearchParams();
         let filtrosUsados = [];
 
@@ -69,7 +71,9 @@
     }
 
     // --- AÑADIR NUEVO DATO ---
-    async function addTemperature() {
+    async function addTemperature(event) {
+        event.preventDefault(); // <-- SVELTE 5 MANERA CORRECTA
+
         const dataToSend = {
             country: newEntry.country,
             year: parseInt(newEntry.year),
@@ -144,7 +148,7 @@
 </script>
 
 <main>
-    <a href="/#/" class="back-btn">⬅ Volver al Inicio</a>
+    <a href="/" class="back-btn">⬅ Volver al Inicio</a>
     <h2>🌍 Average Annual Temperatures (Pablo)</h2>
 
     {#if message}
@@ -152,14 +156,14 @@
     {/if}
 
     <div class="global-actions">
-        <button class="btn-load" on:click={loadInitialData}>🔄 Cargar Datos Iniciales</button>
-        <button class="btn-delete-all" on:click={deleteAll}>🗑️ Borrar Todo</button>
+        <button class="btn-load" onclick={loadInitialData}>🔄 Cargar Datos Iniciales</button>
+        <button class="btn-delete-all" onclick={deleteAll}>🗑️ Borrar Todo</button>
     </div>
 
     <div class="card search-container">
         <h3>🔍 Buscar / Filtrar Registros</h3>
         <p class="subtitle">Rellena uno o varios campos para buscar.</p>
-        <form on:submit|preventDefault={searchTemperatures}>
+        <form onsubmit={searchTemperatures}>
             <div class="input-group">
                 <input type="text" placeholder="País" bind:value={searchParams.country}>
                 <input type="number" placeholder="Año" bind:value={searchParams.year}>
@@ -167,14 +171,14 @@
                 <input type="number" step="0.01" placeholder="Precipitación" bind:value={searchParams.precipitation}>
                 <input type="number" step="0.01" placeholder="Temperatura" bind:value={searchParams.temperature}>
                 <button type="submit" class="btn-search">Buscar</button>
-                <button type="button" class="btn-clear" on:click={clearSearch}>Limpiar Filtros</button>
+                <button type="button" class="btn-clear" onclick={clearSearch}>Limpiar Filtros</button>
             </div>
         </form>
     </div>
 
     <div class="card form-container">
         <h3>➕ Añadir nuevo registro</h3>
-        <form on:submit|preventDefault={addTemperature}>
+        <form onsubmit={addTemperature}>
             <div class="input-group">
                 <input type="text" placeholder="País" bind:value={newEntry.country} required>
                 <input type="number" placeholder="Año" bind:value={newEntry.year} required>
@@ -203,8 +207,8 @@
                         <td>{temp.country}</td><td>{temp.year}</td>
                         <td>{temp.co2_emission}</td><td>{temp.precipitation}</td><td>{temp.temperature}</td>
                         <td>
-                            <button class="btn-edit" on:click={() => push(`/average-annual-temperatures/${temp.country}/${temp.year}`)}>Editar</button>
-                            <button class="btn-delete" on:click={() => deleteTemperature(temp.country, temp.year)}>Borrar</button>
+                            <button class="btn-edit" onclick={() => goto(`/average-annual-temperatures/${temp.country}/${temp.year}`)}>Editar</button>
+                            <button class="btn-delete" onclick={() => deleteTemperature(temp.country, temp.year)}>Borrar</button>
                         </td>
                     </tr>
                 {/each}
