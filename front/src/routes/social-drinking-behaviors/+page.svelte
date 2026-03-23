@@ -145,7 +145,7 @@
 
 <main>
     <a href="/" class="back-btn">⬅ Volver al Inicio</a>
-    <h2>🍺 Social Drinking Behaviors (Juanlu)</h2>
+    <h2>🍺 Consumo del alcohol por paises (Juanlu)</h2>
 
     {#if message}
         <div class="alert">{message}</div>

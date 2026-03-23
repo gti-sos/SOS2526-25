@@ -143,7 +143,7 @@
 
 <main>
     <a href="/" class="back-btn">⬅ Volver al Inicio</a>
-    <h2>✈️ International Tourist Arrivals (Aimar)</h2>
+    <h2>✈️ Llegada internacional de turistas (Aimar)</h2>
 
     {#if message}
         <div class="alert">{message}</div>

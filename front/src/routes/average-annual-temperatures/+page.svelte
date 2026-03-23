@@ -149,7 +149,7 @@
 
 <main>
     <a href="/" class="back-btn">⬅ Volver al Inicio</a>
-    <h2>🌍 Average Annual Temperatures (Pablo)</h2>
+    <h2>🌍 Media de las temperaturas (Pablo)</h2>
 
     {#if message}
         <div class="alert">{message}</div>
