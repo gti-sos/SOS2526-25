@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "47313984-0a1e-4fd4-8ad4-2463934f6f63",
-    "name": "Pruebas F06 AGB - International Tourist Arrivals",
+    "name": "Pruebas F06 AGB - International Tourist Arrivals (Fix 409)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "52411500",
     "_collection_link": "https://go.postman.co/collection/52411500-47313984-0a1e-4fd4-8ad4-2463934f6f63?source=collection_link"
@@ -58,8 +58,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Estado es 200 o 201\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "pm.test(\"Estado es 200, 201 o 409 (si ya estaban cargados)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 409]);",
                   "});"
                 ],
                 "type": "text/javascript"
