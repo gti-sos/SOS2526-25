@@ -20,12 +20,7 @@ let PSAdata_initial = [
     { country: "China", year: 2021, co2_emission: 12.7, precipitation: 654.33, temperature: 8.23 }
 ];
 
-function average_PSA(datos){
-    let Germany = datos.filter( (n) => n.country === "Germany");
-    let co2 = Germany.map( (n) => n.co2_emission);
-    let numerator = co2.reduce( (n, b) => n +=b);
-    return numerator/co2.length;
-}
+
 
 export const loadPSA = (app) => {
 
@@ -165,13 +160,4 @@ export const loadPSA = (app) => {
         });
     });
 
-    // SAMPLE PSA
-    app.get("/samples/PSA", (req, res) => {
-        // Para calcular la media en NeDB, sacamos todos y procesamos
-        db.find({}, (err, docs) => {
-            if (err || docs.length === 0) return res.status(200).send("0");
-            let average = average_PSA(docs); 
-            res.status(200).send(String(average));
-        });
-    });
 };

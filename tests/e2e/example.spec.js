@@ -1,19 +1,25 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
+test('Carga la página principal y verifica el título', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('h1.title')).toHaveText('Team SOS2526-25');
 });
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test('Navega a la sección de Pablo', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('text=Pablo Seco Amores').locator('..').locator('text=🖥️ Front-End').click();
+  await expect(page.locator('h2')).toContainText('Media de las temperaturas');
+});
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+test('Navega a la sección de Aimar', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('text=Aimar García Borrego').locator('..').locator('text=🖥️ Front-End').click();
+  await expect(page.locator('h2')).toContainText('Llegada internacional de turistas');
+});
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+test('Navega a la sección de Juanlu', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('text=Juan Luis Rodríguez Artiaga').locator('..').locator('text=🖥️ Front-End').click();
+  await expect(page.locator('h2')).toContainText('Consumo del alcohol');
 });
