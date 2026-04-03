@@ -1,9 +1,8 @@
 <script>
-    import { page } from '$app/stores'; // Para leer la URL
+    import { page } from '$app/stores'; 
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
 
-    // Capturamos los parámetros de la URL gracias a las carpetas [country] y [year]
     let countryUrl = $page.params.country;
     let yearUrl = $page.params.year;
 
@@ -17,8 +16,11 @@
     });
 
     let message = $state("");
+    
+    // NUEVO: Interruptor para mostrar u ocultar el formulario
+    let dataFound = $state(false); 
 
-    const API_URL = `/api/v1/social-drinking-behaviors/${countryUrl}/${yearUrl}`;
+    const API_URL = `/api/v2/social-drinking-behaviors${countryUrl}/${yearUrl}`;
 
     onMount(async () => {
         await getDrink();
@@ -29,13 +31,23 @@
             const res = await fetch(API_URL);
             if (res.ok) {
                 drink = await res.json();
+                dataFound = true; // Si todo va bien, encendemos el formulario
+            } else if (res.status === 404) {
+                message = `⚠️ No existe un registro de Social Drinking para '${countryUrl}' en el año ${yearUrl}.`;
+                dataFound = false; // Apagamos el formulario
             } else {
-                message = "⚠️ No se encontró el registro. Quizás fue borrado.";
+                message = "⚠️ Error al cargar los datos.";
+                dataFound = false; // Apagamos el formulario
             }
-        } catch (error) { message = "⚠️ Error de red."; }
+        } catch (error) { 
+            message = "⚠️ Error de red."; 
+            dataFound = false;
+        }
     }
 
-    async function updateDrink() {
+    async function updateDrink(event) {
+        event.preventDefault(); 
+
         const dataToSend = {
             country: drink.country,
             year: parseInt(drink.year),
@@ -54,19 +66,20 @@
 
             if (res.status === 200) {
                 message = "✅ Dato actualizado correctamente. Volviendo a la tabla...";
-                // Esperamos 1.5 segundos para que leas el mensaje y volvemos a la tabla
-                setTimeout(() => {
-                    goto('/social-drinking-behaviors');
-                }, 1500);
+                setTimeout(() => { goto('/social-drinking-behaviors'); }, 1500);
+            } else if (res.status === 404) {
+                message = `❌ No se puede actualizar: No existe un registro para '${drink.country}' en el año ${drink.year}.`;
+            } else if (res.status === 400) {
+                message = "❌ Error al actualizar: Los datos introducidos no tienen un formato válido.";
             } else {
-                message = "❌ Error al actualizar el dato. Revisa los campos.";
+                message = "❌ Error inesperado al intentar actualizar el registro.";
             }
-        } catch (error) { message = "⚠️ Error de red."; }
+        } catch (error) { message = "⚠️ Error de red al comunicar con el servidor."; }
     }
 </script>
 
 <main>
-    <button class="back-btn" on:click={() => goto('/social-drinking-behaviors')}>⬅ Volver a la tabla</button>
+    <button class="back-btn" onclick={() => goto('/social-drinking-behaviors')}>⬅ Volver a la tabla</button>
     
     <h2>✏️ Editando: {countryUrl} ({yearUrl})</h2>
 
@@ -74,43 +87,48 @@
         <div class="alert">{message}</div>
     {/if}
 
-    <div class="card form-container">
-        <form on:submit|preventDefault={updateDrink}>
-            <div class="input-group">
-                <div class="field">
-                    <label>País (No editable)</label>
-                    <input type="text" bind:value={drink.country} disabled>
+    {#if dataFound}
+        <div class="card form-container">
+            <form onsubmit={updateDrink}>
+                <div class="input-group">
+                    <div class="field">
+                        <label>País (No editable)</label>
+                        <input type="text" bind:value={drink.country} disabled>
+                    </div>
+                    <div class="field">
+                        <label>Año (No editable)</label>
+                        <input type="text" bind:value={drink.year} disabled>
+                    </div>
+                    <div class="field">
+                        <label>Litros Totales</label>
+                        <input type="number" step="0.1" bind:value={drink.total_liter} required>
+                    </div>
+                    <div class="field">
+                        <label>% Cerveza</label>
+                        <input type="number" step="0.1" bind:value={drink.beer_share} required>
+                    </div>
+                    <div class="field">
+                        <label>% Vino</label>
+                        <input type="number" step="0.1" bind:value={drink.wine_share} required>
+                    </div>
+                    <div class="field">
+                        <label>% Licores</label>
+                        <input type="number" step="0.1" bind:value={drink.spirit_share} required>
+                    </div>
                 </div>
-                <div class="field">
-                    <label>Año (No editable)</label>
-                    <input type="text" bind:value={drink.year} disabled>
+                
+                <div class="actions">
+                    <button type="submit" class="btn-update">💾 Guardar Cambios</button>
                 </div>
-                <div class="field">
-                    <label>Litros Totales</label>
-                    <input type="number" step="0.1" bind:value={drink.total_liter} required>
-                </div>
-                <div class="field">
-                    <label>% Cerveza</label>
-                    <input type="number" step="0.1" bind:value={drink.beer_share} required>
-                </div>
-                <div class="field">
-                    <label>% Vino</label>
-                    <input type="number" step="0.1" bind:value={drink.wine_share} required>
-                </div>
-                <div class="field">
-                    <label>% Licores</label>
-                    <input type="number" step="0.1" bind:value={drink.spirit_share} required>
-                </div>
-            </div>
-            
-            <div class="actions">
-                <button type="submit" class="btn-update">💾 Guardar Cambios</button>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
+    {/if}
 </main>
 
 <style>
+    /* NUEVO: Añadida la regla global para asegurar el fondo oscuro entres por donde entres */
+    :global(body) { margin: 0; background-color: #0f172a; color: white; font-family: sans-serif; }
+    
     main { max-width: 800px; margin: 0 auto; padding: 2rem; color: white; }
     h2 { text-align: center; margin-bottom: 2rem; color: #ffc107; }
     .back-btn { background: none; border: none; color: #94a3b8; text-decoration: none; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 1rem;}
