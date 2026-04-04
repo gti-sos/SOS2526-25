@@ -20,13 +20,18 @@ jobs:
       with:
         node-version: 20
 
-    # 1. Instalación de dependencias
+# 1. Instalación de dependencias
     - name: Install Root & Backend Dependencies
       run: npm install
 
     - name: Install Frontend Dependencies
       working-directory: ./front
       run: npm install
+
+    # 🚀 PASO NUEVO Y CRÍTICO: Construir el frontend para que el handler.js exista
+    - name: Build Frontend
+      working-directory: ./front
+      run: npm run build
 
     - name: Install Playwright Browsers
       working-directory: ./front
