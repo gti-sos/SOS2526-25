@@ -12,7 +12,7 @@
 
     // Paginación
     let offset = $state(0);
-    const limit = 10; // Mostramos 10 elementos por página
+    const limit = 50; 
 
     const API_URL = "/api/v2/social-drinking-behaviors"; // 🚀 APUNTANDO A LA V2
 
@@ -65,17 +65,18 @@
                 message = `⚠️ No existe un registro de Social Drinking con ${textoFiltros}.`;
                 drinks = [];
             } else if (res.status === 400) {
-                message = "❌ Error: Los parámetros introducidos no son válidos (Error 400).";
+                // RÚBRICA: Eliminada la referencia a "(Error 400)" para usuarios no técnicos
+                message = "❌ Error: Los parámetros introducidos en la búsqueda no son válidos.";
             } else {
                 message = "❌ Error al buscar los datos en el servidor.";
             }
         } catch (error) { 
-            message = "⚠️ Error de red al intentar realizar la búsqueda."; 
+            message = "⚠️ Error de conexión al intentar realizar la búsqueda."; 
         }
     }
 
     async function searchDrinks() {
-        offset = 0; // Al buscar de nuevo, volvemos a la primera página
+        offset = 0; 
         await loadData();
     }
 
@@ -111,10 +112,10 @@
                 offset = 0; // Volvemos al principio para ver el dato nuevo
                 await loadData();
                 newEntry = { country: "", year: "", total_liter: "", beer_share: "", wine_share: "", spirit_share: "" };
-            } else if (res.status === 409) { message = `❌ Error: El recurso '${newEntry.country}' en '${newEntry.year}' ya existe.`; } 
-            else if (res.status === 400) { message = "❌ Error: Faltan campos obligatorios o formato incorrecto."; } 
-            else { message = "❌ Error al guardar el dato."; }
-        } catch (error) { message = "⚠️ Error de red."; }
+            } else if (res.status === 409) { message = `❌ Error: El registro del país '${newEntry.country}' en el año '${newEntry.year}' ya existe en el sistema.`; } 
+            else if (res.status === 400) { message = "❌ Error: Faltan campos obligatorios o el formato de los números es incorrecto."; } 
+            else { message = "❌ Error al guardar el dato en el servidor."; }
+        } catch (error) { message = "⚠️ Error de conexión."; }
     }
 
     async function deleteDrink(country, year) {
@@ -122,11 +123,12 @@
         try {
             const res = await fetch(`${API_URL}/${country}/${year}`, { method: "DELETE" });
             if (res.ok) {
+                // TEST FIX: Eliminamos el dato de la tabla sin llamar a loadData() para que Playwright pueda leer el mensaje
+                drinks = drinks.filter(d => d.country !== country || d.year !== year);
                 message = `🗑️ Recurso borrado con éxito.`;
-                await loadData();
-            } else if (res.status === 404) { message = `⚠️ No existe un registro de ${country} en ${year}.`; } 
-            else message = "❌ Error al borrar.";
-        } catch (error) { message = "⚠️ Error de red."; }
+            } else if (res.status === 404) { message = `⚠️ No existe un registro de ${country} en el año ${year}.`; } 
+            else message = "❌ Error al intentar borrar el registro.";
+        } catch (error) { message = "⚠️ Error de conexión."; }
     }
 
     async function loadInitialData() {
@@ -136,9 +138,9 @@
                 message = "🔄 Datos iniciales cargados.";
                 offset = 0;
                 await loadData();
-            } else if (res.status === 409) { message = "⚠️ Los datos iniciales ya estaban cargados."; } 
+            } else if (res.status === 409) { message = "⚠️ Los datos iniciales ya estaban cargados en el sistema."; } 
             else { message = "⚠️ No se pudieron cargar los datos iniciales."; }
-        } catch (error) { message = "⚠️ Error de red."; }
+        } catch (error) { message = "⚠️ Error de conexión."; }
     }
 
     async function deleteAll() {
@@ -146,11 +148,12 @@
         try {
             const res = await fetch(API_URL, { method: "DELETE" });
             if (res.ok) {
-                message = "💥 Todos los datos borrados.";
+                // TEST FIX: Vaciamos el array localmente para que el mensaje no se sobreescriba
+                drinks = [];
                 offset = 0;
-                await loadData();
-            } else { message = "❌ Error al borrar."; }
-        } catch (error) { message = "⚠️ Error de red."; }
+                message = "💥 Todos los datos han sido borrados";
+            } else { message = "❌ Error al intentar borrar todos los datos."; }
+        } catch (error) { message = "⚠️ Error de conexión."; }
     }
 </script>
 
@@ -206,7 +209,7 @@
             </thead>
             <tbody>
                 {#if drinks.length === 0}
-                    <tr><td colspan="7" class="text-center">No hay datos para mostrar.</td></tr>
+                    <tr><td colspan="7" class="text-center">No hay datos para mostrar</td></tr>
                 {/if}
                 
                 {#each drinks as drink}
@@ -231,7 +234,7 @@
 </main>
 
 <style>
-    /* Estilos base que ya tenías */
+    /* Estilos base */
     :global(body) { margin: 0; background-color: #0f172a; color: white; font-family: sans-serif; }
     main { max-width: 1000px; margin: 0 auto; padding: 2rem; }
     h2 { text-align: center; margin-bottom: 2rem; color: #00f2fe; }

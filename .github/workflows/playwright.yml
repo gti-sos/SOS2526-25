@@ -1,27 +1,73 @@
-name: Playwright Tests
+name: CI/CD Pipeline (Social Drinking & Temperatures)
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
-  test:
+  test-and-deploy:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
+        node-version: 20
+
+    # 1. Instalación de dependencias
+    - name: Install Root & Backend Dependencies
+      run: npm install
+
+    - name: Install Frontend Dependencies
+      working-directory: ./front
+      run: npm install
+
     - name: Install Playwright Browsers
+      working-directory: ./front
       run: npx playwright install --with-deps
+
+    # 2. Tests de la API (Backend - Newman)
+    # Asumo que "npm test" lanza vuestros tests de Postman/Newman
+    - name: Run Backend API Tests
+      run: npm test
+
+    # 3. Tests E2E (Playwright)
     - name: Run Playwright tests
-      run: npx playwright test
+      run: |
+        # Arrancamos el Back-End en segundo plano
+        npm start &
+        
+        # Arrancamos el Front-End en modo desarrollo en segundo plano
+        cd front && npm run dev &
+        
+        # Esperamos 15 segundos (en GitHub las máquinas son más lentas que tu PC)
+        sleep 15
+        
+        # Lanzamos los tests con UN SOLO WORKER para evitar colapsos
+        cd front && npx playwright test --workers=1
+
+    # 4. Reporte de fallos (Opcional por si algo falla en la nube)
     - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
+      if: failure()
       with:
         name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+        path: front/playwright-report/
+        retention-days: 10
+
+    # 5. Despliegue en Render (Solo si los tests anteriores han pasado)
+    - name: Deploy to Render
+      if: success() && github.ref == 'refs/heads/main'
+      env:
+        deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK }}
+      run: |
+        if [ -z "$deploy_url" ]; then
+          echo "RENDER_DEPLOY_HOOK no está configurado en los Secrets de GitHub"
+        else
+          curl -X POST "$deploy_url"
+        fi

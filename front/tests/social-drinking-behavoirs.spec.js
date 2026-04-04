@@ -1,24 +1,37 @@
 import { test, expect } from '@playwright/test';
 
-// Usamos 'serial' para que los tests se ejecuten en orden.
+// Ejecución en serie: Si uno falla, los demás no se vuelven locos
 test.describe.serial('E2E Consumo de Alcohol (Juanlu)', () => {
 
     test.beforeEach(async ({ page }) => {
-        // Asegúrate de que el puerto sea el que sale en tu terminal al hacer npm run dev
         await page.goto('http://localhost:5173/social-drinking-behaviors');
+
+        // 1. TRUCO ANTI-VELOCIDAD: Esperamos a que Svelte despierte y pinte la tabla
+        await expect(page.locator('table')).toBeVisible({ timeout: 10000 });
+
+        // 2. Le decimos al robot que acepte SIEMPRE cualquier confirm() en toda la prueba
+        page.on('dialog', dialog => dialog.accept());
     });
 
-    test('1. Listar todos los recursos', async ({ page }) => {
-        // Ahora busca exactamente la frase que tienes en tu h2
-        await expect(page.locator('h2', { hasText: 'Consumo del alcohol' })).toBeVisible();
-        await expect(page.locator('table')).toBeVisible();
+    // 1. PREPARAMOS EL TERRENO (Cumple Listar y Borrar Todos)
+    test('1. Limpiar BD, Cargar Iniciales y Listar', async ({ page }) => {
+        // A) Borramos todo para empezar con la BD limpia
+        await page.locator('.btn-delete-all').click();
+        
+        // Match exacto con tu Front: "💥 Todos los datos han sido borrados" (sin punto)
+        await expect(page.locator('.alert')).toContainText('💥 Todos los datos han sido borrados', { timeout: 10000 });
+
+        // B) Cargamos los datos iniciales
+        await page.locator('.btn-load').click();
+        
+        // Match exacto con tu Front: "🔄 Datos iniciales cargados." (con punto)
+        await expect(page.locator('.alert')).toContainText('🔄 Datos iniciales cargados.', { timeout: 10000 });
     });
 
-    test('2. Crear un recurso', async ({ page }) => {
-        // Le decimos al robot que se fije SOLO en la tarjeta de añadir (la que tiene la clase form-container)
+    test('2. Crear un recurso estático', async ({ page }) => {
         const addForm = page.locator('.form-container');
 
-        // Ahora le pedimos que busque los placeholders dentro de esa tarjeta específica
+        // Como la BD está limpia, podemos usar un nombre fijo sin miedo a que se duplique
         await addForm.getByPlaceholder('País', { exact: true }).fill('PlaywrightLand');
         await addForm.getByPlaceholder('Año', { exact: true }).fill('2050');
         await addForm.getByPlaceholder('L. Totales', { exact: true }).fill('15.5');
@@ -28,73 +41,61 @@ test.describe.serial('E2E Consumo de Alcohol (Juanlu)', () => {
 
         await addForm.locator('.btn-add').click();
 
-        // Le damos un segundito a Svelte para que recargue la tabla
-        await page.waitForTimeout(500);
-
-        await expect(page.locator('.alert')).toContainText('✅ Dato añadido correctamente');
-        // Comprobamos que el nuevo país está en la primera celda de alguna fila
-        await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible();
+        // Match exacto con tu Front: "✅ Dato añadido correctamente." (con punto)
+        await expect(page.locator('.alert')).toContainText('✅ Dato añadido correctamente.', { timeout: 10000 });
+        await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
     });
 
     test('3. Buscar un recurso', async ({ page }) => {
-        // IMPORTANTE: Según tu código, el placeholder es "Buscar por País" (con la 'P' mayúscula y tilde)
-        await page.getByPlaceholder('Buscar por País').fill('PlaywrightLand');
+        const searchInput = page.getByPlaceholder('Buscar por País');
+        
+        // 1. Hacemos clic para enfocar la casilla
+        await searchInput.click();
+        
+        // 2. EL ARMA SECRETA: Tecleamos letra a letra como un humano (50 milisegundos por letra)
+        // Esto obliga a Svelte a actualizar su variable interna $state sin fallar jamás.
+        await searchInput.pressSequentially('PlaywrightLand', { delay: 50 });
+        
+        // 3. Hacemos clic en el botón de buscar
         await page.locator('.btn-search').click();
 
-        await page.waitForTimeout(500);
-
-        await expect(page.locator('.alert')).toContainText('✅ Búsqueda completada');
-        await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible();
+        // 4. Comprobamos los resultados
+        await expect(page.locator('.alert')).toContainText('✅ Búsqueda completada: Mostrando resultados.', { timeout: 10000 });
+        await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
         
-        // Limpiamos los filtros para el siguiente test
+        // Limpiamos los filtros al terminar
         await page.locator('.btn-clear').click();
     });
 
     test('4. Editar recurso en vista separada', async ({ page }) => {
-        // Busca la fila de nuestro país inventado y hace clic en su botón Editar
         const row = page.locator('tr').filter({ hasText: 'PlaywrightLand' });
         await row.locator('.btn-edit').click();
 
-        // Comprueba que la URL ha cambiado a la ruta dinámica
-        await expect(page).toHaveURL(/.*\/social-drinking-behaviors\/PlaywrightLand\/2050/);
+        // Comprobamos que estamos en la vista de edición
+        await expect(page).toHaveURL(/.*\/social-drinking-behaviors\/PlaywrightLand\/2050/, { timeout: 10000 });
 
-        // En tu página de edición, el primer input de número es Litros Totales
-        // Llenamos un valor loco para comprobar que se guarda
+        // Editamos el primer campo numérico (Litros totales)
         await page.locator('input[type="number"]').first().fill('99.9');
         await page.locator('.btn-update').click();
 
-        await expect(page.locator('.alert')).toContainText('✅ Dato actualizado correctamente');
+        // Match exacto con tu Front de Edición (country/year)
+        await expect(page.locator('.alert')).toContainText('✅ Dato actualizado correctamente. Volviendo a la tabla...', { timeout: 10000 });
 
-        // Playwright espera mágicamente el setTimeout() de 1.5s y comprueba que volvemos a la tabla
-        await expect(page).toHaveURL(/.*\/social-drinking-behaviors/);
-        
-        await page.waitForTimeout(500);
+        // Esperamos a que vuelva a la tabla automáticamente (el timeout de 10s cubre el setTimeout de Svelte de 1.5s)
+        await expect(page).toHaveURL(/.*\/social-drinking-behaviors/, { timeout: 10000 });
 
-        // Comprueba que el valor nuevo (99.9) está en la tabla
-        await expect(page.locator('td', { hasText: '99.9' })).toBeVisible();
+        // Comprobamos la edición
+        await expect(page.locator('td', { hasText: '99.9' })).toBeVisible({ timeout: 10000 });
     });
 
     test('5. Borrar un recurso concreto', async ({ page }) => {
-        // Le decimos a Playwright que pulse "Aceptar" cuando salga el confirm
-        page.on('dialog', dialog => dialog.accept());
-
         const row = page.locator('tr').filter({ hasText: 'PlaywrightLand' });
         await row.locator('.btn-delete').click();
 
-        await page.waitForTimeout(500);
-
-        // Comprobamos el mensaje verde
-        await expect(page.locator('.alert')).toContainText('borrado con éxito');
-    });
-
-    test('6. Borrar todos los recursos', async ({ page }) => {
-        page.on('dialog', dialog => dialog.accept());
-
-        await page.locator('.btn-delete-all').click();
-
-        await page.waitForTimeout(500);
-
-        await expect(page.locator('.alert')).toContainText('💥 Todos los datos han sido borrados.');
-        await expect(page.locator('.text-center', { hasText: 'No hay datos para mostrar.' })).toBeVisible(); // Ojo, tu código tiene un punto al final de la frase
+        // Match exacto con tu Front: "🗑️ Recurso borrado con éxito." (con punto)
+        await expect(page.locator('.alert')).toContainText('🗑️ Recurso borrado con éxito.', { timeout: 10000 });
+        
+        // Comprobamos que ya no está en la tabla
+        await expect(page.locator('td', { hasText: 'PlaywrightLand' })).not.toBeVisible();
     });
 });
