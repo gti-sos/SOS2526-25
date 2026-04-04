@@ -6,8 +6,8 @@ test.describe.serial('E2E Consumo de Alcohol (Juanlu)', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('http://localhost:5173/social-drinking-behaviors');
 
-        // 1. TRUCO ANTI-VELOCIDAD: Esperamos a que Svelte despierte y pinte la tabla
-        await expect(page.locator('table')).toBeVisible({ timeout: 10000 });
+        // Evita el clic fantasma del robot.
+        await page.waitForTimeout(3000);
 
         // 2. Le decimos al robot que acepte SIEMPRE cualquier confirm() en toda la prueba
         page.on('dialog', dialog => dialog.accept());

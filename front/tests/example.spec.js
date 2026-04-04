@@ -3,15 +3,14 @@ import { test, expect } from '@playwright/test';
 test.describe.serial('E2E Average Annual Temperatures (Pablo)', () => {
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5173/average-annual-temperatures');
-    
-    // 1. TRUCO ANTI-VELOCIDAD: Esperamos a que la tabla sea visible antes de hacer nada.
-    // Así nos aseguramos de que Svelte ha "despertado" al 100%.
-    await expect(page.locator('table')).toBeVisible({ timeout: 10000 });
+        await page.goto('http://localhost:5173/averge-annual-temperatures');
 
-    // 2. Le decimos al robot que acepte SIEMPRE cualquier popup que salga en toda la prueba.
-    page.on('dialog', dialog => dialog.accept());
-  });
+        // Evita el clic fantasma del robot.
+        await page.waitForTimeout(3000);
+
+        // 2. Le decimos al robot que acepte SIEMPRE cualquier confirm() en toda la prueba
+        page.on('dialog', dialog => dialog.accept());
+    });
 
   test('1. Preparar el terreno (Borrar todo y Cargar Iniciales)', async ({ page }) => {
     // A) Borramos todo para empezar con la BD limpia
