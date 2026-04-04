@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe.serial('E2E Average Annual Temperatures (Pablo)', () => {
 
   test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:5173/averge-annual-temperatures');
+        await page.goto('http://localhost:5173/average-annual-temperatures');
 
         // Evita el clic fantasma del robot.
         await page.waitForTimeout(3000);
