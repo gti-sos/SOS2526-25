@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 test.describe.serial('E2E Media de las temperaturas (Pablo)', () => {
 
     test.beforeEach(async ({ page }) => {
-        // Apuntamos al puerto 5173 (Modo desarrollo de SvelteKit)
+        // Apuntamos al puerto 5173 (Modo desarrollo de SvelteKit) IGUAL QUE TU COMPAÑERO
         await page.goto('http://localhost:5173/average-annual-temperatures');
 
         // Evita el clic fantasma del robot dando tiempo a que la página cargue bien
@@ -35,7 +35,6 @@ test.describe.serial('E2E Media de las temperaturas (Pablo)', () => {
         // Como la BD está limpia, podemos usar un nombre fijo sin miedo a que se duplique
         await addForm.getByPlaceholder('País', { exact: true }).fill('PlaywrightLand');
         await addForm.getByPlaceholder('Año', { exact: true }).fill('2050');
-        // Usamos los placeholders exactos de tu frontend
         await addForm.getByPlaceholder('Emisiones CO2').fill('100.5');
         await addForm.getByPlaceholder('Precipitación').fill('50.2');
         await addForm.getByPlaceholder('Temperatura').fill('25.4');
@@ -71,7 +70,7 @@ test.describe.serial('E2E Media de las temperaturas (Pablo)', () => {
         const row = page.locator('tr').filter({ hasText: 'PlaywrightLand' });
         await row.locator('.btn-edit').click();
 
-        // Comprobamos que estamos en la vista de edición (tu ruta específica)
+        // Comprobamos que estamos en la vista de edición (tu ruta)
         await expect(page).toHaveURL(/.*\/average-annual-temperatures\/PlaywrightLand\/2050/, { timeout: 10000 });
 
         // Editamos el primer campo numérico (Emisiones CO2)
@@ -84,7 +83,7 @@ test.describe.serial('E2E Media de las temperaturas (Pablo)', () => {
         // Esperamos a que vuelva a la tabla automáticamente
         await expect(page).toHaveURL(/.*\/average-annual-temperatures/, { timeout: 10000 });
 
-        // Comprobamos la edición en la tabla
+        // Comprobamos la edición
         await expect(page.locator('td', { hasText: '999.9' })).toBeVisible({ timeout: 10000 });
     });
 
