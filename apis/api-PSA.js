@@ -23,7 +23,7 @@ let PSAdata_initial = [
 export const loadPSA = (app) => {
 
     // =========================================================================
-    // VERSIÓN 1 (Legado)
+    // VERSIÓN 1
     // =========================================================================
     app.get(`${BASE_API_URL_PSA_V1}/loadInitialData`, (req, res) => {
         db.find({}, (err, docs) => {
@@ -31,7 +31,7 @@ export const loadPSA = (app) => {
             if (docs.length === 0) {
                 db.insert(PSAdata_initial, (err, newDocs) => {
                     if (err) return res.status(500).send("Internal Server Error");
-                    res.status(200).send("Ok: Recursos de PSA cargados");
+                    res.status(201).send("Ok: Recursos de PSA cargados");
                 });
             } else {
                 res.status(409).send("Conflict: Datos ya cargados");
@@ -125,7 +125,7 @@ export const loadPSA = (app) => {
     });
 
     // =========================================================================
-    // VERSIÓN 2 (Soporte para from y to)
+    // VERSIÓN 2 (Con los mensajes arreglados para los tests)
     // =========================================================================
     app.get(`${BASE_API_URL_PSA_V2}/loadInitialData`, (req, res) => {
         db.find({}, (err, docs) => {
@@ -133,7 +133,7 @@ export const loadPSA = (app) => {
             if (docs.length === 0) {
                 db.insert(PSAdata_initial, (err, newDocs) => {
                     if (err) return res.status(500).send("Internal Server Error");
-                    res.status(200).send("Ok: Recursos de PSA cargados");
+                    res.status(201).send("Ok: Recursos de PSA cargados");
                 });
             } else {
                 res.status(409).send("Conflict: Datos ya cargados");
@@ -142,7 +142,7 @@ export const loadPSA = (app) => {
     });
 
     app.get(`${BASE_API_URL_PSA_V2}/docs`, (req, res) => {
-        res.redirect("https://documenter.getpostman.com/view/52345894/2sBXiqF9DB");
+        res.redirect("https://documenter.getpostman.com/view/YOUR_LINK_HERE"); // Acuérdate de cambiar esto
     });
 
     app.get(BASE_API_URL_PSA_V2, (req, res) => {
