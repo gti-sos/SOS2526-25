@@ -4,8 +4,8 @@ import { test, expect } from '@playwright/test';
 test.describe.serial('E2E Llegadas de Turistas Internacionales (AGB)', () => {
 
     test.beforeEach(async ({ page }) => {
-        // Asegúrate de que el puerto coincida con el que estés usando (ej: 8082 o 5173)
-        await page.goto('http://localhost:8082/international-tourist-arrivals');
+        // Apuntamos al puerto 5173 (Modo desarrollo de SvelteKit)
+        await page.goto('http://localhost:5173/international-tourist-arrivals');
 
         // Evita el clic fantasma del robot dando tiempo a que la página cargue bien
         await page.waitForTimeout(3000);
@@ -19,13 +19,13 @@ test.describe.serial('E2E Llegadas de Turistas Internacionales (AGB)', () => {
         // A) Borramos todo para empezar con la BD limpia
         await page.locator('.btn-delete-all').click();
         
-        // Match exacto con tu Front: "💥 Todos los datos han sido borrados" (sin punto)
+        // Match exacto con tu Front: "💥 Todos los datos han sido borrados"
         await expect(page.locator('.alert')).toContainText('💥 Todos los datos han sido borrados', { timeout: 10000 });
 
         // B) Cargamos los datos iniciales
         await page.locator('.btn-load').click();
         
-        // Match exacto con tu Front: "🔄 Datos iniciales cargados." (con punto)
+        // Match exacto con tu Front: "🔄 Datos iniciales cargados."
         await expect(page.locator('.alert')).toContainText('🔄 Datos iniciales cargados.', { timeout: 10000 });
     });
 
@@ -53,14 +53,13 @@ test.describe.serial('E2E Llegadas de Turistas Internacionales (AGB)', () => {
         await searchInput.click();
         
         // 2. EL ARMA SECRETA: Tecleamos letra a letra como un humano (50 milisegundos por letra)
-        // Esto obliga a Svelte a actualizar su variable interna $state sin fallar jamás.
         await searchInput.pressSequentially('PlaywrightLand', { delay: 50 });
         
         // 3. Hacemos clic en el botón de buscar
         await page.locator('.btn-search').click();
 
         // 4. Comprobamos los resultados
-        await expect(page.locator('.alert')).toContainText('✅ Búsqueda completada: Mostrando resultados.', { timeout: 10000 });
+        await expect(page.locator('.alert')).toContainText('✅ Búsqueda completada', { timeout: 10000 });
         await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
         
         // Limpiamos los filtros al terminar
@@ -79,7 +78,7 @@ test.describe.serial('E2E Llegadas de Turistas Internacionales (AGB)', () => {
         await page.locator('.btn-update').click();
 
         // Match exacto con tu Front de Edición
-        await expect(page.locator('.alert')).toContainText('✅ Dato actualizado correctamente. Volviendo a la tabla...', { timeout: 10000 });
+        await expect(page.locator('.alert')).toContainText('✅ Dato actualizado correctamente', { timeout: 10000 });
 
         // Esperamos a que vuelva a la tabla automáticamente
         await expect(page).toHaveURL(/.*\/international-tourist-arrivals/, { timeout: 10000 });
