@@ -5,7 +5,11 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	server: {
 		proxy: {
-			'/api': 'http://localhost:8082'
+			'/api': {
+				target: 'http://127.0.0.1:8082',
+				changeOrigin: true,
+				secure: false
+			}
 		}
 	}
 });
