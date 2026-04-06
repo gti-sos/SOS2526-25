@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { goto } from '$app/navigation'; // <-- CAMBIADO A SVELTEKIT
+    import { goto } from '$app/navigation'; 
 
     // Variables de estado usando Svelte 5 ($state)
     let temperatures = $state([]);
@@ -27,7 +27,7 @@
 
     // --- FUNCIÓN DE BÚSQUEDA ---
     async function searchTemperatures(event) {
-        event.preventDefault(); // <-- SVELTE 5 MANERA CORRECTA
+        event.preventDefault(); 
 
         const query = new URLSearchParams();
         let filtrosUsados = [];
@@ -72,7 +72,7 @@
 
     // --- AÑADIR NUEVO DATO ---
     async function addTemperature(event) {
-        event.preventDefault(); // <-- SVELTE 5 MANERA CORRECTA
+        event.preventDefault(); 
 
         const dataToSend = {
             country: newEntry.country,
@@ -139,10 +139,9 @@
             const res = await fetch(API_URL, { method: "DELETE" });
             if (res.ok) {
                 temperatures = [];
-                offset = 0;
                 message = "💥 Todos los datos han sido borrados";
             } else {
-                message = `❌ Error al borrar todos los datos. (Código: ${res.status})`; // Nos dirá si es 404, 500, 504...
+                message = `❌ Error al borrar todos los datos. (Código: ${res.status})`; 
             }
         } catch (error) { message = "⚠️ Error de conexión a la red."; }
     }
@@ -166,7 +165,7 @@
         <p class="subtitle">Rellena uno o varios campos para buscar.</p>
         <form onsubmit={searchTemperatures}>
             <div class="input-group">
-                <input type="text" placeholder="País" bind:value={searchParams.country}>
+                <input type="text" placeholder="Buscar por País" bind:value={searchParams.country}>
                 <input type="number" placeholder="Año" bind:value={searchParams.year}>
                 <input type="number" step="0.01" placeholder="Emisiones CO2" bind:value={searchParams.co2_emission}>
                 <input type="number" step="0.01" placeholder="Precipitación" bind:value={searchParams.precipitation}>
@@ -219,7 +218,6 @@
 </main>
 
 <style>
-    /* El bloque de estilos se mantiene igual para que siga con el diseño oscuro unificado */
     :global(body) { margin: 0; background-color: #0f172a; color: white; font-family: sans-serif; }
     main { max-width: 1000px; margin: 0 auto; padding: 2rem; }
     h2 { text-align: center; margin-bottom: 2rem; color: #00f2fe; }
