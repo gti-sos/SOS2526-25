@@ -3,8 +3,8 @@
 	"name": "Render",
 	"values": [
 		{
-			"key": "api_v1",
-			"value": "api/v1/average-annual-temperatures",
+			"key": "api_v2",
+			"value": "api/v2/average-annual-temperatures",
 			"type": "default",
 			"enabled": true
 		}

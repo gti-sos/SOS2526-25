@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "5dce9aa9-3de5-41a8-85bf-85fbe666bf27",
-    "name": "Pablo Seco Collection",
+    "_postman_id": "a8492e1d-b1c5-41ef-9a48-537c70fbdc01",
+    "name": "API_v2",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "52345894",
-    "_collection_link": "https://go.postman.co/collection/52345894-5dce9aa9-3de5-41a8-85bf-85fbe666bf27?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/52345894-a8492e1d-b1c5-41ef-9a48-537c70fbdc01?source=collection_link"
   },
   "item": [
     {
@@ -46,13 +46,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/loadInitialData",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/loadInitialData",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 "loadInitialData"
               ]
@@ -92,13 +92,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures"
               ]
             }
@@ -141,13 +141,13 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 ""
               ]
@@ -193,13 +193,13 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/Germany/2021",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/Germany/2021",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 "Germany",
                 "2021"
@@ -243,13 +243,13 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/Mexico/2020",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/Mexico/2020",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 "Mexico",
                 "2020"
@@ -290,13 +290,13 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/Spain/2024",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/Spain/2024",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 "Spain",
                 "2024"
@@ -341,13 +341,13 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/Germany/2021",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/Germany/2021",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 "Germany",
                 "2021"
@@ -401,13 +401,13 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 ""
               ]
@@ -462,13 +462,13 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/Atlantis",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/Atlantis",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 "Atlantis"
               ]
@@ -508,13 +508,13 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 ""
               ]
@@ -557,13 +557,13 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 ""
               ]
@@ -594,13 +594,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{URL}}/api/v1/average-annual-temperatures/Atlantis",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/Atlantis",
               "host": [
                 "{{URL}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "average-annual-temperatures",
                 "Atlantis"
               ]
@@ -641,13 +641,13 @@
           "raw": ""
         },
         "url": {
-          "raw": "{{URL}}/api/v1/average-annual-temperatures",
+          "raw": "{{URL}}/api/v2/average-annual-temperatures",
           "host": [
             "{{URL}}"
           ],
           "path": [
             "api",
-            "v1",
+            "v2",
             "average-annual-temperatures"
           ]
         }
