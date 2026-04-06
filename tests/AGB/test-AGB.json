@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "47313984-0a1e-4fd4-8ad4-2463934f6f63",
-    "name": "Pruebas F06 AGB - International Tourist Arrivals (Fix 409)",
+    "_postman_id": "0a04f7ae-3cb8-48a9-adfe-c5faea728c20",
+    "name": "Pruebas F06 AGB - International Tourist Arrivals v2",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "52411500",
-    "_collection_link": "https://go.postman.co/collection/52411500-47313984-0a1e-4fd4-8ad4-2463934f6f63?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/52411500-0a04f7ae-3cb8-48a9-adfe-c5faea728c20?source=collection_link"
   },
   "item": [
     {
@@ -31,13 +31,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals/Spain/2099",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals",
                 "Spain",
                 "2099"
@@ -51,39 +51,6 @@
     {
       "name": "01 - Happy Path",
       "item": [
-        {
-          "name": "GET loadInitialData",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Estado es 200, 201 o 409 (si ya estaban cargados)\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 409]);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/loadInitialData",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "international-tourist-arrivals",
-                "loadInitialData"
-              ]
-            }
-          },
-          "response": []
-        },
         {
           "name": "POST Crear Dummy",
           "event": [
@@ -112,13 +79,13 @@
               "raw": "{\n    \"country\": \"Spain\",\n    \"year\": 2099,\n    \"air_arrival\": 10,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals"
               ]
             }
@@ -154,13 +121,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals"
               ]
             }
@@ -192,13 +159,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals/Spain/2099",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals",
                 "Spain",
                 "2099"
@@ -235,13 +202,13 @@
               "raw": "{\n    \"country\": \"Spain\",\n    \"year\": 2099,\n    \"air_arrival\": 999,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals/Spain/2099",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals",
                 "Spain",
                 "2099"
@@ -283,14 +250,15 @@
               "raw": "{\n    \"country\": \"Spain\",\n    \"year\": 2099,\n    \"air_arrival\": 10,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals/",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
-                "international-tourist-arrivals"
+                "v2",
+                "international-tourist-arrivals",
+                ""
               ]
             }
           },
@@ -324,13 +292,13 @@
               "raw": "{\n    \"country\": \"France\",\n    \"year\": 2099,\n    \"air_arrival\": 10,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals/Spain/2099",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals",
                 "Spain",
                 "2099"
@@ -358,13 +326,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Inventado/0000",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals/Inventado/0000",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals",
                 "Inventado",
                 "0000"
@@ -401,13 +369,13 @@
               "raw": "{\n    \"country\": \"Spain\",\n    \"year\": 2099,\n    \"air_arrival\": 10,\n    \"water_arrival\": 20,\n    \"land_arrival\": 30\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals"
               ]
             }
@@ -440,13 +408,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/v1/international-tourist-arrivals/Spain/2099",
+              "raw": "{{base_url}}/api/v2/international-tourist-arrivals/Spain/2099",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
-                "v1",
+                "v2",
                 "international-tourist-arrivals",
                 "Spain",
                 "2099"
