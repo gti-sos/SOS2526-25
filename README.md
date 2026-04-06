@@ -22,4 +22,6 @@
     - AGB: <br>
       - http://sos2526-25.onrender.com/api/v1/international-tourist-arrivals <br>
       - http://sos2526-25.onrender.com/api/v1/international-tourist-arrivals/docs (developed by Aimar García Borrego) <br>
+      - http://sos2526-25.onrender.com/api/v2/international-tourist-arrivals <br>
+      - http://sos2526-25.onrender.com/api/v2/international-tourist-arrivals/docs (developed by Aimar García Borrego) <br>
 
