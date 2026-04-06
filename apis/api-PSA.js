@@ -27,14 +27,14 @@ export const loadPSA = (app) => {
     // =========================================================================
     app.get(`${BASE_API_URL_PSA_V1}/loadInitialData`, (req, res) => {
         db.find({}, (err, docs) => {
-            if (err) return res.sendStatus(500);
+            if (err) return res.status(500).send("Internal Server Error");
             if (docs.length === 0) {
                 db.insert(PSAdata_initial, (err, newDocs) => {
-                    if (err) return res.sendStatus(500);
-                    res.sendStatus(201);
+                    if (err) return res.status(500).send("Internal Server Error");
+                    res.status(200).send("Ok: Recursos de PSA cargados");
                 });
             } else {
-                res.sendStatus(409);
+                res.status(409).send("Conflict: Datos ya cargados");
             }
         });
     });
@@ -56,7 +56,7 @@ export const loadPSA = (app) => {
         if (req.query.limit) limit = parseInt(req.query.limit);
 
         db.find(query, { _id: 0 }).skip(offset).limit(limit).exec((err, docs) => {
-            if (err) return res.sendStatus(500);
+            if (err) return res.status(500).send("Internal Server Error");
             res.status(200).json(docs);
         });
     });
@@ -64,24 +64,24 @@ export const loadPSA = (app) => {
     app.post(BASE_API_URL_PSA_V1, (req, res) => {
         const newData = req.body;
         if (!newData || Object.keys(newData).length !== 5 || newData.country === undefined || newData.year === undefined || newData.co2_emission === undefined || newData.precipitation === undefined || newData.temperature === undefined) {
-            return res.sendStatus(400);
+            return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
         }
         db.find({ country: newData.country, year: newData.year }, (err, docs) => {
-            if (err) return res.sendStatus(500);
-            if (docs.length > 0) return res.sendStatus(409);
+            if (err) return res.status(500).send("Internal Server Error");
+            if (docs.length > 0) return res.status(409).send("Conflict: El recurso ya existe");
             db.insert(newData, (err, newDoc) => {
-                if (err) return res.sendStatus(500);
-                res.sendStatus(201);
+                if (err) return res.status(500).send("Internal Server Error");
+                res.status(201).send("Created");
             });
         });
     });
 
-    app.put(BASE_API_URL_PSA_V1, (req, res) => res.sendStatus(405));
+    app.put(BASE_API_URL_PSA_V1, (req, res) => res.status(405).send("Method Not Allowed"));
 
     app.delete(BASE_API_URL_PSA_V1, (req, res) => {
         db.remove({}, { multi: true }, (err, numRemoved) => {
-            if (err) return res.sendStatus(500);
-            res.sendStatus(200);
+            if (err) return res.status(500).send("Internal Server Error");
+            res.status(200).send("Ok: Recursos borrados");
         });
     });
 
@@ -89,13 +89,13 @@ export const loadPSA = (app) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
         db.find({ country: countryName, year: year }, { _id: 0 }, (err, docs) => {
-            if (err) return res.sendStatus(500);
+            if (err) return res.status(500).send("Internal Server Error");
             if (docs.length > 0) res.status(200).json(docs[0]);
-            else res.sendStatus(404);
+            else res.status(404).send("Not Found");
         });
     });
 
-    app.post(`${BASE_API_URL_PSA_V1}/:country/:year`, (req, res) => res.sendStatus(405));
+    app.post(`${BASE_API_URL_PSA_V1}/:country/:year`, (req, res) => res.status(405).send("Method Not Allowed"));
 
     app.put(`${BASE_API_URL_PSA_V1}/:country/:year`, (req, res) => {
         const countryName = req.params.country;
@@ -103,14 +103,14 @@ export const loadPSA = (app) => {
         const updatedData = req.body;
         
         if (!updatedData || Object.keys(updatedData).length !== 5 || updatedData.country === undefined || updatedData.year === undefined || updatedData.co2_emission === undefined || updatedData.precipitation === undefined || updatedData.temperature === undefined) {
-            return res.sendStatus(400);
+            return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
         }
-        if (updatedData.country !== countryName || updatedData.year !== year) return res.sendStatus(400);
+        if (updatedData.country !== countryName || updatedData.year !== year) return res.status(400).send("Bad Request: El ID de la URL y el del cuerpo deben coincidir");
 
         db.update({ country: countryName, year: year }, updatedData, {}, (err, numReplaced) => {
-            if (err) return res.sendStatus(500);
-            if (numReplaced === 0) return res.sendStatus(404);
-            res.sendStatus(200);
+            if (err) return res.status(500).send("Internal Server Error");
+            if (numReplaced === 0) return res.status(404).send("Not Found");
+            res.status(200).send("Ok: Recurso actualizado");
         });
     });
 
@@ -118,31 +118,30 @@ export const loadPSA = (app) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
         db.remove({ country: countryName, year: year }, {}, (err, numRemoved) => {
-            if (err) return res.sendStatus(500);
-            if (numRemoved === 0) return res.sendStatus(404);
-            res.sendStatus(200);
+            if (err) return res.status(500).send("Internal Server Error");
+            if (numRemoved === 0) return res.status(404).send("Not Found");
+            res.status(200).send("Ok: Recurso borrado");
         });
     });
 
     // =========================================================================
-    // VERSIÓN 2 (Con soporte para from y to)
+    // VERSIÓN 2 (Soporte para from y to)
     // =========================================================================
     app.get(`${BASE_API_URL_PSA_V2}/loadInitialData`, (req, res) => {
         db.find({}, (err, docs) => {
-            if (err) return res.sendStatus(500);
+            if (err) return res.status(500).send("Internal Server Error");
             if (docs.length === 0) {
                 db.insert(PSAdata_initial, (err, newDocs) => {
-                    if (err) return res.sendStatus(500);
-                    res.sendStatus(201);
+                    if (err) return res.status(500).send("Internal Server Error");
+                    res.status(200).send("Ok: Recursos de PSA cargados");
                 });
             } else {
-                res.sendStatus(409);
+                res.status(409).send("Conflict: Datos ya cargados");
             }
         });
     });
 
     app.get(`${BASE_API_URL_PSA_V2}/docs`, (req, res) => {
-        // ⚠️ Debes crear la documentación de la v2 en Postman y poner el link aquí
         res.redirect("https://documenter.getpostman.com/view/52345894/2sBXiqF9DB");
     });
 
@@ -154,7 +153,6 @@ export const loadPSA = (app) => {
         if (req.query.precipitation) query.precipitation = parseFloat(req.query.precipitation);
         if (req.query.temperature) query.temperature = parseFloat(req.query.temperature);
 
-        // Soporte para from y to
         if (req.query.from || req.query.to) {
             query.year = {};
             if (req.query.from) query.year.$gte = parseInt(req.query.from);
@@ -164,17 +162,11 @@ export const loadPSA = (app) => {
         }
 
         let offset = 0; let limit = 0;
-        if (req.query.offset) {
-            offset = parseInt(req.query.offset);
-            if (isNaN(offset) || offset < 0) return res.sendStatus(400); 
-        }
-        if (req.query.limit) {
-            limit = parseInt(req.query.limit);
-            if (isNaN(limit) || limit <= 0) return res.sendStatus(400); 
-        }
+        if (req.query.offset) offset = parseInt(req.query.offset);
+        if (req.query.limit) limit = parseInt(req.query.limit);
 
         db.find(query, { _id: 0 }).skip(offset).limit(limit).exec((err, docs) => {
-            if (err) return res.sendStatus(500);
+            if (err) return res.status(500).send("Internal Server Error");
             res.status(200).json(docs);
         });
     });
@@ -182,24 +174,24 @@ export const loadPSA = (app) => {
     app.post(BASE_API_URL_PSA_V2, (req, res) => {
         const newData = req.body;
         if (!newData || Object.keys(newData).length !== 5 || newData.country === undefined || newData.year === undefined || newData.co2_emission === undefined || newData.precipitation === undefined || newData.temperature === undefined) {
-            return res.sendStatus(400);
+            return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
         }
         db.find({ country: newData.country, year: newData.year }, (err, docs) => {
-            if (err) return res.sendStatus(500);
-            if (docs.length > 0) return res.sendStatus(409);
+            if (err) return res.status(500).send("Internal Server Error");
+            if (docs.length > 0) return res.status(409).send("Conflict: El recurso ya existe");
             db.insert(newData, (err, newDoc) => {
-                if (err) return res.sendStatus(500);
-                res.sendStatus(201);
+                if (err) return res.status(500).send("Internal Server Error");
+                res.status(201).send("Created");
             });
         });
     });
 
-    app.put(BASE_API_URL_PSA_V2, (req, res) => res.sendStatus(405));
+    app.put(BASE_API_URL_PSA_V2, (req, res) => res.status(405).send("Method Not Allowed"));
 
     app.delete(BASE_API_URL_PSA_V2, (req, res) => {
         db.remove({}, { multi: true }, (err, numRemoved) => {
-            if (err) return res.sendStatus(500);
-            res.sendStatus(200);
+            if (err) return res.status(500).send("Internal Server Error");
+            res.status(200).send("Ok: Recursos borrados");
         });
     });
 
@@ -207,13 +199,13 @@ export const loadPSA = (app) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
         db.find({ country: countryName, year: year }, { _id: 0 }, (err, docs) => {
-            if (err) return res.sendStatus(500);
+            if (err) return res.status(500).send("Internal Server Error");
             if (docs.length > 0) res.status(200).json(docs[0]);
-            else res.sendStatus(404);
+            else res.status(404).send("Not Found");
         });
     });
 
-    app.post(`${BASE_API_URL_PSA_V2}/:country/:year`, (req, res) => res.sendStatus(405));
+    app.post(`${BASE_API_URL_PSA_V2}/:country/:year`, (req, res) => res.status(405).send("Method Not Allowed"));
 
     app.put(`${BASE_API_URL_PSA_V2}/:country/:year`, (req, res) => {
         const countryName = req.params.country;
@@ -221,14 +213,14 @@ export const loadPSA = (app) => {
         const updatedData = req.body;
         
         if (!updatedData || Object.keys(updatedData).length !== 5 || updatedData.country === undefined || updatedData.year === undefined || updatedData.co2_emission === undefined || updatedData.precipitation === undefined || updatedData.temperature === undefined) {
-            return res.sendStatus(400);
+            return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
         }
-        if (updatedData.country !== countryName || updatedData.year !== year) return res.sendStatus(400);
+        if (updatedData.country !== countryName || updatedData.year !== year) return res.status(400).send("Bad Request: El ID de la URL y el del cuerpo deben coincidir");
 
         db.update({ country: countryName, year: year }, updatedData, {}, (err, numReplaced) => {
-            if (err) return res.sendStatus(500);
-            if (numReplaced === 0) return res.sendStatus(404);
-            res.sendStatus(200);
+            if (err) return res.status(500).send("Internal Server Error");
+            if (numReplaced === 0) return res.status(404).send("Not Found");
+            res.status(200).send("Ok: Recurso actualizado");
         });
     });
 
@@ -236,9 +228,9 @@ export const loadPSA = (app) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
         db.remove({ country: countryName, year: year }, {}, (err, numRemoved) => {
-            if (err) return res.sendStatus(500);
-            if (numRemoved === 0) return res.sendStatus(404);
-            res.sendStatus(200);
+            if (err) return res.status(500).send("Internal Server Error");
+            if (numRemoved === 0) return res.status(404).send("Not Found");
+            res.status(200).send("Ok: Recurso borrado");
         });
     });
 };
