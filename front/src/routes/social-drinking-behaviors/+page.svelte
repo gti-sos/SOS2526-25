@@ -29,6 +29,11 @@
         if (searchParams.year) { query.append("year", searchParams.year); filtrosUsados.push(`año '${searchParams.year}'`); }
         if (searchParams.total_liter) { query.append("total_liter", searchParams.total_liter); filtrosUsados.push(`L. totales '${searchParams.total_liter}'`); }
         
+        // 🚀 NUEVO: Conectamos los 3 filtros de bebidas al servidor
+        if (searchParams.beer_share) { query.append("beer_share", searchParams.beer_share); filtrosUsados.push(`% cerveza '${searchParams.beer_share}'`); }
+        if (searchParams.wine_share) { query.append("wine_share", searchParams.wine_share); filtrosUsados.push(`% vino '${searchParams.wine_share}'`); }
+        if (searchParams.spirit_share) { query.append("spirit_share", searchParams.spirit_share); filtrosUsados.push(`% licores '${searchParams.spirit_share}'`); }
+        
         // Rangos
         if (searchParams.from) { query.append("from", searchParams.from); filtrosUsados.push(`desde '${searchParams.from}'`); }
         if (searchParams.to) { query.append("to", searchParams.to); filtrosUsados.push(`hasta '${searchParams.to}'`); }
@@ -172,13 +177,19 @@
 
     <div class="card search-container">
         <h3>🔍 Buscar / Filtrar Registros</h3>
-        <p class="subtitle">Rellena uno o varios campos para buscar.</p>
+        <p class="subtitle">Rellena uno o varios campos para buscar combinándolos como quieras.</p>
         <form onsubmit={(e) => { e.preventDefault(); searchDrinks(); }}>
             <div class="input-group">
                 <input type="text" placeholder="Buscar por País" bind:value={searchParams.country}>
                 <input type="number" placeholder="Año exacto" bind:value={searchParams.year}>
                 <input type="number" placeholder="Desde año (from)" bind:value={searchParams.from}>
                 <input type="number" placeholder="Hasta año (to)" bind:value={searchParams.to}>
+                
+                <input type="number" step="0.1" placeholder="Litros exactos" bind:value={searchParams.total_liter}>
+                <input type="number" step="0.1" placeholder="% Cerveza" bind:value={searchParams.beer_share}>
+                <input type="number" step="0.1" placeholder="% Vino" bind:value={searchParams.wine_share}>
+                <input type="number" step="0.1" placeholder="% Licores" bind:value={searchParams.spirit_share}>
+                
                 <button type="submit" class="btn-search">Buscar</button>
                 <button type="button" class="btn-clear" onclick={clearSearch}>Limpiar Filtros</button>
             </div>
