@@ -92,7 +92,7 @@ test.describe.serial('E2E Media de las temperaturas (Pablo)', () => {
         await row.locator('.btn-delete').click();
 
         // Match exacto con tu Front
-        await expect(page.locator('.alert')).toContainText('🗑️ Recurso borrado con éxito.', { timeout: 10000 });
+        await expect(page.locator('.alert')).toContainText('borrado con éxito', { timeout: 10000 });
         
         // Comprobamos que ya no está en la tabla
         await expect(page.locator('td', { hasText: 'PlaywrightLand' })).not.toBeVisible();

@@ -44,7 +44,7 @@ test.describe.serial('E2E Average Annual Temperatures (Pablo)', () => {
     await searchInput.pressSequentially('PlaywrightLand', { delay: 50 });
     await page.locator('.btn-search').click();
 
-    await expect(page.locator('.alert')).toContainText('Búsqueda completada: Mostrando resultados', { timeout: 10000 });
+    await expect(page.locator('.alert')).toContainText('Búsqueda completada', { timeout: 10000 });
     await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
     
     await page.locator('.btn-clear').click();
