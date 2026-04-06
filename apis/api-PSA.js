@@ -3,8 +3,8 @@ import Datastore from 'nedb';
 
 // Inicializamos la base de datos NeDB
 const db = new Datastore({ filename: './data/PSA.db', autoload: true });
-const BASE_API_URL_PSA = "/api/v1/average-annual-temperatures";
-
+const BASE_API_URL_PSA_V1 = "/api/v1/average-annual-temperatures";
+const BASE_API_URL_PSA_V2 = "/api/v2/average-annual-temperatures";
 
 let PSAdata_initial = [
     { country: "Germany", year: 2021, co2_emission: 679, precipitation: 772.59, temperature: 9.48 },
@@ -20,144 +20,225 @@ let PSAdata_initial = [
     { country: "China", year: 2021, co2_emission: 12.7, precipitation: 654.33, temperature: 8.23 }
 ];
 
-
-
 export const loadPSA = (app) => {
 
-    // CARGA INICIAL
-    app.get(`${BASE_API_URL_PSA}/loadInitialData`, (req, res) => {
+    // =========================================================================
+    // VERSIÓN 1 (Legado)
+    // =========================================================================
+    app.get(`${BASE_API_URL_PSA_V1}/loadInitialData`, (req, res) => {
         db.find({}, (err, docs) => {
-            if (err) return res.status(500).send("Internal Server Error");
+            if (err) return res.sendStatus(500);
             if (docs.length === 0) {
                 db.insert(PSAdata_initial, (err, newDocs) => {
-                    if (err) return res.status(500).send("Internal Server Error");
-                    res.status(200).send("Ok: Recursos de PSA cargados");
+                    if (err) return res.sendStatus(500);
+                    res.sendStatus(201);
                 });
             } else {
-                res.status(409).send("Conflict: Datos ya cargados");
+                res.sendStatus(409);
             }
         });
     });
 
-    // Postman documentación
-    app.get(`${BASE_API_URL_PSA}/docs`, (req, res) => {
+    app.get(`${BASE_API_URL_PSA_V1}/docs`, (req, res) => {
         res.redirect("https://documenter.getpostman.com/view/52345894/2sBXigKYGM");
     });
 
-    // GET LISTA Y BÚSQUEDAS CON PAGINACIÓN
-    // GET LISTA Y BÚSQUEDAS CON PAGINACIÓN ARREGLADA
-    app.get(BASE_API_URL_PSA, (req, res) => {
+    app.get(BASE_API_URL_PSA_V1, (req, res) => {
         let query = {};
-
-        // 1. Búsquedas por todos los campos
         if (req.query.country) query.country = req.query.country;
         if (req.query.year) query.year = parseInt(req.query.year);
         if (req.query.co2_emission) query.co2_emission = parseFloat(req.query.co2_emission);
         if (req.query.precipitation) query.precipitation = parseFloat(req.query.precipitation);
         if (req.query.temperature) query.temperature = parseFloat(req.query.temperature);
 
-        // 2. Preparamos la consulta base (Cursor)
-        let cursor = db.find(query);
+        let offset = 0; let limit = 0;
+        if (req.query.offset) offset = parseInt(req.query.offset);
+        if (req.query.limit) limit = parseInt(req.query.limit);
 
-        // 3. Aplicamos paginación SOLO si vienen en la URL
-        if (req.query.offset) {
-            cursor = cursor.skip(parseInt(req.query.offset));
-        }
-        if (req.query.limit) {
-            cursor = cursor.limit(parseInt(req.query.limit));
-        }
-
-        // 4. Ejecutamos la consulta final
-        cursor.exec((err, docs) => {
-            if (err) return res.status(500).send("Internal Server Error");
-            
-            // Eliminamos el _id interno de NeDB
-            docs.forEach(d => delete d._id);
+        db.find(query, { _id: 0 }).skip(offset).limit(limit).exec((err, docs) => {
+            if (err) return res.sendStatus(500);
             res.status(200).json(docs);
         });
     });
 
-    // POST LISTA
-    app.post(BASE_API_URL_PSA, (req, res) => {
+    app.post(BASE_API_URL_PSA_V1, (req, res) => {
         const newData = req.body;
-        
-        // Validación estricta de sus 5 campos
         if (!newData || Object.keys(newData).length !== 5 || newData.country === undefined || newData.year === undefined || newData.co2_emission === undefined || newData.precipitation === undefined || newData.temperature === undefined) {
-            return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
+            return res.sendStatus(400);
         }
-        
         db.find({ country: newData.country, year: newData.year }, (err, docs) => {
-            if (err) return res.status(500).send("Internal Server Error");
-            if (docs.length > 0) return res.status(409).send("Conflict: El recurso ya existe");
-            
+            if (err) return res.sendStatus(500);
+            if (docs.length > 0) return res.sendStatus(409);
             db.insert(newData, (err, newDoc) => {
-                if (err) return res.status(500).send("Internal Server Error");
-                res.status(201).send("Created");
+                if (err) return res.sendStatus(500);
+                res.sendStatus(201);
             });
         });
     });
 
-    // PUT LISTA
-    app.put(BASE_API_URL_PSA, (req, res) => res.status(405).send("Method Not Allowed"));
+    app.put(BASE_API_URL_PSA_V1, (req, res) => res.sendStatus(405));
 
-    // DELETE LISTA
-    app.delete(BASE_API_URL_PSA, (req, res) => {
+    app.delete(BASE_API_URL_PSA_V1, (req, res) => {
         db.remove({}, { multi: true }, (err, numRemoved) => {
-            if (err) return res.status(500).send("Internal Server Error");
-            res.status(200).send("Ok: Recursos borrados");
+            if (err) return res.sendStatus(500);
+            res.sendStatus(200);
         });
     });
 
-    // GET RECURSO CONCRETO
-    app.get(`${BASE_API_URL_PSA}/:country/:year`, (req, res) => {
+    app.get(`${BASE_API_URL_PSA_V1}/:country/:year`, (req, res) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
-        
-        db.find({ country: countryName, year: year }, (err, docs) => {
-            if (err) return res.status(500).send("Internal Server Error");
-            if (docs.length > 0) {
-                delete docs[0]._id; // Limpiar id interno
-                res.status(200).json(docs[0]);
-            } else {
-                res.status(404).send("Not Found");
-            }
+        db.find({ country: countryName, year: year }, { _id: 0 }, (err, docs) => {
+            if (err) return res.sendStatus(500);
+            if (docs.length > 0) res.status(200).json(docs[0]);
+            else res.sendStatus(404);
         });
     });
 
-    // POST RECURSO CONCRETO
-    app.post(`${BASE_API_URL_PSA}/:country/:year`, (req, res) => res.status(405).send("Method Not Allowed"));
+    app.post(`${BASE_API_URL_PSA_V1}/:country/:year`, (req, res) => res.sendStatus(405));
 
-    // PUT RECURSO CONCRETO
-    app.put(`${BASE_API_URL_PSA}/:country/:year`, (req, res) => {
+    app.put(`${BASE_API_URL_PSA_V1}/:country/:year`, (req, res) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
         const updatedData = req.body;
         
         if (!updatedData || Object.keys(updatedData).length !== 5 || updatedData.country === undefined || updatedData.year === undefined || updatedData.co2_emission === undefined || updatedData.precipitation === undefined || updatedData.temperature === undefined) {
-            return res.status(400).send("Bad Request: El JSON no tiene los campos esperados");
+            return res.sendStatus(400);
         }
-        
-        if (updatedData.country !== countryName || updatedData.year !== year) {
-            return res.status(400).send("Bad Request: El ID de la URL y el del cuerpo deben coincidir");
-        }
+        if (updatedData.country !== countryName || updatedData.year !== year) return res.sendStatus(400);
 
         db.update({ country: countryName, year: year }, updatedData, {}, (err, numReplaced) => {
-            if (err) return res.status(500).send("Internal Server Error");
-            if (numReplaced === 0) return res.status(404).send("Not Found");
-            res.status(200).send("Ok: Recurso actualizado");
+            if (err) return res.sendStatus(500);
+            if (numReplaced === 0) return res.sendStatus(404);
+            res.sendStatus(200);
         });
     });
 
-    // DELETE RECURSO CONCRETO
-    app.delete(`${BASE_API_URL_PSA}/:country/:year`, (req, res) => {
+    app.delete(`${BASE_API_URL_PSA_V1}/:country/:year`, (req, res) => {
         const countryName = req.params.country;
         const year = parseInt(req.params.year);
-        
         db.remove({ country: countryName, year: year }, {}, (err, numRemoved) => {
-            if (err) return res.status(500).send("Internal Server Error");
-            if (numRemoved === 0) return res.status(404).send("Not Found");
-            res.status(200).send("Ok: Recurso borrado");
+            if (err) return res.sendStatus(500);
+            if (numRemoved === 0) return res.sendStatus(404);
+            res.sendStatus(200);
         });
     });
 
+    // =========================================================================
+    // VERSIÓN 2 (Con soporte para from y to)
+    // =========================================================================
+    app.get(`${BASE_API_URL_PSA_V2}/loadInitialData`, (req, res) => {
+        db.find({}, (err, docs) => {
+            if (err) return res.sendStatus(500);
+            if (docs.length === 0) {
+                db.insert(PSAdata_initial, (err, newDocs) => {
+                    if (err) return res.sendStatus(500);
+                    res.sendStatus(201);
+                });
+            } else {
+                res.sendStatus(409);
+            }
+        });
+    });
+
+    app.get(`${BASE_API_URL_PSA_V2}/docs`, (req, res) => {
+        // ⚠️ Debes crear la documentación de la v2 en Postman y poner el link aquí
+        res.redirect("https://documenter.getpostman.com/view/YOUR_LINK_HERE");
+    });
+
+    app.get(BASE_API_URL_PSA_V2, (req, res) => {
+        let query = {};
+        
+        if (req.query.country) query.country = req.query.country;
+        if (req.query.co2_emission) query.co2_emission = parseFloat(req.query.co2_emission);
+        if (req.query.precipitation) query.precipitation = parseFloat(req.query.precipitation);
+        if (req.query.temperature) query.temperature = parseFloat(req.query.temperature);
+
+        // Soporte para from y to
+        if (req.query.from || req.query.to) {
+            query.year = {};
+            if (req.query.from) query.year.$gte = parseInt(req.query.from);
+            if (req.query.to) query.year.$lte = parseInt(req.query.to);
+        } else if (req.query.year) {
+            query.year = parseInt(req.query.year);
+        }
+
+        let offset = 0; let limit = 0;
+        if (req.query.offset) {
+            offset = parseInt(req.query.offset);
+            if (isNaN(offset) || offset < 0) return res.sendStatus(400); 
+        }
+        if (req.query.limit) {
+            limit = parseInt(req.query.limit);
+            if (isNaN(limit) || limit <= 0) return res.sendStatus(400); 
+        }
+
+        db.find(query, { _id: 0 }).skip(offset).limit(limit).exec((err, docs) => {
+            if (err) return res.sendStatus(500);
+            res.status(200).json(docs);
+        });
+    });
+
+    app.post(BASE_API_URL_PSA_V2, (req, res) => {
+        const newData = req.body;
+        if (!newData || Object.keys(newData).length !== 5 || newData.country === undefined || newData.year === undefined || newData.co2_emission === undefined || newData.precipitation === undefined || newData.temperature === undefined) {
+            return res.sendStatus(400);
+        }
+        db.find({ country: newData.country, year: newData.year }, (err, docs) => {
+            if (err) return res.sendStatus(500);
+            if (docs.length > 0) return res.sendStatus(409);
+            db.insert(newData, (err, newDoc) => {
+                if (err) return res.sendStatus(500);
+                res.sendStatus(201);
+            });
+        });
+    });
+
+    app.put(BASE_API_URL_PSA_V2, (req, res) => res.sendStatus(405));
+
+    app.delete(BASE_API_URL_PSA_V2, (req, res) => {
+        db.remove({}, { multi: true }, (err, numRemoved) => {
+            if (err) return res.sendStatus(500);
+            res.sendStatus(200);
+        });
+    });
+
+    app.get(`${BASE_API_URL_PSA_V2}/:country/:year`, (req, res) => {
+        const countryName = req.params.country;
+        const year = parseInt(req.params.year);
+        db.find({ country: countryName, year: year }, { _id: 0 }, (err, docs) => {
+            if (err) return res.sendStatus(500);
+            if (docs.length > 0) res.status(200).json(docs[0]);
+            else res.sendStatus(404);
+        });
+    });
+
+    app.post(`${BASE_API_URL_PSA_V2}/:country/:year`, (req, res) => res.sendStatus(405));
+
+    app.put(`${BASE_API_URL_PSA_V2}/:country/:year`, (req, res) => {
+        const countryName = req.params.country;
+        const year = parseInt(req.params.year);
+        const updatedData = req.body;
+        
+        if (!updatedData || Object.keys(updatedData).length !== 5 || updatedData.country === undefined || updatedData.year === undefined || updatedData.co2_emission === undefined || updatedData.precipitation === undefined || updatedData.temperature === undefined) {
+            return res.sendStatus(400);
+        }
+        if (updatedData.country !== countryName || updatedData.year !== year) return res.sendStatus(400);
+
+        db.update({ country: countryName, year: year }, updatedData, {}, (err, numReplaced) => {
+            if (err) return res.sendStatus(500);
+            if (numReplaced === 0) return res.sendStatus(404);
+            res.sendStatus(200);
+        });
+    });
+
+    app.delete(`${BASE_API_URL_PSA_V2}/:country/:year`, (req, res) => {
+        const countryName = req.params.country;
+        const year = parseInt(req.params.year);
+        db.remove({ country: countryName, year: year }, {}, (err, numRemoved) => {
+            if (err) return res.sendStatus(500);
+            if (numRemoved === 0) return res.sendStatus(404);
+            res.sendStatus(200);
+        });
+    });
 };
