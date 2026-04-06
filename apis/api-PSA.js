@@ -143,7 +143,7 @@ export const loadPSA = (app) => {
 
     app.get(`${BASE_API_URL_PSA_V2}/docs`, (req, res) => {
         // ⚠️ Debes crear la documentación de la v2 en Postman y poner el link aquí
-        res.redirect("https://documenter.getpostman.com/view/YOUR_LINK_HERE");
+        res.redirect("https://documenter.getpostman.com/view/52345894/2sBXiqF9DB");
     });
 
     app.get(BASE_API_URL_PSA_V2, (req, res) => {
