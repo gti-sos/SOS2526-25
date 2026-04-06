@@ -133,17 +133,18 @@
     }
 
     // --- BORRAR TODO ---
-    async function deleteAll() {
-        if (!confirm("⚠️ ¿Estás SEGURO de que quieres borrar TODOS los datos?")) return;
+   async function deleteAll() {
+        if (!confirm("⚠️ ¿Estás SEGURO de que quieres borrar TODOS los datos de temperaturas?")) return;
         try {
             const res = await fetch(API_URL, { method: "DELETE" });
             if (res.ok) {
-                message = "💥 Todos los datos han sido borrados.";
-                await getTemperatures();
+                temperatures = [];
+                offset = 0;
+                message = "💥 Todos los datos han sido borrados";
             } else {
-                message = "❌ Error al borrar todos los datos.";
+                message = `❌ Error al borrar todos los datos. (Código: ${res.status})`; // Nos dirá si es 404, 500, 504...
             }
-        } catch (error) { message = "⚠️ Error de red."; }
+        } catch (error) { message = "⚠️ Error de conexión a la red."; }
     }
 </script>
 
