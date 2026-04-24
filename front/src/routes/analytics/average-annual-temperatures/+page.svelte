@@ -29,7 +29,10 @@
 </script>
 
 <main>
-    <a href="/average-annual-temperatures" class="back-btn">⬅ Volver a Temperaturas</a>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="/average-annual-temperatures" class="back-btn">⬅ Volver a Temperaturas</a>
+        <a href="/analytics/average-annual-temperatures/map" class="btn-map">🗺️ Ver Mapa Geoespacial</a>
+    </div>
     <h2>🌍 Analíticas de Temperaturas</h2>
     {#if message}<p class="alert">{message}</p>{/if}
     <div bind:this={chartContainer} style="width: 100%; height: 500px;"></div>
@@ -39,4 +42,17 @@
     :global(body) { background-color: #0f172a; color: white; font-family: sans-serif; }
     main { max-width: 900px; margin: 0 auto; padding: 2rem; }
     .back-btn { color: #94a3b8; text-decoration: none; font-weight: bold; }
+    .btn-map {
+        background: #10b981; /* Verde esmeralda */
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: transform 0.2s;
+    }
+    .btn-map:hover {
+        transform: scale(1.05);
+        background: #059669;
+    }
 </style>
