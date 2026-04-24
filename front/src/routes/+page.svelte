@@ -11,6 +11,7 @@
         <div class="project-links">
             <a href="https://github.com/gti-sos/SOS2526-25" target="_blank" class="btn btn-github">📁 GitHub Repository</a>
             <a href="https://sos2526-25.onrender.com/" target="_blank" class="btn btn-api">🚀 Render Deployment</a>
+            <a href="/analytics" class="btn btn-analytics">📈 Gráfica Grupal</a>
         </div>
     </header>
 
@@ -24,6 +25,7 @@
                 <a href="/social-drinking-behaviors" class="btn btn-frontend">🖥️ Front-End</a>
                 <a href="/api/v1/social-drinking-behaviors" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v1/social-drinking-behaviors/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
+                <a href="/analytics/social-drinking-behaviors" class="btn btn-analytics">📊 Analytics</a>
             </div>
         </div>
 
@@ -36,6 +38,7 @@
                 <a href="/international-tourist-arrivals" class="btn btn-frontend">🖥️ Front-End</a>
                 <a href="/api/v1/international-tourist-arrivals" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v1/international-tourist-arrivals/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
+                <a href="/analytics/international-tourist-arrivals" class="btn btn-analytics">📊 Analytics</a>
             </div>
         </div>
 
@@ -48,6 +51,7 @@
                 <a href="/average-annual-temperatures" class="btn btn-frontend">🖥️ Front-End</a>
                 <a href="/api/v1/average-annual-temperatures" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v1/average-annual-temperatures/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
+                <a href="/analytics/average-annual-temperatures" class="btn btn-analytics">📊 Analytics</a>
             </div>
         </div>
     </div>
@@ -227,6 +231,15 @@
         gap: 1.5rem;
         justify-content: center;
         flex-wrap: wrap;
+    }
+    .btn-analytics {
+        background: rgba(168, 85, 247, 0.1); 
+        color: #a855f7;
+        border: 1px solid #a855f7;
+    }
+    .btn-analytics:hover {
+        background: #a855f7;
+        color: white;
     }
 </style>
 

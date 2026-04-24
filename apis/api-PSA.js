@@ -142,7 +142,7 @@ export const loadPSA = (app) => {
     });
 
     app.get(`${BASE_API_URL_PSA_V2}/docs`, (req, res) => {
-        res.redirect("https://documenter.getpostman.com/view/YOUR_LINK_HERE"); // Acuérdate de cambiar esto
+        res.redirect("https://documenter.getpostman.com/view/52345894/2sBXiqF9DB"); // Acuérdate de cambiar esto
     });
 
     app.get(BASE_API_URL_PSA_V2, (req, res) => {
