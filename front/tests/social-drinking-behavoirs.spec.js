@@ -42,7 +42,12 @@ test.describe.serial('E2E Consumo de Alcohol (Juanlu)', () => {
         await addForm.locator('.btn-add').click();
 
         // Match exacto con tu Front: "✅ Dato añadido correctamente." (con punto)
+       // Match exacto con tu Front: "✅ Dato añadido correctamente." (con punto)
         await expect(page.locator('.alert')).toContainText('✅ Dato añadido correctamente.', { timeout: 10000 });
+            await page.fill('input[placeholder*="País"]', 'PlaywrightLand'); // Ajusta el texto del placeholder si tu input pone otra cosa
+        await page.click('button:has-text("Buscar")'); // Ajusta si tu botón de buscar tiene otro texto
+
+        // Ahora sí, comprobamos que está en la tabla
         await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
     });
 
