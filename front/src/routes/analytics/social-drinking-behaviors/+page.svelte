@@ -40,9 +40,6 @@
                 chart: { 
                     type: 'bar',
                     backgroundColor: 'transparent',
-                    // 🚀 LA MAGIA DEL SCROLL: 
-                    // Le damos 35 píxeles de altura a cada país para que respire.
-                    // Si el total supera el tamaño de la caja, Highcharts pone un scroll vertical.
                     scrollablePlotArea: {
                         minHeight: data.length * 35, 
                         scrollPositionX: 0
@@ -68,7 +65,6 @@
                     },
                     labels: { style: { color: '#94a3b8' } },
                     gridLineColor: '#1e293b',
-                    // Mantiene el eje Y (los porcentajes) fijo arriba cuando haces scroll hacia abajo
                     opposite: true 
                 },
                 plotOptions: { 
