@@ -12,6 +12,8 @@ const dataJLRA = [
     { country: "Germany", year: 2018, total_liter: 10.3, beer_share: 4.9, wine_share: 3.1, spirit_share: 2.3 },
     { country: "Germany", year: 2019, total_liter: 10.3, beer_share: 4.9, wine_share: 3.1, spirit_share: 2.3 },
     { country: "Germany", year: 2020, total_liter: 10.5, beer_share: 5.0, wine_share: 3.1, spirit_share: 2.4 },
+    { country: "Germany", year: 2015, total_liter: 11.2, beer_share: 5.8, wine_share: 3.1, spirit_share: 2.3 },
+    { country: "Germany", year: 2017, total_liter: 10.9, beer_share: 5.5, wine_share: 3.1, spirit_share: 2.3 },
     { country: "Germany", year: 2021, total_liter: 10.8, beer_share: 5.2, wine_share: 3.2, spirit_share: 2.4 },
     { country: "Germany", year: 2022, total_liter: 10.7, beer_share: 5.1, wine_share: 3.2, spirit_share: 2.4 },
     { country: "Albania", year: 2018, total_liter: 4.7, beer_share: 1.8, wine_share: 1.6, spirit_share: 1.3 },
