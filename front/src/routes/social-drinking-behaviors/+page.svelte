@@ -12,7 +12,7 @@
 
     // Paginación
     let offset = $state(0);
-    const limit = 50; 
+    const limit = 15; 
 
     const API_URL = "/api/v2/social-drinking-behaviors"; // 🚀 APUNTANDO A LA V2
 

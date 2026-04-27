@@ -42,7 +42,12 @@ test.describe.serial('E2E Consumo de Alcohol (Juanlu)', () => {
         await addForm.locator('.btn-add').click();
 
         // Match exacto con tu Front: "✅ Dato añadido correctamente." (con punto)
+       // Match exacto con tu Front: "✅ Dato añadido correctamente." (con punto)
         await expect(page.locator('.alert')).toContainText('✅ Dato añadido correctamente.', { timeout: 10000 });
+            await page.fill('input[placeholder*="País"]', 'PlaywrightLand'); // Ajusta el texto del placeholder si tu input pone otra cosa
+        await page.click('button:has-text("Buscar")'); // Ajusta si tu botón de buscar tiene otro texto
+
+        // Ahora sí, comprobamos que está en la tabla
         await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
     });
 
@@ -68,6 +73,10 @@ test.describe.serial('E2E Consumo de Alcohol (Juanlu)', () => {
     });
 
     test('4. Editar recurso en vista separada', async ({ page }) => {
+        await page.fill('input[placeholder*="País"]', 'PlaywrightLand'); 
+        await page.click('button:has-text("Buscar")'); 
+
+        // Ahora sí, buscamos la fila y le damos a editar
         const row = page.locator('tr').filter({ hasText: 'PlaywrightLand' });
         await row.locator('.btn-edit').click();
 
@@ -83,16 +92,21 @@ test.describe.serial('E2E Consumo de Alcohol (Juanlu)', () => {
 
         // Esperamos a que vuelva a la tabla automáticamente (el timeout de 10s cubre el setTimeout de Svelte de 1.5s)
         await expect(page).toHaveURL(/.*\/social-drinking-behaviors/, { timeout: 10000 });
+        
+        await page.fill('input[placeholder*="País"]', 'PlaywrightLand'); 
+        await page.click('button:has-text("Buscar")'); 
 
         // Comprobamos la edición
         await expect(page.locator('td', { hasText: '99.9' })).toBeVisible({ timeout: 10000 });
     });
 
     test('5. Borrar un recurso concreto', async ({ page }) => {
+        
+        await page.fill('input[placeholder*="País"]', 'PlaywrightLand'); 
+        await page.click('button:has-text("Buscar")'); 
+
         const row = page.locator('tr').filter({ hasText: 'PlaywrightLand' });
         await row.locator('.btn-delete').click();
-
-        // Match exacto con tu Front: "🗑️ Recurso borrado con éxito." (con punto)
         await expect(page.locator('.alert')).toContainText('🗑️ Recurso borrado con éxito.', { timeout: 10000 });
         
         // Comprobamos que ya no está en la tabla
