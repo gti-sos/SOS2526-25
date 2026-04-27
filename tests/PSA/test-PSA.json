@@ -462,7 +462,7 @@
               }
             },
             "url": {
-              "raw": "{{URL}}/api/v2/average-annual-temperatures/Atlantis",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/Atlantis/2022",
               "host": [
                 "{{URL}}"
               ],
@@ -470,7 +470,8 @@
                 "api",
                 "v2",
                 "average-annual-temperatures",
-                "Atlantis"
+                "Atlantis",
+                "2022"
               ]
             }
           },
@@ -594,7 +595,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{URL}}/api/v2/average-annual-temperatures/Atlantis",
+              "raw": "{{URL}}/api/v2/average-annual-temperatures/Atlantis/2022",
               "host": [
                 "{{URL}}"
               ],
@@ -602,7 +603,8 @@
                 "api",
                 "v2",
                 "average-annual-temperatures",
-                "Atlantis"
+                "Atlantis",
+                "2022"
               ]
             }
           },
