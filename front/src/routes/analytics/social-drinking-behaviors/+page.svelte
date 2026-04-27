@@ -30,18 +30,19 @@
             // 2. Ordenamos alfabéticamente para que sea fácil buscar un país
             data.sort((a, b) => a.country.localeCompare(b.country));
 
-            // Extraemos los datos
+            // Extraemos los datos numéricos (¡AQUÍ ESTÁN TODOS AHORA!)
             const countries = data.map(d => d.country);
             const beer = data.map(d => d.beer_share);
             const wine = data.map(d => d.wine_share);
             const spirit = data.map(d => d.spirit_share);
-
+            const total = data.map(d => d.total_liter); 
             Highcharts.chart(chartContainer, {
                 chart: { 
                     type: 'bar',
                     backgroundColor: 'transparent',
                     scrollablePlotArea: {
-                        minHeight: data.length * 35, 
+                        // Aumentamos un pelín el alto mínimo porque ahora hay 4 barras por país
+                        minHeight: data.length * 45, 
                         scrollPositionX: 0
                     }
                 }, 
@@ -59,7 +60,8 @@
                 yAxis: { 
                     min: 0, 
                     title: { 
-                        text: 'Porcentaje Compartido (%)', 
+                        // 🚀 NUEVO: Cambiamos el título para que tenga sentido con los dos tipos de datos
+                        text: 'Valores (% de Preferencia y Litros Per Cápita)', 
                         align: 'high',
                         style: { color: '#94a3b8' } 
                     },
@@ -69,7 +71,6 @@
                 },
                 plotOptions: { 
                     bar: { 
-                        // Hacer las barras un poco más finas para que no se peguen unas con otras
                         pointPadding: 0.1, 
                         groupPadding: 0.1,
                         dataLabels: { 
@@ -87,11 +88,14 @@
                     itemHoverStyle: { color: '#00f2fe' } 
                 },
                 credits: { enabled: false },
-                colors: ['#f59e0b', '#9d174d', '#3b82f6'], 
+                // 🚀 NUEVO: Hemos añadido un cuarto color (Cian neón) para los Litros Totales
+                colors: ['#00f2fe', '#f59e0b', '#9d174d', '#3b82f6'], 
                 series: [
-                    { name: 'Cerveza', data: beer },
-                    { name: 'Vino', data: wine },
-                    { name: 'Licores', data: spirit }
+                    // 🚀 NUEVO: Añadimos la serie de Litros a la gráfica
+                    { name: 'Litros Totales (L)', data: total }, 
+                    { name: 'Cerveza (%)', data: beer },
+                    { name: 'Vino (%)', data: wine },
+                    { name: 'Licores (%)', data: spirit }
                 ]
             });
         } catch (error) {
@@ -149,6 +153,6 @@
     .chart-box {
         width: 100%;
         height: 600px; 
-        overflow: hidden; /* Evita que el scroll rompa los bordes redondeados */
+        overflow: hidden; 
     }
 </style>
