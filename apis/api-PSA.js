@@ -47,7 +47,7 @@ export const loadPSA = (app) => {
     });
 
     app.get(`${BASE_API_URL_PSA_V1}/docs`, (req, res) => {
-        res.redirect("https://documenter.getpostman.com/view/52345894/2sBXigKYGM");
+        res.redirect("https://documenter.getpostman.com/view/52345894/2sBXiqF9DB");
     });
 
     app.get(BASE_API_URL_PSA_V1, (req, res) => {

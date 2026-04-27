@@ -10,6 +10,7 @@ import { loadAGB } from "./apis/api-AGB.js";
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 8082; 
 
 // 2. Configurar la ruta estática para la página web
