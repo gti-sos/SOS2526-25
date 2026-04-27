@@ -15,10 +15,11 @@ const port = process.env.PORT || 8082;
 // 2. Configurar la ruta estática para la página web
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+app.use('/', express.static(path.join(__dirname, 'public')));
 
 // 3. Cargar las tres APIs pasándoles la app
 loadJLRA(app);
-loadPSA(app);
+loadPSA(app);   
 loadAGB(app);
 
 //3.2 Uso de svelte
