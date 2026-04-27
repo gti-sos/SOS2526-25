@@ -17,8 +17,15 @@ let PSAdata_initial = [
     { country: "United Kingdom", year: 2018, co2_emission: 380, precipitation: 1100, temperature: 9.53 },
     { country: "Germany", year: 2015, co2_emission: 780, precipitation: 654.88, temperature: 10.33 },
     { country: "China", year: 2019, co2_emission: 11.8, precipitation: 615.63, temperature: 8.04 },
-    { country: "China", year: 2021, co2_emission: 12.7, precipitation: 654.33, temperature: 8.23 }
-];
+    { country: "China", year: 2021, co2_emission: 12.7, precipitation: 654.33, temperature: 8.23 },
+    { country: "Germany", year: 2017, co2_emission: 785, precipitation: 845.50, temperature: 9.60 },
+    { country: "Germany", year: 2018, co2_emission: 755, precipitation: 590.20, temperature: 10.45 },
+    { country: "Germany", year: 2019, co2_emission: 710, precipitation: 740.00, temperature: 10.30 },
+    { country: "Germany", year: 2020, co2_emission: 644, precipitation: 710.40, temperature: 10.40 },
+    { country: "Germany", year: 2022, co2_emission: 665, precipitation: 671.00, temperature: 10.50 },
+    { country: "Germany", year: 2023, co2_emission: 610, precipitation: 830.00, temperature: 10.60 },
+    { country: "Germany", year: 2024, co2_emission: 590, precipitation: 750.00, temperature: 10.70 }
+];  
 
 export const loadPSA = (app) => {
 
