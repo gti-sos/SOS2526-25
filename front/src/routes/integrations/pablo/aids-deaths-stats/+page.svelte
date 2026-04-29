@@ -19,9 +19,9 @@
 
     async function loadAndDraw() {
         try {
-            // 1. Fetch a la API propia de Pablo (Temperaturas)
-            const resTemp = await fetch('/api/v2/average-annual-temperatures?country=Afghanistan');
-            // 2. Fetch a la API del compañero a través del PROXY
+            // Buscamos directamente Afganistán 2015 en TU api
+            const resTemp = await fetch('/api/v2/average-annual-temperatures?country=Afghanistan&year=2015');
+            // Llamamos al proxy (que ahora ya trae Afganistán 2015 filtrado)
             const resAids = await fetch('/api/proxy/pablo/aids');
 
             if (!resTemp.ok || !resAids.ok) throw new Error("Error al obtener datos");
@@ -29,19 +29,17 @@
             const dataTemp = await resTemp.json();
             const dataAids = await resAids.json();
 
-            // 3. Cruzar datos (Ejemplo: Afganistán en el año 2015)
-            const yearMatch = 2015;
-            const myData = dataTemp.find(d => d.year === yearMatch);
-            const partnerData = dataAids.find(d => d.country === "Afghanistan" && d.year === yearMatch);
+            // Extraemos los objetos (si las APIs devuelven un array, cogemos el primero)
+            const myData = Array.isArray(dataTemp) ? dataTemp[0] : dataTemp;
+            const partnerData = Array.isArray(dataAids) ? dataAids[0] : dataAids;
 
             if (!myData || !partnerData) {
-                message = `⚠️ No hay datos coincidentes para el año ${yearMatch}`;
+                message = `⚠️ No hay datos coincidentes en las bases de datos para Afganistán 2015.`;
                 return;
             }
 
-            message = ""; // Limpiar mensaje de carga
+            message = ""; 
 
-            // 4. Generar Radar Chart con Billboard.js
             window.bb.generate({
                 data: {
                     x: "x",
@@ -55,16 +53,14 @@
                             partnerData.death_count_hiv_aids_70_plus
                         ]
                     ],
-                    type: "radar", // Tipo requerido: No es LINE y es distinta a las demás
+                    type: "radar",
                     labels: true
                 },
-                radar: {
-                    axis: { max: 200 }
-                },
+                radar: { axis: { max: 200 } },
                 bindto: chartElement,
                 color: { pattern: ["#aa3bff"] },
                 legend: { show: true },
-                title: { text: `Distribución de muertes SIDA vs Clima (${myData.country}, ${yearMatch})` }
+                title: { text: `Distribución de muertes SIDA vs Clima (${myData.country}, 2015)` }
             });
 
         } catch (e) {

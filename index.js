@@ -53,8 +53,8 @@ app.get('/api/proxy/g14/meteorites', async (req, res) => {
 
 // PROXY para Pablo -> API AIDS (Grupo 21)
 app.get('/api/proxy/pablo/aids', async (req, res) => {
-    // Usamos la URL de Render del compañero (ajustar si el grupo es diferente al 21)
-    const remoteUrl = 'https://sos2526-21.onrender.com/api/v1/aids-deaths-stats';
+    // AÑADIMOS LOS PARÁMETROS AQUÍ para evitar el límite de 10 registros
+    const remoteUrl = 'https://sos2526-21.onrender.com/api/v1/aids-deaths-stats?country=Afghanistan&year=2015';
     try {
         const response = await fetch(remoteUrl);
         if (!response.ok) throw new Error("Error en API remota");

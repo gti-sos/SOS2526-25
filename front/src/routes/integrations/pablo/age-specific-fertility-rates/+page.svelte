@@ -22,9 +22,8 @@
             // 1. Fetch a la API de Pablo (Temperaturas)
             const resTemp = await fetch('/api/v2/average-annual-temperatures');
             
-            // 2. Fetch directo a la API del G12 (Fertilidad)
-            const resFertility = await fetch('https://sos2526-12.onrender.com/api/v2/age-specific-fertility-rates');
-
+            // 2. Fetch a la API del G12 pidiendo 100 registros (para saltarnos su límite por defecto)
+            const resFertility = await fetch('https://sos2526-12.onrender.com/api/v2/age-specific-fertility-rates?limit=100');
             if (!resTemp.ok || !resFertility.ok) throw new Error("Error al conectar con las APIs");
 
             const dataTemp = await resTemp.json();

@@ -20,12 +20,11 @@
 
     async function loadAndDraw() {
         try {
-            // 1. Fetch a la API de Pablo (Temperaturas)
+            // 1. Fetch a la API de Pablo (Temperaturas) SIN FILTROS para traer todos
             const resTemp = await fetch('/api/v2/average-annual-temperatures');
             
-            // 2. Fetch directo a la API del G30 (Olympics) - Atacamos a su backend en Render
-            // Su API devuelve hasta 100 registros con el parámetro limit=100
-            const resOlympics = await fetch('https://sos2526-30.onrender.com/api/v2/olympics-athlete-events?limit=100');
+            // 2. Fetch directo a la API del G30 pidiendo 500 registros para asegurarnos de que vienen los de China/Spain/etc.
+            const resOlympics = await fetch('https://sos2526-30.onrender.com/api/v2/olympics-athlete-events?limit=500');
 
             if (!resTemp.ok || !resOlympics.ok) throw new Error("Error al conectar con las APIs");
 
