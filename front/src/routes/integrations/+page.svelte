@@ -51,6 +51,30 @@
                 <div class="arrow">Ver Gráfica ➜</div>
             </div>
         </a>
+        <a href="/integrations/pablo/aids-deaths-stats" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración SOS (Pablo)</span>
+                <h3 style="color: #aa3bff;">AIDS Deaths (G21)</h3>
+                <p>Análisis: Muertes por SIDA vs Temperaturas usando Billboard.js (Radar) vía Proxy.</p>
+                <div class="arrow" style="color: #aa3bff;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/olympics-athlete-events" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración SOS (Pablo)</span>
+                <h3 style="color: #facc15;">Olimpiadas (G30)</h3>
+                <p>Análisis: Atletas Olímpicos vs Temperatura usando Apache ECharts (Rose Chart).</p>
+                <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/age-specific-fertility-rates" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración SOS (Pablo)</span>
+                <h3 style="color: #ff007f;">Fertilidad (G12)</h3>
+                <p>Análisis: Tasa de Fertilidad vs Temperatura usando AnyChart (Treemap).</p>
+                <div class="arrow" style="color: #ff007f;">Ver Gráfica ➜</div>
+            </div>
+        </a>
 
     </div>
 </main>
