@@ -426,11 +426,11 @@ export const loadJLRA = (app) => {
     app.get(`${BASE_API_URL_V2}/loadInitialData`, (req, res) => {
         // Usamos count() como en tu ejemplo, que es más eficiente que find()
         db.count({}, (err, count) => { 
-            if (err) return res.status(500);
+            if (err) return res.sendStatus(500);
             
             if (count > 0) {
                 // Backlog: Si ya hay datos, código 409 Conflict
-                return res.status(409);
+                return res.sendStatus(409);
             }
 
             // Ruta hacia el archivo que acabas de descargar y guardar en tu proyecto
@@ -448,13 +448,13 @@ export const loadJLRA = (app) => {
                 }));
 
                 db.insert(datosLimpios, (err, newDocs) => {
-                    if (err) return res.status(500);
+                    if (err) return res.sendStatus(500);
                     
                     res.status(200);
                 });
             }).catch((err) => {
                 console.error("Error leyendo el CSV:", err);
-                res.status(500);
+                res.sendStatus(500);
             });
         });
     });
