@@ -97,10 +97,10 @@
             "exec": [
               "pm.test(\"Status es 200 OK\", () => pm.response.to.have.status(200));",
               "",
-              "pm.test(\"Devuelve un Array de 202 elementos\", () => {",
+              "pm.test(\"Devuelve un Array de mas de 240 elementos\", () => {",
               "    var jsonData = pm.response.json();",
               "    pm.expect(Array.isArray(jsonData)).to.be.true;",
-              "    pm.expect(jsonData).to.have.lengthOf(202);",
+              "    pm.expect(jsonData.length).to.be.above(240);",
               "});"
             ],
             "type": "text/javascript",

@@ -12,6 +12,7 @@
             <a href="https://github.com/gti-sos/SOS2526-25" target="_blank" class="btn btn-github">📁 GitHub Repository</a>
             <a href="https://sos2526-25.onrender.com/" target="_blank" class="btn btn-api">🚀 Render Deployment</a>
             <a href="/analytics" class="btn btn-analytics">📈 Gráfica Grupal</a>
+            <a href="/integrations" class="btn btn-analytics">📈 Integraciones grupales</a>
         </div>
     </header>
 

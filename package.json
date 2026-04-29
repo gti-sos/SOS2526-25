@@ -39,6 +39,7 @@
     "leaflet": "^1.9.4",
     "nedb": "^1.8.0",
     "path": "^0.12.7",
+    "plotly.js-dist-min": "^3.5.0",
     "svelte": "^5.54.0",
     "svelte-spa-router": "^5.0.0"
   },
