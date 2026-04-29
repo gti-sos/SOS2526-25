@@ -24,14 +24,20 @@
     {#if remoteData.length > 0}
         <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px;">
             <table style="width: 100%; border-collapse: collapse; color: white;">
-                <tr style="color: #a855f7; text-align: left;"><th>Universidad</th><th>Sitio Web</th></tr>
-                {#each remoteData as uni}
-                    <tr>
-                        <td style="padding: 10px; border-bottom: 1px solid #334155;">{uni.name}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #334155;"><a href="{uni.web_pages[0]}" style="color: #00f2fe;" target="_blank">{uni.domains[0]}</a></td>
-                    </tr>
-                {/each}
-            </table>
+    <thead>
+        <tr style="color: #a855f7; text-align: left;">
+            <th>Universidad</th>
+            <th>Sitio Web</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+        {#each remoteData as uni}
+            <tr>
+                </tr>
+        {/each}
+    </tbody>
+</table>
         </div>
     {/if}
 </main>
