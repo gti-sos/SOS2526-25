@@ -71,8 +71,11 @@
     }
 
     // --- AÑADIR NUEVO DATO ---
-    async function addTemperature(event) {
-        event.preventDefault(); 
+   async function addTemperature(event) {
+        if (event) event.preventDefault(); 
+
+        // Forzamos la limpieza del mensaje antes de empezar
+        message = "Enviando..."; 
 
         const dataToSend = {
             country: newEntry.country,
@@ -90,17 +93,18 @@
             });
 
             if (res.status === 201) {
+                // El test busca esta frase EXACTA
                 message = "✅ Dato añadido correctamente.";
                 await getTemperatures();
                 newEntry = { country: "", year: "", co2_emission: "", precipitation: "", temperature: "" };
             } else if (res.status === 409) {
-                message = `❌ Error: El recurso para el país '${newEntry.country}' en el año '${newEntry.year}' ya existe (Conflicto 409).`;
-            } else if (res.status === 400) {
-                message = "❌ Error: Faltan campos obligatorios o el formato es incorrecto (Bad Request 400).";
+                message = "❌ Error: El recurso ya existe.";
             } else {
                 message = "❌ Error al guardar el dato.";
             }
-        } catch (error) { message = "⚠️ Error de red."; }
+        } catch (error) { 
+            message = "⚠️ Error de red."; 
+        }
     }
 
     // --- BORRAR DATO ESPECÍFICO ---
