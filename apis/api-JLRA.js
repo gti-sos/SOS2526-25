@@ -426,11 +426,11 @@ export const loadJLRA = (app) => {
     app.get(`${BASE_API_URL_V2}/loadInitialData`, (req, res) => {
         // Usamos count() como en tu ejemplo, que es más eficiente que find()
         db.count({}, (err, count) => { 
-            if (err) return res.status(500).json({ error: "Error al consultar la DB" });
+            if (err) return res.status(500);
             
             if (count > 0) {
                 // Backlog: Si ya hay datos, código 409 Conflict
-                return res.status(409).json({ message: "La base de datos ya tiene datos. Usa DELETE primero." });
+                return res.status(409);
             }
 
             // Ruta hacia el archivo que acabas de descargar y guardar en tu proyecto
@@ -448,17 +448,13 @@ export const loadJLRA = (app) => {
                 }));
 
                 db.insert(datosLimpios, (err, newDocs) => {
-                    if (err) return res.status(500).json({ error: "Error al insertar en DB" });
+                    if (err) return res.status(500);
                     
-                    // Respondemos con 201 y un mensaje simple (sin mandar los _id autogenerados)
-                    res.status(200).json({ 
-                        message: "Datos cargados correctamente desde el CSV local", 
-                        count: newDocs.length 
-                    });
+                    res.status(200);
                 });
             }).catch((err) => {
                 console.error("Error leyendo el CSV:", err);
-                res.status(500).json({ error: "Error interno al leer el archivo CSV local" });
+                res.status(500);
             });
         });
     });
