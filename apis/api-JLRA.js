@@ -450,7 +450,7 @@ export const loadJLRA = (app) => {
                 db.insert(datosLimpios, (err, newDocs) => {
                     if (err) return res.sendStatus(500);
                     
-                    res.status(200);
+                    res.sendStatus(200);
                 });
             }).catch((err) => {
                 console.error("Error leyendo el CSV:", err);
