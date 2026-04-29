@@ -24,8 +24,8 @@
             
             <div class="links-container">
                 <a href="/social-drinking-behaviors" class="btn btn-frontend">🖥️ Front-End</a>
-                <a href="/api/v1/social-drinking-behaviors" target="_blank" class="btn btn-api">⚙️ Base API</a>
-                <a href="/api/v1/social-drinking-behaviors/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
+                <a href="/api/v2/social-drinking-behaviors" target="_blank" class="btn btn-api">⚙️ Base API</a>
+                <a href="/api/v2/social-drinking-behaviors/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
                 <a href="/analytics/social-drinking-behaviors" class="btn btn-analytics">📊 Analytics</a>
             </div>
         </div>

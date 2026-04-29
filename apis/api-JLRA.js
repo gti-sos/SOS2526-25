@@ -1,5 +1,6 @@
 // Archivo: apis/api-JLRA.js
 import Datastore from "nedb";
+import csv from 'csvtojson';
 
 // 1. Configuramos la Base de Datos
 const db = new Datastore({ filename: './data/jlra.db', autoload: true });
@@ -250,7 +251,6 @@ const dataJLRA = [
     { country: "Canada", year: 2017, total_liter: 8.9, beer_share: 4.1, wine_share: 2.2, spirit_share: 2.6 },
     { country: "Australia", year: 2016, total_liter: 10.5, beer_share: 4.3, wine_share: 4.0, spirit_share: 2.2 },
     { country: "Australia", year: 2017, total_liter: 10.5, beer_share: 4.3, wine_share: 4.0, spirit_share: 2.2 },
-
     { country: "Oman", year: 2016, total_liter: 0.1, beer_share: 0.0, wine_share: 0.0, spirit_share: 0.1 },
     { country: "Oman", year: 2017, total_liter: 0.1, beer_share: 0.0, wine_share: 0.0, spirit_share: 0.1 },
     { country: "Oman", year: 2018, total_liter: 0.1, beer_share: 0.0, wine_share: 0.0, spirit_share: 0.1 },
@@ -422,18 +422,46 @@ export const loadJLRA = (app) => {
     // VERSIÓN 2
     // =========================================================================
 
+
     app.get(`${BASE_API_URL_V2}/loadInitialData`, (req, res) => {
-        db.find({}, function (err, docs) {
-            if (err) return res.sendStatus(500);
-            if (docs.length === 0) {
-                db.insert(dataJLRA, function (err, newDocs) {
-                    if (err) return res.sendStatus(500);
-                    res.sendStatus(200); 
+        // Usamos count() como en tu ejemplo, que es más eficiente que find()
+        db.count({}, (err, count) => { 
+            if (err) return res.status(500).json({ error: "Error al consultar la DB" });
+            
+            if (count > 0) {
+                // Backlog: Si ya hay datos, código 409 Conflict
+                return res.status(409).json({ message: "La base de datos ya tiene datos. Usa DELETE primero." });
+            }
+
+            // Ruta hacia el archivo que acabas de descargar y guardar en tu proyecto
+            const alcohol_csv = './data/alcohol_data.csv';
+
+            csv().fromFile(alcohol_csv).then((datos) => {
+                // Mapeamos y limpiamos los datos para quedarnos solo con TUS 6 columnas
+                const datosLimpios = datos.map(m => ({
+                    country: String(m.country).trim(),
+                    year: Number(m.year),
+                    total_liter: Number(m.total_liter) || 0,
+                    beer_share: Number(m.beer_share) || 0,
+                    wine_share: Number(m.wine_share) || 0,
+                    spirit_share: Number(m.spirit_share) || 0
+                }));
+
+                db.insert(datosLimpios, (err, newDocs) => {
+                    if (err) return res.status(500).json({ error: "Error al insertar en DB" });
+                    
+                    // Respondemos con 201 y un mensaje simple (sin mandar los _id autogenerados)
+                    res.status(201).json({ 
+                        message: "Datos cargados correctamente desde el CSV local", 
+                        count: newDocs.length 
+                    });
                 });
-            } else { res.sendStatus(409); }
+            }).catch((err) => {
+                console.error("Error leyendo el CSV:", err);
+                res.status(500).json({ error: "Error interno al leer el archivo CSV local" });
+            });
         });
     });
-
     // ⚠️ ATENCIÓN: Aquí tendrás que poner el nuevo enlace de Postman cuando lo crees
     app.get(`${BASE_API_URL_V2}/docs`, (req, res) => {
         res.redirect("https://documenter.getpostman.com/view/52398088/2sBXiomA1M");
