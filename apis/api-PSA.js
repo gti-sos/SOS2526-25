@@ -7,6 +7,7 @@ const BASE_API_URL_PSA_V1 = "/api/v1/average-annual-temperatures";
 const BASE_API_URL_PSA_V2 = "/api/v2/average-annual-temperatures";
 
 let PSAdata_initial = [
+    // --- TUS DATOS ORIGINALES ---
     { country: "Germany", year: 2021, co2_emission: 679, precipitation: 772.59, temperature: 9.48 },
     { country: "Austria", year: 2021, co2_emission: 65.5, precipitation: 1090, temperature: 7.29 },
     { country: "Belgium", year: 2017, co2_emission: 99.1, precipitation: 876.48, temperature: 11.02 },
@@ -24,9 +25,32 @@ let PSAdata_initial = [
     { country: "Germany", year: 2020, co2_emission: 644, precipitation: 710.40, temperature: 10.40 },
     { country: "Germany", year: 2022, co2_emission: 665, precipitation: 671.00, temperature: 10.50 },
     { country: "Germany", year: 2023, co2_emission: 610, precipitation: 830.00, temperature: 10.60 },
-    { country: "Germany", year: 2024, co2_emission: 590, precipitation: 750.00, temperature: 10.70 }
-];  
+    { country: "Germany", year: 2024, co2_emission: 590, precipitation: 750.00, temperature: 10.70 },
 
+    // --- DATOS NUEVOS PARA CRUZAR CON EL SIDA (GRUPO 21) ---
+    { country: "Afghanistan", year: 2015, co2_emission: 8.5, precipitation: 327.5, temperature: 13.5 },
+    { country: "South Africa", year: 2015, co2_emission: 450.2, precipitation: 495.1, temperature: 17.5 },
+    { country: "Nigeria", year: 2015, co2_emission: 120.4, precipitation: 1150.2, temperature: 26.8 },
+
+    // --- DATOS NUEVOS PARA CRUZAR CON OLIMPIADAS (GRUPO 30) ---
+    { country: "China", year: 1992, co2_emission: 2500.5, precipitation: 600.5, temperature: 6.5 },
+    { country: "USA", year: 1992, co2_emission: 5100.5, precipitation: 700.5, temperature: 11.5 },
+    { country: "Spain", year: 1992, co2_emission: 230.1, precipitation: 600.4, temperature: 14.5 },
+    { country: "France", year: 1992, co2_emission: 380.2, precipitation: 820.1, temperature: 11.5 },
+
+    // --- DATOS NUEVOS PARA CRUZAR CON FERTILIDAD (GRUPO 12) ---
+    { country: "Slovenia", year: 2022, co2_emission: 12.5, precipitation: 1400.2, temperature: 10.5 },
+    { country: "Spain", year: 2022, co2_emission: 245.1, precipitation: 500.4, temperature: 15.5 },
+    { country: "France", year: 2022, co2_emission: 300.2, precipitation: 800.1, temperature: 12.5 },
+    { country: "USA", year: 2022, co2_emission: 5000.5, precipitation: 720.3, temperature: 12.1 },
+    { country: "Italy", year: 2022, co2_emission: 330.4, precipitation: 750.8, temperature: 14.0 },
+    { country: "Japan", year: 2022, co2_emission: 1100.5, precipitation: 1600.2, temperature: 12.5 },
+    { country: "Latvia", year: 2022, co2_emission: 7.2, precipitation: 650.5, temperature: 6.8 },
+    { country: "Mongolia", year: 2022, co2_emission: 25.1, precipitation: 200.5, temperature: -0.5 },
+    { country: "Liberia", year: 2022, co2_emission: 1.2, precipitation: 2500.5, temperature: 26.5 },
+    { country: "Ukraine", year: 2022, co2_emission: 180.5, precipitation: 550.4, temperature: 8.5 },
+    { country: "Chad", year: 2022, co2_emission: 1.5, precipitation: 300.2, temperature: 28.5 }
+];
 export const loadPSA = (app) => {
 
     // =========================================================================
