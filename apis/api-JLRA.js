@@ -451,7 +451,7 @@ export const loadJLRA = (app) => {
                     if (err) return res.status(500).json({ error: "Error al insertar en DB" });
                     
                     // Respondemos con 201 y un mensaje simple (sin mandar los _id autogenerados)
-                    res.status(201).json({ 
+                    res.status(200).json({ 
                         message: "Datos cargados correctamente desde el CSV local", 
                         count: newDocs.length 
                     });
