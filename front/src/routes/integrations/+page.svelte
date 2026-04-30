@@ -84,7 +84,7 @@
             </div>
         </a>
         <!-- Tarjeta: Integración SOS (Exportaciones G13) - Pablo -->
-        <a href="/integrations/pablo/exportation-stats" class="card-link">
+        <a href="/integrations/pablo/exportations-stats" class="card-link">
             <div class="card">
                 <span class="tag tag-int">Integración Pablo (Compañeros)</span>
                 <h3 style="color: #f59e0b;">Exportaciones (G13)</h3>

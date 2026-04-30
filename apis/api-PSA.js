@@ -49,7 +49,32 @@ let PSAdata_initial = [
     { country: "Mongolia", year: 2022, co2_emission: 25.1, precipitation: 200.5, temperature: -0.5 },
     { country: "Liberia", year: 2022, co2_emission: 1.2, precipitation: 2500.5, temperature: 26.5 },
     { country: "Ukraine", year: 2022, co2_emission: 180.5, precipitation: 550.4, temperature: 8.5 },
-    { country: "Chad", year: 2022, co2_emission: 1.5, precipitation: 300.2, temperature: 28.5 }
+    { country: "Chad", year: 2022, co2_emission: 1.5, precipitation: 300.2, temperature: 28.5 },
+    { country: "Germany", year: 2016, co2_emission: 775, precipitation: 660, temperature: 10.35 },
+    
+    // España (2015-2024) -> Para cruzar con ESG Scores (G28), Exportaciones (G13) y SpaceX
+    { country: "Spain", year: 2015, co2_emission: 254, precipitation: 636, temperature: 13.3 },
+    { country: "Spain", year: 2016, co2_emission: 256, precipitation: 650, temperature: 13.4 },
+    { country: "Spain", year: 2017, co2_emission: 260, precipitation: 474, temperature: 13.6 },
+    { country: "Spain", year: 2018, co2_emission: 255, precipitation: 670, temperature: 13.5 },
+    { country: "Spain", year: 2019, co2_emission: 240, precipitation: 600, temperature: 13.7 },
+    { country: "Spain", year: 2020, co2_emission: 210, precipitation: 610, temperature: 13.8 },
+    { country: "Spain", year: 2021, co2_emission: 230, precipitation: 590, temperature: 13.6 },
+    { country: "Spain", year: 2022, co2_emission: 245, precipitation: 500, temperature: 14.0 },
+    { country: "Spain", year: 2023, co2_emission: 240, precipitation: 520, temperature: 14.2 },
+    { country: "Spain", year: 2024, co2_emission: 235, precipitation: 510, temperature: 14.4 },
+
+    // USA (2018-2022) -> Para cruzar con ESG Scores (G28) y Exportaciones (G13)
+    { country: "USA", year: 2018, co2_emission: 5000, precipitation: 700, temperature: 11.5 },
+    { country: "USA", year: 2019, co2_emission: 4900, precipitation: 710, temperature: 11.6 },
+    { country: "USA", year: 2020, co2_emission: 4500, precipitation: 720, temperature: 11.7 },
+    { country: "USA", year: 2021, co2_emission: 4800, precipitation: 705, temperature: 11.6 },
+    { country: "USA", year: 2022, co2_emission: 4950, precipitation: 690, temperature: 11.8 },
+
+    // Datos específicos para cruzar con APIs de compañeros:
+    { country: "Afghanistan", year: 2015, co2_emission: 8.5, precipitation: 327, temperature: 13.5 }, // SIDA (G21)
+    { country: "Slovenia", year: 2022, co2_emission: 13.5, precipitation: 1400, temperature: 10.5 }, // Fertilidad (G12)
+    { country: "China", year: 1992, co2_emission: 2500, precipitation: 600, temperature: 6.5 } // Olimpiadas (G30)
 ];
 export const loadPSA = (app) => {
 
