@@ -74,7 +74,19 @@ let PSAdata_initial = [
     // Datos específicos para cruzar con APIs de compañeros:
     { country: "Afghanistan", year: 2015, co2_emission: 8.5, precipitation: 327, temperature: 13.5 }, // SIDA (G21)
     { country: "Slovenia", year: 2022, co2_emission: 13.5, precipitation: 1400, temperature: 10.5 }, // Fertilidad (G12)
-    { country: "China", year: 1992, co2_emission: 2500, precipitation: 600, temperature: 6.5 } // Olimpiadas (G30)
+    { country: "China", year: 1992, co2_emission: 2500, precipitation: 600, temperature: 6.5 } ,// Olimpiadas (G30)
+
+    // --- DATOS EXACTOS PARA CRUZAR CON EL GRUPO 3 (Armas/TIV) ---
+    { country: "Egypt", year: 1982, co2_emission: 50.2, precipitation: 20.5, temperature: 22.1 },
+    { country: "Angola", year: 1975, co2_emission: 10.1, precipitation: 1010.0, temperature: 21.5 },
+    { country: "Equatorial Guinea", year: 2008, co2_emission: 5.2, precipitation: 2000.0, temperature: 25.3 },
+    { country: "Ethiopia", year: 2019, co2_emission: 15.3, precipitation: 800.0, temperature: 20.2 },
+    { country: "Spain", year: 1975, co2_emission: 150.0, precipitation: 600.0, temperature: 13.0 },
+    { country: "Algeria", year: 2003, co2_emission: 90.5, precipitation: 100.0, temperature: 22.8 },
+    { country: "El Salvador", year: 1969, co2_emission: 2.1, precipitation: 1800.0, temperature: 24.1 },
+    { country: "Greece", year: 2020, co2_emission: 60.2, precipitation: 650.0, temperature: 17.5 },
+    { country: "Afghanistan", year: 2002, co2_emission: 1.5, precipitation: 300.0, temperature: 12.8 },
+    { country: "Estonia", year: 2007, co2_emission: 18.2, precipitation: 700.0, temperature: 5.5 },
 ];
 export const loadPSA = (app) => {
 

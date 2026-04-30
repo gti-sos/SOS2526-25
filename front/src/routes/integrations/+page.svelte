@@ -75,7 +75,7 @@
                 <div class="arrow" style="color: #ff007f;">Ver Gráfica ➜</div>
             </div>
         </a><!-- Tarjeta: Integración SOS de Pablo (ESG G28) -->
-        <a href="/integrations/pablo/age-specific-fertility-rates" class="card-link">
+        <a href="/integrations/pablo/company-esg-scores-financial-performances" class="card-link">
             <div class="card">
                 <span class="tag tag-int">Integración Pablo (Compañeros)</span>
                 <h3 style="color: #10b981;">Sostenibilidad ESG (G28)</h3>
