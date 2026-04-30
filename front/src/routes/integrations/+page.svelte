@@ -53,7 +53,7 @@
         </a>
         <a href="/integrations/pablo/aids-deaths-stats" class="card-link">
             <div class="card">
-                <span class="tag tag-int">Integración SOS (Pablo)</span>
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
                 <h3 style="color: #aa3bff;">AIDS Deaths (G21)</h3>
                 <p>Análisis: Muertes por SIDA vs Temperaturas usando Billboard.js (Radar) vía Proxy.</p>
                 <div class="arrow" style="color: #aa3bff;">Ver Gráfica ➜</div>
@@ -61,7 +61,7 @@
         </a>
         <a href="/integrations/pablo/olympics-athlete-events" class="card-link">
             <div class="card">
-                <span class="tag tag-int">Integración SOS (Pablo)</span>
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
                 <h3 style="color: #facc15;">Olimpiadas (G30)</h3>
                 <p>Análisis: Atletas Olímpicos vs Temperatura usando Apache ECharts (Rose Chart).</p>
                 <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
@@ -69,10 +69,55 @@
         </a>
         <a href="/integrations/pablo/age-specific-fertility-rates" class="card-link">
             <div class="card">
-                <span class="tag tag-int">Integración SOS (Pablo)</span>
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
                 <h3 style="color: #ff007f;">Fertilidad (G12)</h3>
                 <p>Análisis: Tasa de Fertilidad vs Temperatura usando AnyChart (Treemap).</p>
                 <div class="arrow" style="color: #ff007f;">Ver Gráfica ➜</div>
+            </div>
+        </a><!-- Tarjeta: Integración SOS de Pablo (ESG G28) -->
+        <a href="/integrations/pablo/age-specific-fertility-rates" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
+                <h3 style="color: #10b981;">Sostenibilidad ESG (G28)</h3>
+                <p>Análisis cruzado por año: Clima vs Rendimiento ESG usando Google Charts (Stepped Area).</p>
+                <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <!-- Tarjeta: Integración SOS (Exportaciones G13) - Pablo -->
+        <a href="/integrations/pablo/exportation-stats" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
+                <h3 style="color: #f59e0b;">Exportaciones (G13)</h3>
+                <p>Análisis: Temperatura Media vs Exportaciones usando ZingChart (Area Chart).</p>
+                <div class="arrow" style="color: #f59e0b;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/weather" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #3b82f6;">Open-Meteo (Clima)</h3>
+                <p>Análisis: Previsión actual vs Histórico de España usando Frappe Charts.</p>
+                <div class="arrow" style="color: #3b82f6;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        
+        <!-- Tarjeta: Uso Textual de Pablo (JokeAPI) -->
+        <a href="/integrations/pablo/textual" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Textual (Pablo)</span>
+                <h3 style="color: #38bdf8;">JokeAPI (Programación)</h3>
+                <p>Uso textual (Tabla HTML): Clima vs Chistes aleatorios de programación por país.</p>
+                <div class="arrow" style="color: #38bdf8;">Ver Tabla ➜</div>
+            </div>
+        </a>
+
+        <!-- Tarjeta: Uso Externo Gráfico de Pablo (Open-Meteo + Frappe) -->
+        <a href="/integrations/pablo/weather" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #3b82f6;">Open-Meteo (Clima)</h3>
+                <p>Análisis: Previsión actual vs Histórico de España usando Frappe Charts.</p>
+                <div class="arrow" style="color: #3b82f6;">Ver Gráfica ➜</div>
             </div>
         </a>
 
