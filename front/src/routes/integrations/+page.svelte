@@ -101,23 +101,23 @@
             </div>
         </a>
         
-        <!-- Tarjeta: Uso Textual de Pablo (JokeAPI) -->
-        <a href="/integrations/pablo/textual" class="card-link">
+      <!-- Tarjeta: Uso Externo de Pablo (SpaceX) -->
+        <a href="/integrations/pablo/spacex" class="card-link">
             <div class="card">
-                <span class="tag tag-use">Uso Externa Textual (Pablo)</span>
-                <h3 style="color: #38bdf8;">JokeAPI (Programación)</h3>
-                <p>Uso textual (Tabla HTML): Clima vs Chistes aleatorios de programación por país.</p>
-                <div class="arrow" style="color: #38bdf8;">Ver Tabla ➜</div>
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #38bdf8;">SpaceX Launches</h3>
+                <p>Análisis: Temperatura global por año vs Nº Lanzamientos usando Chart.js (Bubble).</p>
+                <div class="arrow" style="color: #38bdf8;">Ver Gráfica ➜</div>
             </div>
         </a>
 
-        <!-- Tarjeta: Uso Externo Gráfico de Pablo (Open-Meteo + Frappe) -->
-        <a href="/integrations/pablo/weather" class="card-link">
+        <!-- Tarjeta: Uso Externo Gráfico de Pablo (CoinDesk + C3.js) -->
+        <a href="/integrations/pablo/external" class="card-link">
             <div class="card">
                 <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #3b82f6;">Open-Meteo (Clima)</h3>
-                <p>Análisis: Previsión actual vs Histórico de España usando Frappe Charts.</p>
-                <div class="arrow" style="color: #3b82f6;">Ver Gráfica ➜</div>
+                <h3 style="color: #facc15;">CoinDesk (Bitcoin)</h3>
+                <p>Análisis: Precio de Bitcoin vs Clima en Alemania usando C3.js (Bar).</p>
+                <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
             </div>
         </a>
 
