@@ -9,6 +9,19 @@ import { loadPSA } from "./apis/api-PSA.js";
 import { loadAGB } from "./apis/api-AGB.js";
 
 const app = express();
+
+// =========================================================
+// CABECERAS CORS (¡REQUISITO OBLIGATORIO PARA LA DEFENSA!)
+// Esto abre vuestra API para que los navegadores de los otros 
+// grupos no bloqueen las peticiones por el Same Origin Policy (SOP)[cite: 2].
+// =========================================================
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, PUT, HEAD, POST, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 8082; 
@@ -25,6 +38,7 @@ loadAGB(app);
 
 // =========================================================
 // PROXIES PARA INTEGRACIONES (Requisito D03.B)
+// Con esto sorteáis el bloqueo de SOP al consumir APIs externas[cite: 2].
 // =========================================================
 app.get('/api/proxy/g10/protests', async (req, res) => {
     try {
@@ -65,8 +79,9 @@ app.get('/api/proxy/pablo/aids', async (req, res) => {
     }
 });
 
-//3.2 Uso de svelte
+// 3.2 Uso de svelte
 app.use(handler);
+
 // 4. Arrancar el servidor
 app.listen(port, () => {
     console.log(`Servidor corriendo en el puerto ${port}`);
