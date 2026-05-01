@@ -87,6 +87,7 @@ let PSAdata_initial = [
     { country: "Greece", year: 2020, co2_emission: 60.2, precipitation: 650.0, temperature: 17.5 },
     { country: "Afghanistan", year: 2002, co2_emission: 1.5, precipitation: 300.0, temperature: 12.8 },
     { country: "Estonia", year: 2007, co2_emission: 18.2, precipitation: 700.0, temperature: 5.5 },
+    
 ];
 export const loadPSA = (app) => {
 
