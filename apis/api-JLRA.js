@@ -309,7 +309,41 @@ const dataJLRA = [
 ];
 
 export const loadJLRA = (app) => {
+    //AutoCarga antes de inicar el server
+    db.count({}, (err, count) => {
+        if (err) {
+            console.error("Error comprobando la base de datos JLRA en el arranque:", err);
+        } else if (count === 0) {
+            console.log("Base de datos JLRA vacía. Leyendo CSV y autocargando datos...");
+            
+            const alcohol_csv = './data/alcohol_data.csv';
+            
+            csv().fromFile(alcohol_csv).then((datos) => {
+                // Mapeamos y limpiamos los datos igual que en tu V2
+                const datosLimpios = datos.map(m => ({
+                    country: String(m.country).trim(),
+                    year: Number(m.year),
+                    total_liter: Number(m.total_liter) || 0,
+                    beer_share: Number(m.beer_share) || 0,
+                    wine_share: Number(m.wine_share) || 0,
+                    spirit_share: Number(m.spirit_share) || 0
+                }));
 
+                db.insert(datosLimpios, (err, newDocs) => {
+                    if (err) {
+                        console.error("Error insertando datos automáticos desde CSV:", err);
+                    } else {
+                        console.log(`¡Lista! Insertados ${newDocs.length} registros automáticamente desde el CSV.`);
+                    }
+                });
+            }).catch((err) => {
+                console.error("Error leyendo el CSV en el arranque:", err);
+            });
+            
+        } else {
+            console.log(`La base de datos JLRA ya contiene ${count} registros. Omitiendo autocarga.`);
+        }
+    });
     // =========================================================================
     // VERSIÓN 1 
     // =========================================================================
