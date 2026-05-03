@@ -78,16 +78,18 @@ app.get('/api/proxy/pablo/aids', async (req, res) => {
         res.status(500).json({ error: "No se pudo conectar con la API de AIDS a través del proxy" });
     }
 });
-// PROXY para Pablo -> API Bitcoin (CoinDesk)
+// PROXY para Pablo -> API Bitcoin (Blockchain.info)
 app.get('/api/proxy/pablo/bitcoin', async (req, res) => {
-    const remoteUrl = 'https://api.coindesk.com/v1/bpi/historical/close.json?start=2018-01-01&end=2022-12-31';
+    // Usamos una API súper estable que nos da los últimos 6 años de precios
+    const remoteUrl = 'https://api.blockchain.info/charts/market-price?timespan=6years&sampled=true&format=json';
     try {
         const response = await fetch(remoteUrl);
         if (!response.ok) throw new Error("Error en API remota Bitcoin");
         const data = await response.json();
         res.json(data);
     } catch (error) {
-        res.status(500).json({ error: "No se pudo conectar con la API de Bitcoin a través del proxy" });
+        console.error(error);
+        res.status(500).json({ error: "No se pudo conectar con la API de Bitcoin" });
     }
 });
 

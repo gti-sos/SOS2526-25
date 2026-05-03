@@ -27,77 +27,70 @@
 
     async function loadAndDraw() {
         try {
-            // 1. Fetch a tu API (Temperaturas)
+            // 1. Fetch a tu API
             const resTemp = await fetch('/api/v2/average-annual-temperatures');
             let dataTemp = resTemp.ok ? await resTemp.json() : [];
 
-            // 2. Fetch a la API EXTERNA (Bitcoin - CoinDesk u otra pública)
+            // 2. Fetch a la API EXTERNA a través del proxy
             let btcData = null;
             try {
-                // Usamos una API pública de precios históricos por año o un proxy si tienes uno
-                // Si esta falla (muy común por bloqueos de CORS externos), saltará el fallback
-                const resBtc = await fetch('/api/proxy/pablo/bitcoin');
+                const isDev = browser && window.location.hostname === 'localhost';
+                const baseUrl = isDev ? 'http://localhost:8082' : ''; 
+                
+                const resBtc = await fetch(`${baseUrl}/api/proxy/pablo/bitcoin`);
                 if (resBtc.ok) {
                     btcData = await resBtc.json();
                 }
-            } catch(e) { console.warn("Fallo al conectar con la API de Bitcoin."); }
+            } catch(e) { console.warn("Fallo al conectar con el proxy de Bitcoin."); }
 
             let years = [];
             let seriesTemp = ['Temp. Alemania (ºC)'];
             let seriesBtc = ['Bitcoin (Miles de USD)'];
 
-            // Cruzamos datos: Filtramos por Alemania y cruzamos con años
-            if (dataTemp.length > 0 && btcData && btcData.bpi) {
+            // Cruzamos datos: Filtramos por Alemania y leemos la nueva API
+            if (dataTemp.length > 0 && btcData && btcData.values) {
                 const germanyTemps = dataTemp.filter(d => d.country?.toLowerCase() === 'germany').sort((a,b) => a.year - b.year);
                 
                 germanyTemps.forEach(d => {
                     years.push(d.year);
                     seriesTemp.push(d.temperature);
-                    // Lógica simulada para extraer el precio de final de año de la API
-                    const priceKey = `${d.year}-12-31`;
-                    const price = btcData.bpi[priceKey] ? (btcData.bpi[priceKey] / 1000) : 0; 
-                    seriesBtc.push(price);
+                    
+                    // Buscamos los precios que correspondan a ese año
+                    const targetYear = parseInt(d.year);
+                    const yearPrices = btcData.values.filter(v => new Date(v.x * 1000).getFullYear() === targetYear);
+                    
+                    if (yearPrices.length > 0) {
+                        // Cogemos el último precio registrado de ese año y lo pasamos a miles
+                        const lastPriceOfYear = yearPrices[yearPrices.length - 1].y;
+                        seriesBtc.push(lastPriceOfYear / 1000);
+                    } else {
+                        seriesBtc.push(0);
+                    }
                 });
             }
 
-            // MODO DE RESPALDO (Fallback) si falla la API externa
+            // MODO DE RESPALDO (Fallback) si falla algo
             if (years.length === 0 || seriesBtc.length <= 1) {
-                console.log("Activando datos de respaldo de Bitcoin...");
                 fallbackActivado = true;
                 years = ['2018', '2019', '2020', '2021', '2022'];
-                seriesTemp = ['Temp. Alemania (ºC)', 10.45, 10.3, 10.4, 9.48, 10.5]; // Datos de tu BD
-                seriesBtc = ['Bitcoin (Miles de USD)', 3.8, 7.2, 29.0, 47.0, 16.5]; // Precios históricos aprox
+                seriesTemp = ['Temp. Alemania (ºC)', 10.45, 10.3, 10.4, 9.48, 10.5];
+                seriesBtc = ['Bitcoin (Miles de USD)', 3.8, 7.2, 29.0, 47.0, 16.5];
             }
 
-            // Svelte detecta esto y muestra el div
             message = ""; 
 
-            // 🔥 ESPERAMOS 100ms para que C3.js encuentre su lienzo
             setTimeout(() => {
                 window.c3.generate({
                     bindto: '#c3-chart',
                     data: {
-                        columns: [
-                            seriesTemp,
-                            seriesBtc
-                        ],
+                        columns: [seriesTemp, seriesBtc],
                         type: 'bar',
-                        types: {
-                            'Temp. Alemania (ºC)': 'line' // Hacemos un gráfico combinado (Línea + Barras)
-                        },
-                        colors: {
-                            'Temp. Alemania (ºC)': '#00f2fe',
-                            'Bitcoin (Miles de USD)': '#f59e0b'
-                        }
+                        types: { 'Temp. Alemania (ºC)': 'line' },
+                        colors: { 'Temp. Alemania (ºC)': '#00f2fe', 'Bitcoin (Miles de USD)': '#f59e0b' }
                     },
                     axis: {
-                        x: {
-                            type: 'category',
-                            categories: years
-                        },
-                        y: {
-                            label: { text: 'Valores', position: 'outer-middle' }
-                        }
+                        x: { type: 'category', categories: years },
+                        y: { label: { text: 'Valores', position: 'outer-middle' } }
                     }
                 });
             }, 100);

@@ -2,27 +2,20 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
-    // ¡Nuestros $state reactivos!
-    let message = $state("Cargando precios de Bitcoin y temperaturas...");
+    // ¡Aquí está la magia reactiva de Svelte 5!
+    let message = $state("Cargando lanzamientos de SpaceX y temperaturas...");
     let fallbackActivado = $state(false);
 
     onMount(async () => {
         if (!browser) return;
 
-        // C3.js tiene una trampa: NECESITA que D3.js se cargue PRIMERO
-        const scriptD3 = document.createElement('script');
-        scriptD3.src = "https://d3js.org/d3.v5.min.js"; // Cargamos D3
-        
-        scriptD3.onload = () => {
-            // Cuando D3 termine, cargamos C3
-            const scriptC3 = document.createElement('script');
-            scriptC3.src = "https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js";
-            scriptC3.onload = () => {
-                loadAndDraw(); // Y cuando C3 termine, dibujamos
-            };
-            document.head.appendChild(scriptC3);
+        // Cargamos Chart.js de forma segura
+        const script = document.createElement('script');
+        script.src = "https://cdn.jsdelivr.net/npm/chart.js";
+        script.onload = () => {
+            loadAndDraw();
         };
-        document.head.appendChild(scriptD3);
+        document.head.appendChild(script);
     });
 
     async function loadAndDraw() {
@@ -31,72 +24,99 @@
             const resTemp = await fetch('/api/v2/average-annual-temperatures');
             let dataTemp = resTemp.ok ? await resTemp.json() : [];
 
-            // 2. Fetch a la API EXTERNA (Bitcoin - CoinDesk u otra pública)
-            let btcData = null;
+            // 2. Fetch a la API EXTERNA (SpaceX)
+            let spaceXData = [];
             try {
-                // Usamos una API pública de precios históricos por año o un proxy si tienes uno
-                // Si esta falla (muy común por bloqueos de CORS externos), saltará el fallback
-                const resBtc = await fetch('https://api.coindesk.com/v1/bpi/historical/close.json?start=2018-01-01&end=2022-12-31');
-                if (resBtc.ok) {
-                    btcData = await resBtc.json();
+                const resSpaceX = await fetch('https://api.spacexdata.com/v4/launches');
+                if (resSpaceX.ok) {
+                    spaceXData = await resSpaceX.json();
                 }
-            } catch(e) { console.warn("Fallo al conectar con la API de Bitcoin."); }
+            } catch(e) { console.warn("Fallo al conectar con la API de SpaceX."); }
 
-            let years = [];
-            let seriesTemp = ['Temp. Alemania (ºC)'];
-            let seriesBtc = ['Bitcoin (Miles de USD)'];
+            let bubbleData = [];
 
-            // Cruzamos datos: Filtramos por Alemania y cruzamos con años
-            if (dataTemp.length > 0 && btcData && btcData.bpi) {
-                const germanyTemps = dataTemp.filter(d => d.country?.toLowerCase() === 'germany').sort((a,b) => a.year - b.year);
-                
-                germanyTemps.forEach(d => {
-                    years.push(d.year);
-                    seriesTemp.push(d.temperature);
-                    // Lógica simulada para extraer el precio de final de año de la API
-                    const priceKey = `${d.year}-12-31`;
-                    const price = btcData.bpi[priceKey] ? (btcData.bpi[priceKey] / 1000) : 0; 
-                    seriesBtc.push(price);
+            // Cruzamos los datos: Cantidad de lanzamientos por AÑO vs Temperatura de USA
+            if (dataTemp.length > 0 && spaceXData.length > 0) {
+                // Agrupamos los lanzamientos de SpaceX por año
+                const launchesByYear = {};
+                spaceXData.forEach(launch => {
+                    if (launch.date_utc) {
+                        const year = new Date(launch.date_utc).getFullYear();
+                        launchesByYear[year] = (launchesByYear[year] || 0) + 1;
+                    }
+                });
+
+                // Filtramos tus datos solo para USA (ya que SpaceX es de allí)
+                const usaTemps = dataTemp.filter(d => d.country?.toLowerCase() === 'usa');
+
+                usaTemps.forEach(d => {
+                    const year = parseInt(d.year);
+                    if (launchesByYear[year]) {
+                        bubbleData.push({
+                            x: year,
+                            y: d.temperature,
+                            r: launchesByYear[year] * 1.5, // Multiplicamos por 1.5 para que la burbuja se vea bien
+                            launches: launchesByYear[year]
+                        });
+                    }
                 });
             }
 
-            // MODO DE RESPALDO (Fallback) si falla la API externa
-            if (years.length === 0 || seriesBtc.length <= 1) {
-                console.log("Activando datos de respaldo de Bitcoin...");
+            // MODO DE RESPALDO (Fallback) si falla internet o el cruce
+            if (bubbleData.length === 0) {
+                console.log("Activando datos de respaldo...");
                 fallbackActivado = true;
-                years = ['2018', '2019', '2020', '2021', '2022'];
-                seriesTemp = ['Temp. Alemania (ºC)', 10.45, 10.3, 10.4, 9.48, 10.5]; // Datos de tu BD
-                seriesBtc = ['Bitcoin (Miles de USD)', 3.8, 7.2, 29.0, 47.0, 16.5]; // Precios históricos aprox
+                bubbleData = [
+                    { x: 2018, y: 11.5, r: 21 * 1.5, launches: 21 },
+                    { x: 2019, y: 11.6, r: 13 * 1.5, launches: 13 },
+                    { x: 2020, y: 11.7, r: 26 * 1.5, launches: 26 },
+                    { x: 2021, y: 11.6, r: 31 * 1.5, launches: 31 },
+                    { x: 2022, y: 11.8, r: 61 * 1.5, launches: 61 }
+                ];
             }
 
-            // Svelte detecta esto y muestra el div
+            // Svelte detecta esto y quita el display:none
             message = ""; 
 
-            // 🔥 ESPERAMOS 100ms para que C3.js encuentre su lienzo
+            // 🔥 Le damos 100ms a Chart.js para que encuentre su canvas visible
             setTimeout(() => {
-                window.c3.generate({
-                    bindto: '#c3-chart',
+                const ctx = document.getElementById('spacex-chart').getContext('2d');
+                new window.Chart(ctx, {
+                    type: 'bubble',
                     data: {
-                        columns: [
-                            seriesTemp,
-                            seriesBtc
-                        ],
-                        type: 'bar',
-                        types: {
-                            'Temp. Alemania (ºC)': 'line' // Hacemos un gráfico combinado (Línea + Barras)
-                        },
-                        colors: {
-                            'Temp. Alemania (ºC)': '#00f2fe',
-                            'Bitcoin (Miles de USD)': '#f59e0b'
-                        }
+                        datasets: [{
+                            label: 'Lanzamientos SpaceX vs Temp. Media (USA)',
+                            data: bubbleData,
+                            backgroundColor: 'rgba(244, 63, 94, 0.6)', // Color rojito espacial
+                            borderColor: 'rgba(244, 63, 94, 1)',
+                            borderWidth: 2
+                        }]
                     },
-                    axis: {
-                        x: {
-                            type: 'category',
-                            categories: years
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: { display: true, text: 'Año', color: '#cbd5e1' },
+                                ticks: { color: '#94a3b8', stepSize: 1 },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            y: {
+                                title: { display: true, text: 'Temperatura Media (ºC)', color: '#cbd5e1' },
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
                         },
-                        y: {
-                            label: { text: 'Valores', position: 'outer-middle' }
+                        plugins: {
+                            legend: { labels: { color: '#cbd5e1' } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const d = context.raw;
+                                        return `Año: ${d.x} | Temp: ${d.y}ºC | Cohetes: ${d.launches}`;
+                                    }
+                                }
+                            }
                         }
                     }
                 });
@@ -108,20 +128,15 @@
     }
 </script>
 
-<svelte:head>
-    <!-- C3.js necesita su propio archivo CSS para verse bien -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css" rel="stylesheet">
-</svelte:head>
-
 <main>
-    <!-- Mantenemos el data-sveltekit-reload por si acaso -->
     <a href="/integrations" class="back-btn" data-sveltekit-reload>⬅ Volver al Panel</a>
-    <h2>💰 Clima Alemania vs Bitcoin (Pablo)</h2>
-    <p class="subtitle">Integración Externa usando <b>C3.js</b> (Bar/Line Chart).</p>
+    <h2>🚀 Uso Externo: Clima vs SpaceX (Pablo)</h2>
+    <p class="subtitle">Integración con <b>SpaceX API</b> usando <b>Chart.js</b> (Bubble Chart).</p>
 
+    <!-- El chivato visual -->
     {#if fallbackActivado}
         <div class="fallback-warning">
-            ⚠️ Modo Respaldo: No se pudo conectar con la API de Bitcoin. Usando datos históricos simulados.
+            ⚠️ Modo Respaldo: No se pudo conectar con SpaceX o cruzar datos. Usando datos simulados.
         </div>
     {/if}
 
@@ -129,24 +144,25 @@
         <div class="alert">{message}</div>
     {/if}
 
-    <!-- Fondo blanco para que la gráfica C3.js se lea perfectamente -->
     <div class="card" class:hidden={!!message}>
-        <div id="c3-chart"></div>
+        <!-- Chart.js necesita un canvas en lugar de un div -->
+        <div style="height: 500px; width: 100%;">
+            <canvas id="spacex-chart"></canvas>
+        </div>
     </div>
 </main>
 
 <style>
     :global(body) { background-color: #0f172a; color: white; font-family: sans-serif; margin: 0; }
     main { max-width: 1000px; margin: 0 auto; padding: 2rem; }
-    h2 { color: #f59e0b; text-align: center; margin-bottom: 0.5rem; }
+    h2 { color: #f43f5e; text-align: center; margin-bottom: 0.5rem; }
     .subtitle { text-align: center; color: #94a3b8; margin-bottom: 2rem; }
     .back-btn { color: #94a3b8; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 1rem; }
-    .back-btn:hover { color: #f59e0b; }
+    .back-btn:hover { color: #f43f5e; }
     
-    /* Fondo blanco forzado para evitar problemas de contraste con el texto por defecto negro de C3 */
-    .card { background: white; border-radius: 15px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
     
-    .alert { background: rgba(245, 158, 11, 0.2); border-left: 4px solid #f59e0b; padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; text-align: center; color: #f59e0b; font-weight: bold;}
+    .alert { background: rgba(244, 63, 94, 0.2); border-left: 4px solid #f43f5e; padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; text-align: center; color: #f43f5e; font-weight: bold;}
     
     .fallback-warning {
         background-color: rgba(239, 68, 68, 0.15);
