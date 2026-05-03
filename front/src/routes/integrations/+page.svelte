@@ -92,7 +92,7 @@
                 <div class="arrow" style="color: #f59e0b;">Ver Gráfica ➜</div>
             </div>
         </a>
-        <a href="/integrations/pablo/weather" class="card-link">
+        <a href="/integrations/pablo/openmeteo" class="card-link">
             <div class="card">
                 <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
                 <h3 style="color: #3b82f6;">Open-Meteo (Clima)</h3>
@@ -112,7 +112,7 @@
         </a>
 
         <!-- Tarjeta: Uso Externo Gráfico de Pablo (CoinDesk + C3.js) -->
-        <a href="/integrations/pablo/external" class="card-link">
+        <a href="/integrations/pablo/bitcoin" class="card-link">
             <div class="card">
                 <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
                 <h3 style="color: #facc15;">CoinDesk (Bitcoin)</h3>

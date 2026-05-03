@@ -78,6 +78,18 @@ app.get('/api/proxy/pablo/aids', async (req, res) => {
         res.status(500).json({ error: "No se pudo conectar con la API de AIDS a través del proxy" });
     }
 });
+// PROXY para Pablo -> API Bitcoin (CoinDesk)
+app.get('/api/proxy/pablo/bitcoin', async (req, res) => {
+    const remoteUrl = 'https://api.coindesk.com/v1/bpi/historical/close.json?start=2018-01-01&end=2022-12-31';
+    try {
+        const response = await fetch(remoteUrl);
+        if (!response.ok) throw new Error("Error en API remota Bitcoin");
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: "No se pudo conectar con la API de Bitcoin a través del proxy" });
+    }
+});
 
 // 3.2 Uso de svelte
 app.use(handler);

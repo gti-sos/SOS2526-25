@@ -36,7 +36,7 @@
             try {
                 // Usamos una API pública de precios históricos por año o un proxy si tienes uno
                 // Si esta falla (muy común por bloqueos de CORS externos), saltará el fallback
-                const resBtc = await fetch('https://api.coindesk.com/v1/bpi/historical/close.json?start=2018-01-01&end=2022-12-31');
+                const resBtc = await fetch('/api/proxy/pablo/bitcoin');
                 if (resBtc.ok) {
                     btcData = await resBtc.json();
                 }
