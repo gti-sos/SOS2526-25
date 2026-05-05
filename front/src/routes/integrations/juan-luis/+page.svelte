@@ -1,6 +1,6 @@
 <main>
     <div class="header">
-        <a href="/" class="back-btn">⬅ Volver al portal de integración</a>
+        <a href="/integrations" class="back-btn">⬅ Volver al portal de integración</a>
         <h1>🌐 Centro de Integraciones de Juan Luis</h1>
         <p class="subtitle">Panel de Control de APIs Externas y Colaborativas</p>
     </div>

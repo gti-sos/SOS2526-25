@@ -131,7 +131,7 @@
 
 <main>
     <div class="header-nav">
-        <a href="/integrations/juan-luis" class="back-btn">⬅ Volver al Panel</a>
+        <a href="/integrations/juan-luis" class="back-btn">⬅ Volver a Integraciones Juan Luis</a>
     </div>
 
     <div class="card">
