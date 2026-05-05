@@ -21,10 +21,12 @@
             const ApexCharts = (await import('apexcharts')).default;
 
             const resMis = await fetch('/api/v2/social-drinking-behaviors');
-            const resG10 = await fetch('https://sos2526-10.onrender.com/api/v2/protests');
+            console.log("Debug. Entrando en la api del compañero...")
+            const resG10 = await fetch('/api/proxy/g10/protestas');
+
 
             if (!resMis.ok) throw new Error("Fallo en API propia.");
-            if (!resG10.ok) throw new Error("Fallo en la API del compañero grupo G10.");
+            if (!resG10.ok) throw new Error("Fallo en la API del compañero.");
 
             const misDatos = await resMis.json();
             const g10Datos = await resG10.json();
