@@ -62,7 +62,7 @@
                 <a href="/integrations/juan-luis/sinisters" class="card-link">
             <div class="card">
                 <span class="tag tag-use">Uso Externo (Pública)</span>
-                <h3>sinisters</h3>
+                <h3>Sinisters</h3>
                 <p>Siniestros de coches y motos por paises</p>
                 <div class="arrow">Ver Gráfica ➜</div>
             </div>
