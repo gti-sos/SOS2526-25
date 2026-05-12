@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
-    // ¡Aquí está la magia reactiva de Svelte 5!
+    // ¡La magia reactiva de Svelte 5!
     let message = $state("Cargando lanzamientos de SpaceX y temperaturas...");
     let fallbackActivado = $state(false);
 
@@ -33,11 +33,13 @@
                 }
             } catch(e) { console.warn("Fallo al conectar con la API de SpaceX."); }
 
-            let bubbleData = [];
+            // Arrays separados para el gráfico mixto
+            let labelsYears = [];
+            let tempValues = [];
+            let launchValues = [];
 
-            // Cruzamos los datos: Cantidad de lanzamientos por AÑO vs Temperatura de USA
+            // Cruzamos los datos
             if (dataTemp.length > 0 && spaceXData.length > 0) {
-                // Agrupamos los lanzamientos de SpaceX por año
                 const launchesByYear = {};
                 spaceXData.forEach(launch => {
                     if (launch.date_utc) {
@@ -46,65 +48,88 @@
                     }
                 });
 
-                // Filtramos tus datos solo para USA (ya que SpaceX es de allí)
                 const usaTemps = dataTemp.filter(d => d.country?.toLowerCase() === 'usa');
 
                 usaTemps.forEach(d => {
                     const year = parseInt(d.year);
                     if (launchesByYear[year]) {
-                        bubbleData.push({
-                            x: year,
-                            y: d.temperature,
-                            r: launchesByYear[year] * 1.5, // Multiplicamos por 1.5 para que la burbuja se vea bien
-                            launches: launchesByYear[year]
-                        });
+                        labelsYears.push(year);
+                        tempValues.push(d.temperature);
+                        launchValues.push(launchesByYear[year]);
                     }
                 });
             }
 
-            // MODO DE RESPALDO (Fallback) si falla internet o el cruce
-            if (bubbleData.length === 0) {
+            // MODO DE RESPALDO (Fallback) 
+            if (labelsYears.length === 0) {
                 console.log("Activando datos de respaldo...");
                 fallbackActivado = true;
-                bubbleData = [
-                    { x: 2018, y: 11.5, r: 21 * 1.5, launches: 21 },
-                    { x: 2019, y: 11.6, r: 13 * 1.5, launches: 13 },
-                    { x: 2020, y: 11.7, r: 26 * 1.5, launches: 26 },
-                    { x: 2021, y: 11.6, r: 31 * 1.5, launches: 31 },
-                    { x: 2022, y: 11.8, r: 61 * 1.5, launches: 61 }
-                ];
+                labelsYears = ['2018', '2019', '2020', '2021', '2022'];
+                tempValues = [11.5, 11.6, 11.7, 11.6, 11.8];
+                launchValues = [21, 13, 26, 31, 61];
             }
 
-            // Svelte detecta esto y quita el display:none
             message = ""; 
 
-            // 🔥 Le damos 100ms a Chart.js para que encuentre su canvas visible
+            // Construimos el Gráfico Mixto
             setTimeout(() => {
                 const ctx = document.getElementById('spacex-chart').getContext('2d');
                 new window.Chart(ctx, {
-                    type: 'bubble',
+                    type: 'line', // Tipo base, se sobreescribe en los datasets
                     data: {
-                        datasets: [{
-                            label: 'Lanzamientos SpaceX vs Temp. Media (USA)',
-                            data: bubbleData,
-                            backgroundColor: 'rgba(244, 63, 94, 0.6)', // Color rojito espacial
-                            borderColor: 'rgba(244, 63, 94, 1)',
-                            borderWidth: 2
-                        }]
+                        labels: labelsYears,
+                        datasets: [
+                            {
+                                type: 'bar', // Barras para los lanzamientos
+                                label: 'Lanzamientos SpaceX',
+                                data: launchValues,
+                                backgroundColor: 'rgba(244, 63, 94, 0.6)', 
+                                borderColor: 'rgba(244, 63, 94, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y-launches' // Eje derecho
+                            },
+                            {
+                                type: 'line', // Línea para las temperaturas
+                                label: 'Temperatura Media USA (ºC)',
+                                data: tempValues,
+                                backgroundColor: '#38bdf8', // Azulito para el clima
+                                borderColor: '#38bdf8',
+                                borderWidth: 3,
+                                tension: 0.3, // Curva suave
+                                pointRadius: 5,
+                                yAxisID: 'y-temp' // Eje izquierdo
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
                         scales: {
                             x: {
                                 title: { display: true, text: 'Año', color: '#cbd5e1' },
-                                ticks: { color: '#94a3b8', stepSize: 1 },
-                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                            },
-                            y: {
-                                title: { display: true, text: 'Temperatura Media (ºC)', color: '#cbd5e1' },
                                 ticks: { color: '#94a3b8' },
                                 grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            'y-temp': {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: { display: true, text: 'Temperatura (ºC)', color: '#38bdf8' },
+                                ticks: { color: '#38bdf8' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            'y-launches': {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: { display: true, text: 'Nº de Lanzamientos', color: '#f43f5e' },
+                                ticks: { color: '#f43f5e' },
+                                // Ocultamos la cuadrícula de este eje para que no se pise con la de temperatura
+                                grid: { drawOnChartArea: false } 
                             }
                         },
                         plugins: {
@@ -112,8 +137,14 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        const d = context.raw;
-                                        return `Año: ${d.x} | Temp: ${d.y}ºC | Cohetes: ${d.launches}`;
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.dataset.type === 'line') {
+                                            label += context.raw + ' ºC';
+                                        } else {
+                                            label += context.raw + ' cohetes';
+                                        }
+                                        return label;
                                     }
                                 }
                             }
@@ -130,8 +161,8 @@
 
 <main>
     <a href="/integrations" class="back-btn" data-sveltekit-reload>⬅ Volver al Panel</a>
-    <h2>🚀 Uso Externo: Clima vs SpaceX (Pablo)</h2>
-    <p class="subtitle">Integración con <b>SpaceX API</b> usando <b>Chart.js</b> (Bubble Chart).</p>
+    <h2>🚀 Uso Externo: Clima vs SpaceX</h2>
+    <p class="subtitle">Integración con <b>SpaceX API</b> usando <b>Chart.js</b> (Gráfico Mixto: Barra + Línea).</p>
 
     <!-- El chivato visual -->
     {#if fallbackActivado}
@@ -145,7 +176,6 @@
     {/if}
 
     <div class="card" class:hidden={!!message}>
-        <!-- Chart.js necesita un canvas en lugar de un div -->
         <div style="height: 500px; width: 100%;">
             <canvas id="spacex-chart"></canvas>
         </div>

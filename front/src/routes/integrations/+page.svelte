@@ -51,12 +51,12 @@
                 <div class="arrow">Ver Gráfica ➜</div>
             </div>
         </a>
-        <a href="/integrations/pablo/aids-deaths-stats" class="card-link">
+        <a href="/integrations/pablo/water-productivities" class="card-link">
             <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #aa3bff;">AIDS Deaths (G21)</h3>
-                <p>Análisis: Muertes por SIDA vs Temperaturas usando Billboard.js (Radar) vía Proxy.</p>
-                <div class="arrow" style="color: #aa3bff;">Ver Gráfica ➜</div>
+                <span class="tag tag-int">Integración Pablo (Externa)</span>
+                <h3 style="color: #0ea5e9;">RestCountries (Demografía)</h3>
+                <p>Análisis: Análisis: ¿Aumenta el estrés hídrico con una mayor densidad de población (hab/km²)? Gráfica mixta vía ApexCharts.(Gráfico Mixto).</p>
+                <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
             </div>
         </a>
         <a href="/integrations/pablo/olympics-athlete-events" class="card-link">
@@ -120,6 +120,48 @@
                 <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
             </div>
         </a>
+
+        <a href="/integrations/pablo/amadeus" class="card-link" data-sveltekit-reload>
+            <div class="card">
+                <span class="tag tag-use">Uso Externa OAuth (Pablo)</span>
+                <h3 style="color: #0ea5e9;">Amadeus (Aviación)</h3>
+                <p>Análisis: Infraestructura Aérea vs CO2 usando Apache ECharts (Rose) vía Proxy OAuth 2.0.</p>
+                <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+
+        <a href="/integrations/pablo/worldbank" class="card-link" data-sveltekit-reload>
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #22c55e;">World Bank (Economía)</h3>
+                <p>Análisis: Riqueza (PIB) vs Emisiones de CO2 usando Highcharts (Column/Line).</p>
+                <div class="arrow" style="color: #22c55e;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+       <a href="/integrations/pablo/openmeteo" class="card-link" data-sveltekit-reload>
+    <div class="card">
+        <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+        <h3 style="color: #0ea5e9;">Open-Meteo (Clima en Vivo)</h3>
+        <p>Correlación: Emisiones de CO2 vs Humedad actual usando Plotly (Scatter).</p>
+        <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
+    </div>
+</a>
+        <a href="/integrations/pablo/population" class="card-link" data-sveltekit-reload>
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #10b981;">RestCountries (Demografía)</h3>
+                <p>Análisis: Población mundial vs Emisiones de CO2 usando ApexCharts (Column/Line).</p>
+                <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/renewables" class="card-link" data-sveltekit-reload>
+    <div class="card">
+        <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+        <h3 style="color: #f43f5e;">ReliefWeb ONU (Desastres)</h3>
+        <p>Correlación: Temperaturas vs Nº de desastres naturales registrados usando Plotly (Scatter).</p>
+        <div class="arrow" style="color: #f43f5e;">Ver Gráfica ➜</div>
+    </div>
+</a>
 
     </div>
 </main>

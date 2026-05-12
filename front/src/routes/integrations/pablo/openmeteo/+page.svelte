@@ -25,14 +25,13 @@
             let dataTemp = resTemp.ok ? await resTemp.json() : [];
 
             // 2. Fetch a la API EXTERNA (Open-Meteo)
-            // Pedimos el clima en tiempo real de algunas coordenadas clave que coinciden con tus países
             let currentTemps = [];
             try {
                 const urls = [
-                    { country: "Spain", url: "https://api.open-meteo.com/v1/forecast?latitude=40.4165&longitude=-3.7026&current_weather=true" }, // Madrid
-                    { country: "Germany", url: "https://api.open-meteo.com/v1/forecast?latitude=52.5200&longitude=13.4050&current_weather=true" }, // Berlín
-                    { country: "China", url: "https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true" }, // Pekín
-                    { country: "USA", url: "https://api.open-meteo.com/v1/forecast?latitude=38.8951&longitude=-77.0364&current_weather=true" } // Washington DC
+                    { country: "Spain", url: "https://api.open-meteo.com/v1/forecast?latitude=40.4165&longitude=-3.7026&current_weather=true" }, 
+                    { country: "Germany", url: "https://api.open-meteo.com/v1/forecast?latitude=52.5200&longitude=13.4050&current_weather=true" }, 
+                    { country: "China", url: "https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true" }, 
+                    { country: "USA", url: "https://api.open-meteo.com/v1/forecast?latitude=38.8951&longitude=-77.0364&current_weather=true" } 
                 ];
 
                 for (const u of urls) {
@@ -48,10 +47,9 @@
             let seriesHist = [];
             let seriesCurr = [];
 
-            // Cruzamos los datos: Histórico más reciente vs Clima de HOY
+            // Cruzamos los datos
             if (dataTemp.length > 0 && currentTemps.length > 0) {
                 currentTemps.forEach(ct => {
-                    // Buscamos el último año registrado de ese país en tu base de datos
                     const hist = dataTemp.filter(d => d.country === ct.country).sort((a,b) => b.year - a.year)[0];
                     if (hist) {
                         labels.push(ct.country);
@@ -61,13 +59,13 @@
                 });
             }
 
-            // MODO DE RESPALDO (Fallback) si no hay conexión o no hay datos
+            // MODO DE RESPALDO (Fallback)
             if (labels.length === 0) {
                 console.log("Activando datos de respaldo...");
                 fallbackActivado = true;
                 labels = ["Spain", "Germany", "China", "USA"];
-                seriesHist = [14.4, 10.7, 8.2, 11.8]; // Medias históricas inventadas
-                seriesCurr = [18.5, 12.1, 15.3, 14.2]; // Clima actual inventado
+                seriesHist = [14.4, 10.7, 8.2, 11.8]; 
+                seriesCurr = [18.5, 12.1, 15.3, 14.2]; 
             }
 
             message = ""; // Quitamos el cartel
@@ -79,11 +77,12 @@
                     data: {
                         labels: labels,
                         datasets: [
-                            { name: "Media Histórica (Pablo)", values: seriesHist },
-                            { name: "Temp. Actual (Open-Meteo)", values: seriesCurr }
+                            // ✅ SOLUCIÓN AQUÍ: Nombres más cortos para que la leyenda no se solape
+                            { name: "Histórico (Pablo)", values: seriesHist },
+                            { name: "Actual (Open-Meteo)", values: seriesCurr }
                         ]
                     },
-                    type: 'bar', // Tipo de gráfica (barras agrupadas)
+                    type: 'bar',
                     height: 450,
                     colors: ['#00f2fe', '#facc15'],
                     axisOptions: { xIsSeries: false },
@@ -102,7 +101,6 @@
     <h2>🌤️ Previsión Actual vs Histórico (Pablo)</h2>
     <p class="subtitle">Integración con API Externa (<b>Open-Meteo</b>) usando <b>Frappe Charts</b>.</p>
 
-    <!-- El chivato visual -->
     {#if fallbackActivado}
         <div class="fallback-warning">
             ⚠️ Modo Respaldo: No se pudo conectar con Open-Meteo o no hay países en común. Usando datos simulados.
@@ -142,4 +140,11 @@
     }
     
     .hidden { display: none; }
+
+    /* ✅ ALTERNATIVA: Si aún con los textos cortos se solapan en pantallas pequeñas, descomenta la siguiente regla: */
+    /*
+    :global(.chart-legend > g:nth-child(2)) {
+        transform: translateX(45px);
+    }
+    */
 </style>
