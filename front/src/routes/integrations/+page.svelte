@@ -6,118 +6,12 @@
     </div>
 
     <div class="grid-container">
-        
-        <a href="/integrations/juan-luis/protests" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración (Compañeros)</span>
-                <h3>Protestas (G10)</h3>
-                <p>Análisis: Consumo de Alcohol vs Conflictos Sociales.</p>
-                <div class="arrow">Ver Gráfica ➜</div>
-            </div>
-        </a>
-
-        <a href="/integrations/juan-luis/meteorite-landings" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración (Compañeros)</span>
-                <h3>Meteoritos (G14)</h3>
-                <p>Análisis: Impactos de meteoritos vs Consumo.</p>
-                <div class="arrow">Ver Gráfica ➜</div>
-            </div>
-        </a>
-
-        <a href="/integrations/cocktails" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externo (Pública)</span>
-                <h3>TheCocktailDB</h3>
-                <p>Base de datos de combinados y recetas internacionales.</p>
-                <div class="arrow">Ver Datos ➜</div>
-            </div>
-        </a>
-
-        <a href="/integrations/breweries" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externo (Pública)</span>
-                <h3>Open Brewery DB</h3>
-                <p>Estadísticas de fábricas de cerveza por el mundo.</p>
-                <div class="arrow">Ver Gráfica ➜</div>
-            </div>
-        </a>
-
-        <a href="/integrations/coffee" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externo (Pública)</span>
-                <h3>SampleAPIs - Coffee</h3>
-                <p>La alternativa sin alcohol: Tipos de café y componentes.</p>
-                <div class="arrow">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/aids-deaths-stats" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #aa3bff;">AIDS Deaths (G21)</h3>
-                <p>Análisis: Muertes por SIDA vs Temperaturas usando Billboard.js (Radar) vía Proxy.</p>
-                <div class="arrow" style="color: #aa3bff;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/olympics-athlete-events" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #facc15;">Olimpiadas (G30)</h3>
-                <p>Análisis: Atletas Olímpicos vs Temperatura usando Apache ECharts (Rose Chart).</p>
-                <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/age-specific-fertility-rates" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #ff007f;">Fertilidad (G12)</h3>
-                <p>Análisis: Tasa de Fertilidad vs Temperatura usando AnyChart (Treemap).</p>
-                <div class="arrow" style="color: #ff007f;">Ver Gráfica ➜</div>
-            </div>
-        </a><!-- Tarjeta: Integración SOS de Pablo (ESG G28) -->
-        <a href="/integrations/pablo/company-esg-scores-financial-performances" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #10b981;">Sostenibilidad ESG (G28)</h3>
-                <p>Análisis cruzado por año: Clima vs Rendimiento ESG usando Google Charts (Stepped Area).</p>
-                <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <!-- Tarjeta: Integración SOS (Exportaciones G13) - Pablo -->
-        <a href="/integrations/pablo/exportations-stats" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #f59e0b;">Exportaciones (G13)</h3>
-                <p>Análisis: Temperatura Media vs Exportaciones usando ZingChart (Area Chart).</p>
-                <div class="arrow" style="color: #f59e0b;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/openmeteo" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #3b82f6;">Open-Meteo (Clima)</h3>
-                <p>Análisis: Previsión actual vs Histórico de España usando Frappe Charts.</p>
-                <div class="arrow" style="color: #3b82f6;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        
-      <!-- Tarjeta: Uso Externo de Pablo (SpaceX) -->
-        <a href="/integrations/pablo/spacex" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #38bdf8;">SpaceX Launches</h3>
-                <p>Análisis: Temperatura global por año vs Nº Lanzamientos usando Chart.js (Bubble).</p>
-                <div class="arrow" style="color: #38bdf8;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-
-        <!-- Tarjeta: Uso Externo Gráfico de Pablo (CoinDesk + C3.js) -->
-        <a href="/integrations/pablo/bitcoin" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #facc15;">CoinDesk (Bitcoin)</h3>
-                <p>Análisis: Precio de Bitcoin vs Clima en Alemania usando C3.js (Bar).</p>
-                <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
+        <a href="integrations/juan-luis" class="card-link full-row">
+            <div class="card hero-card">
+                <span class="tag tag-use" style="align-self: center;">Panel Principal</span>
+                <h3 style="color: #00f2fe; font-size: 2rem;">Integraciones de Juan Luis</h3>
+                <p style="font-size: 1.1rem;">Accede a todos mis análisis cruzados (Protestas, Meteoritos y APIs públicas).</p>
+                <div class="arrow" style="color: #00f2fe; font-size: 1.1rem;">Entrar a mis integraciones ➜</div>
             </div>
         </a>
 
@@ -157,23 +51,42 @@
     }
     .back-btn:hover { color: #00f2fe; }
 
-    /* --- EL FIX DEFINITIVO DEL GRID --- */
     .grid-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 2.5rem;
-        align-items: stretch; /* Fuerza a que todas las tarjetas de la misma fila midan lo mismo */
+        align-items: stretch; 
     }
 
+    /* --- NUEVAS CLASES PARA EL BOTÓN GIGANTE --- */
+    .full-row {
+        grid-column: 1 / -1; /* Ocupa desde la primera línea hasta la última */
+    }
+
+    .hero-card {
+        background: linear-gradient(145deg, rgba(0, 242, 254, 0.1), rgba(168, 85, 247, 0.05));
+        border: 2px solid rgba(0, 242, 254, 0.4) !important;
+        align-items: center; /* Centra el contenido horizontalmente */
+        text-align: center;
+        padding: 3rem 2rem !important; /* Más alto para que destaque */
+    }
+
+    .hero-card:hover {
+        background: linear-gradient(145deg, rgba(0, 242, 254, 0.15), rgba(168, 85, 247, 0.1));
+        border-color: #00f2fe !important;
+        box-shadow: 0 10px 40px rgba(0, 242, 254, 0.2) !important;
+    }
+    /* ------------------------------------------- */
+
     .card-link { 
-        display: flex; /* Hace que el enlace se expanda como un bloque flexible */
+        display: flex; 
         text-decoration: none; 
         color: inherit; 
     }
 
     .card {
         width: 100%;
-        box-sizing: border-box; /* Evita que el padding rompa la caja por fuera */
+        box-sizing: border-box; 
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 20px;
@@ -185,7 +98,6 @@
         flex-direction: column;
         justify-content: space-between;
     }
-    /* ---------------------------------- */
 
     .card:hover {
         transform: translateY(-10px);
