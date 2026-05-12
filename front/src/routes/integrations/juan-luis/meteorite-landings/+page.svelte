@@ -13,10 +13,10 @@
 
             // 🚀 ESTO ES LO QUE FALTABA: Descargar los datos de las APIs
             const resMis = await fetch('/api/v2/social-drinking-behaviors'); 
-            const resG14 = await fetch('https://meteorite-landings-tvcf.onrender.com/api/v2/meteorite-landings/');
+            const resG14 = await fetch('/api/proxy/g14/meteorites');
 
             if (!resMis.ok) throw new Error("Fallo al obtener tus datos de alcohol");
-            if (!resG14.ok) throw new Error("Fallo al obtener datos de meteoritos (G14)");
+            if (!resG14.ok) throw new Error("Fallo al obtener datos del compañero.");
 
             const misDatos = await resMis.json();
             const g14Datos = await resG14.json();
@@ -106,7 +106,7 @@
 
 <main>
     <div class="header-nav">
-        <a href="/integrations" class="back-btn">⬅ Volver al Panel</a>
+        <a href="/integrations/juan-luis" class="back-btn">⬅ Volver a Integraciones Juan Luis</a>
     </div>
 
     <div class="card">

@@ -6,6 +6,7 @@
     </div>
 
     <div class="grid-container">
+
         
         <a href="/integrations/juan-luis/protests" class="card-link">
             <div class="card">
@@ -118,6 +119,13 @@
                 <h3 style="color: #facc15;">CoinDesk (Bitcoin)</h3>
                 <p>Análisis: Precio de Bitcoin vs Clima en Alemania usando C3.js (Bar).</p>
                 <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
+
+        <a href="integrations/juan-luis" class="card-link full-row">
+            <div class="card hero-card">
+                <span class="tag tag-use" style="align-self: center;">Panel Principal</span>
+                <h3 style="color: #00f2fe; font-size: 2rem;">Integraciones de Juan Luis</h3>
+                <p style="font-size: 1.1rem;">Accede a todos mis análisis cruzados (Protestas, Meteoritos y APIs públicas).</p>
+                <div class="arrow" style="color: #00f2fe; font-size: 1.1rem;">Entrar a mis integraciones ➜</div>
             </div>
         </a>
 
@@ -199,23 +207,42 @@
     }
     .back-btn:hover { color: #00f2fe; }
 
-    /* --- EL FIX DEFINITIVO DEL GRID --- */
     .grid-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 2.5rem;
-        align-items: stretch; /* Fuerza a que todas las tarjetas de la misma fila midan lo mismo */
+        align-items: stretch; 
     }
 
+    /* --- NUEVAS CLASES PARA EL BOTÓN GIGANTE --- */
+    .full-row {
+        grid-column: 1 / -1; /* Ocupa desde la primera línea hasta la última */
+    }
+
+    .hero-card {
+        background: linear-gradient(145deg, rgba(0, 242, 254, 0.1), rgba(168, 85, 247, 0.05));
+        border: 2px solid rgba(0, 242, 254, 0.4) !important;
+        align-items: center; /* Centra el contenido horizontalmente */
+        text-align: center;
+        padding: 3rem 2rem !important; /* Más alto para que destaque */
+    }
+
+    .hero-card:hover {
+        background: linear-gradient(145deg, rgba(0, 242, 254, 0.15), rgba(168, 85, 247, 0.1));
+        border-color: #00f2fe !important;
+        box-shadow: 0 10px 40px rgba(0, 242, 254, 0.2) !important;
+    }
+    /* ------------------------------------------- */
+
     .card-link { 
-        display: flex; /* Hace que el enlace se expanda como un bloque flexible */
+        display: flex; 
         text-decoration: none; 
         color: inherit; 
     }
 
     .card {
         width: 100%;
-        box-sizing: border-box; /* Evita que el padding rompa la caja por fuera */
+        box-sizing: border-box; 
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 20px;
@@ -227,7 +254,6 @@
         flex-direction: column;
         justify-content: space-between;
     }
-    /* ---------------------------------- */
 
     .card:hover {
         transform: translateY(-10px);

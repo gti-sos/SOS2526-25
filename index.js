@@ -37,27 +37,50 @@ loadPSA(app);
 loadAGB(app);
 
 // =========================================================
-// PROXIES PARA INTEGRACIONES (Requisito D03.B)
-// Con esto sorteáis el bloqueo de SOP al consumir APIs externas[cite: 2].
+// PROXIES PARA INTEGRACIONES 
 // =========================================================
-app.get('/api/proxy/g10/protests', async (req, res) => {
+app.get('/api/proxy/g10/protestas', async (req, res) => {
     try {
-        // Al usar Node 20 en vuestro CI, 'fetch' nativo está disponible
-        const response = await fetch('https://sos2526-10.onrender.com/api/v2/protests');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
+        let response = await fetch('https://sos2526-10.onrender.com/api/v2/protests');
+        let data;
+
+        if (response.ok) {
+            data = await response.json();
+        }
+
+        if (!response.ok || (Array.isArray(data) && data.length === 0)) {
+            console.log("Detectado error o datos vacíos. Cargando datos iniciales...");
+            
+            await fetch("https://sos2526-10.onrender.com/api/v2/protests/loadInitialData");
+            
+            let secondResponse = await fetch('https://sos2526-10.onrender.com/api/v2/protests');
+            
+            if (secondResponse.ok) {
+                data = await secondResponse.json();
+            } else {
+                data = [];
+            }
+        }
+        
         res.json(data);
+
     } catch (error) {
         console.error("Error en el proxy G10:", error);
-        res.status(500).json({ error: 'Fallo al contactar con la API remota del G10 a través del proxy.' });
+        res.status(500).json({ error: 'Fallo al contactar con la API remota.' });
     }
 });
 
 app.get('/api/proxy/g14/meteorites', async (req, res) => {
     try {
-        const response = await fetch('https://sos2526-14.onrender.com/api/v2/meteorite-landings');
+        let response = await fetch('https://meteorite-landings-tvcf.onrender.com/api/v2/meteorite-landings');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
+        let data = await response.json();
+        if(Array.isArray(data) && data.length === 0){
+            console.log("Datos vacios, cargando los datos iniciales...")
+            await fetch("https://meteorite-landings-tvcf.onrender.com/api/v2/meteorite-landings/loadInitialData")
+            response = await fetch('https://meteorite-landings-tvcf.onrender.com/api/v2/meteorite-landings');
+            data = await response.json();
+        }
         res.json(data);
     } catch (error) {
         console.error("Error en el proxy G14:", error);
@@ -65,11 +88,18 @@ app.get('/api/proxy/g14/meteorites', async (req, res) => {
     }
 });
 
+
 // PROXY para Pablo (G25) -> API Water Productivities de Mario (G17)
 app.get('/api/proxy/mario/water-productivities', async (req, res) => {
     // URL real de la API de Mario en Render
     const remoteUrl = 'https://sos2526-17.onrender.com/api/v1/water-productivities';
     
+
+
+// PROXY para Pablo -> API AIDS (Grupo 21)
+app.get('/api/proxy/pablo/aids', async (req, res) => {
+    // AÑADIMOS LOS PARÁMETROS AQUÍ para evitar el límite de 10 registros
+    const remoteUrl = 'https://sos2526-21.onrender.com/api/v1/aids-deaths-stats?country=Afghanistan&year=2015';
     try {
         const response = await fetch(remoteUrl);
         if (!response.ok) throw new Error("Error conectando con la API del Grupo 17");
