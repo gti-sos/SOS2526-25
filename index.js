@@ -93,7 +93,7 @@ app.get('/api/proxy/g14/meteorites', async (req, res) => {
 app.get('/api/proxy/mario/water-productivities', async (req, res) => {
     // URL real de la API de Mario en Render
     const remoteUrl = 'https://sos2526-17.onrender.com/api/v1/water-productivities';
-    
+});
 
 
 // PROXY para Pablo -> API AIDS (Grupo 21)
