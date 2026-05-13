@@ -2,106 +2,195 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
-    let map;
-    let mapContainer;
-    let message = $state("🌍 Cargando mapa y datos espaciales...");
+    let message = $state("Cargando visualización profesional con Highcharts...");
+    let chartContainer;
+    let chartInstance;
+    let datosCompletos = $state([]); 
+    
+    let availableYears = $state([]);
+    let selectedYear = $state("");
 
-    // DICCIONARIO DE COORDENADAS (Basado en tu JSON exacto)
-    const countryCoords = {
-        "Germany": [51.16, 10.45], "Spain": [40.46, -3.74], "Japan": [36.20, 138.25],
-        "Chad": [15.45, 18.73], "France": [46.22, 2.21], "Ethiopia": [9.14, 40.48],
-        "Mongolia": [46.86, 103.84], "Turkey": [38.96, 35.24], "Equatorial Guinea": [1.65, 10.26],
-        "Egypt": [26.82, 30.80], "Ukraine": [48.37, 31.16], "China": [35.86, 104.19],
-        "Latvia": [56.87, 24.60], "Angola": [-11.20, 17.87], "Liberia": [6.42, -9.42],
-        "USA": [37.09, -95.71], "Afghanistan": [33.93, 67.71], "Italy": [41.87, 12.56],
-        "Mexico": [23.63, -102.55], "Greece": [39.07, 21.82], "Estonia": [58.59, 25.01],
-        "Austria": [47.51, 14.55], "Nigeria": [9.08, 8.67], "El Salvador": [13.79, -88.89],
-        "United Kingdom": [55.37, -3.43], "South Africa": [-30.55, 22.93], "Slovenia": [46.15, 14.99],
-        "Belgium": [50.50, 4.46], "Algeria": [28.03, 1.65]
-    };
+    async function safeJson(res) {
+        try { return res.ok ? await res.json() : []; } catch { return []; }
+    }
 
     onMount(async () => {
-        if (browser) {
-            // 1. Inicializar mapa
-            const L = await import('leaflet');
-            map = L.map(mapContainer).setView([20, 0], 2);
+        if (!browser) return;
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
+        try {
+            // Cargamos tus datos locales (country, year, beer_share, wine_share, spirits_share, etc.)
+            const resMis = await fetch("/api/v2/social-drinking-behaviors");
+            const misDatos = await safeJson(resMis);
 
-            // 2. Cargar tus datos
-            try {
-                const res = await fetch('/api/v2/average-annual-temperatures');
-                const data = await res.json();
-
-                if (data.length > 0) {
-                    data.forEach(item => {
-                        const coords = countryCoords[item.country];
-                        if (coords) {
-                            // JITTER: Sumamos un pequeño error aleatorio para que si hay 
-                            // varios registros del mismo país, se vean todos y no uno encima de otro.
-                            const lat = coords[0] + (Math.random() - 0.5) * 2; 
-                            const lng = coords[1] + (Math.random() - 0.5) * 2;
-
-                            L.marker([lat, lng]).addTo(map)
-                                .bindPopup(`
-                                    <div style="color: #333">
-                                        <b>${item.country} (${item.year})</b><br>
-                                        🌡️ Temp: ${item.temperature} °C<br>
-                                        ☁️ CO2: ${item.co2_emission}
-                                    </div>
-                                `);
-                        }
-                    });
-                    message = ""; // Borramos el mensaje de carga si todo OK
-                } else {
-                    message = "⚠️ No hay datos en la base de datos.";
-                }
-            } catch (e) {
-                message = "❌ Error al conectar con la API.";
-                console.error(e);
+            if (misDatos.length === 0) {
+                message = "⚠️ No hay datos en tu API local.";
+                return;
             }
+
+            // Extraemos años únicos para el desplegable
+            const years = [...new Set(misDatos.map(d => String(d.year)))];
+            availableYears = years.sort().reverse();
+            selectedYear = availableYears[0];
+
+            datosCompletos = misDatos;
+            message = "";
+
+            esperarYRenderizar();
+
+        } catch (error) {
+            console.error(error);
+            message = "Error crítico cargando Highcharts.";
         }
     });
+
+    function esperarYRenderizar() {
+        const check = setInterval(() => {
+            if (window.Highcharts && chartContainer) {
+                clearInterval(check);
+                dibujarGrafica();
+            }
+        }, 100);
+    }
+
+    // Reactividad: Si cambia el año, redibujamos
+    $effect(() => {
+        if (selectedYear && datosCompletos.length > 0 && browser && window.Highcharts) {
+            dibujarGrafica();
+        }
+    });
+
+    function dibujarGrafica() {
+        if (!window.Highcharts || !chartContainer) return;
+
+        // Filtramos por año seleccionado
+        const filtrados = datosCompletos.filter(d => String(d.year) === selectedYear);
+        
+        // Ordenamos por consumo total (litros) para que sea estético
+        filtrados.sort((a, b) => (Number(b.total_liter) || 0) - (Number(a.total_liter) || 0));
+
+        const categoriasPaises = filtrados.map(d => d.country);
+        const serieCerveza = filtrados.map(d => Number(d.beer_share) || 0);
+        const serieVino = filtrados.map(d => Number(d.wine_share) || 0);
+        const serieLicores = filtrados.map(d => Number(d.spirit_share) || 0);
+
+        chartInstance = window.Highcharts.chart(chartContainer, {
+            chart: {
+                type: 'bar', // Barras horizontales
+                backgroundColor: 'transparent',
+                height: Math.max(500, categoriasPaises.length * 40) // Ajuste dinámico según nº de países
+            },
+            title: {
+                text: `Consumo de Alcohol por País (${selectedYear})`,
+                style: { color: '#ffffff' }
+            },
+            xAxis: {
+                categories: categoriasPaises,
+                labels: { style: { color: '#cbd5e1' } },
+                lineColor: '#334155'
+            },
+            yAxis: {
+                min: 0,
+                max: 100,
+                title: { text: 'Porcentaje del total (%)', style: { color: '#cbd5e1' } },
+                labels: { style: { color: '#cbd5e1' } },
+                gridLineColor: '#334155'
+            },
+            legend: {
+                itemStyle: { color: '#cbd5e1' },
+                itemHoverStyle: { color: '#ffffff' }
+            },
+            tooltip: {
+                shared: true,
+                backgroundColor: '#1e293b',
+                style: { color: '#ffffff' },
+                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}%</b><br/>'
+            },
+            plotOptions: {
+                series: {
+                    stacking: 'normal', // Apilado para ver el desglose
+                    dataLabels: {
+                        enabled: true,
+                        color: '#ffffff',
+                        format: '{point.y}%' // Muestra los datos numéricos directamente en la barra
+                    }
+                }
+            },
+            series: [{
+                name: 'Cerveza',
+                data: serieCerveza,
+                color: '#facc15'
+            }, {
+                name: 'Vino',
+                data: serieVino,
+                color: '#ef4444'
+            }, {
+                name: 'Licores',
+                data: serieLicores,
+                color: '#3b82f6'
+            }]
+        });
+    }
 </script>
 
 <svelte:head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Cargamos Highcharts desde su CDN oficial -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
 </svelte:head>
 
 <main>
-    <h2>🗺️ Mapa Geoespacial: Temperaturas</h2>
-    
-    {#if message}
-        <div class="loading-bar">{message}</div>
-    {/if}
+    <div class="header-nav">
+        <a href="/integrations/juan-luis" class="back-btn">⬅ Volver a Integraciones</a>
+    </div>
 
-    <div class="map-wrapper">
-        <div id="map" bind:this={mapContainer}></div>
+    <div class="card">
+        <div class="top-bar">
+            <h2>📊 Desglose de Consumo (Highcharts)</h2>
+            <p class="desc">
+                Visualización detallada de las cuotas de alcohol. Las barras muestran el porcentaje relativo de cada tipo de bebida por país.
+            </p>
+        </div>
+
+        {#if message}
+            <div class="loading-state">{message}</div>
+        {:else}
+            <div class="controls">
+                <label for="yearSelector">📅 Seleccionar Año:</label>
+                <select id="yearSelector" bind:value={selectedYear}>
+                    {#each availableYears as yr}
+                        <option value={yr}>Año {yr}</option>
+                    {/each}
+                </select>
+                <span class="badge">{availableYears.length} Años disponibles</span>
+            </div>
+
+            <div class="chart-box">
+                <!-- Contenedor del gráfico -->
+                <div bind:this={chartContainer}></div>
+            </div>
+        {/if}
     </div>
 </main>
 
 <style>
-    :global(body) { background-color: #0f172a; color: white; margin: 0; font-family: sans-serif; }
-    main { padding: 20px; max-width: 1200px; margin: 0 auto; }
-    h2 { text-align: center; color: #38bdf8; }
-    
-    .loading-bar { 
-        background: #854d0e; 
-        color: #fef08a; 
-        padding: 10px; 
-        border-left: 5px solid #eab308;
-        margin-bottom: 10px;
-        text-align: center;
+    :global(body) { background: #0f172a; color: white; margin: 0; font-family: sans-serif; }
+    main { padding: 2rem; max-width: 1100px; margin: auto; }
+    .header-nav { margin-bottom: 2rem; }
+    .back-btn { color: #facc15; text-decoration: none; border: 1px solid #facc15; padding: 0.5rem 1rem; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+    .back-btn:hover { background: rgba(250, 204, 21, 0.2); }
+    .card { background: #1e293b; padding: 2rem; border-radius: 20px; border: 1px solid #334155; }
+    .top-bar h2 { color: #facc15; margin: 0 0 0.5rem 0; }
+    .desc { color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.5; }
+    .controls { background: #0b1120; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+    select { background: #1e293b; color: #facc15; padding: 0.5rem; border-radius: 5px; border: 1px solid #facc15; font-weight: bold; }
+    .badge { color: #64748b; font-size: 0.9rem; }
+    .loading-state { color: #facc15; padding: 2rem; text-align: center; }
+    .chart-box { 
+        background: #0b1120; 
+        border-radius: 12px; 
+        padding: 1rem; 
+        border: 1px solid #334155;
+        max-height: 700px;
+        overflow-y: auto; /* Para poder ver todos los países si hay muchos */
     }
-
-    .map-wrapper {
-        border: 2px solid rgba(255,255,255,0.1);
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    }
-
-    #map { height: 600px; width: 100%; background: #1e293b; }
 </style>
