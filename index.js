@@ -288,6 +288,38 @@ app.get('/api/proxy/pablo/github-token', async (req, res) => {
     }
 });
 
+
+
+// =========================================================
+// PROXY DE AIMAR: API Citys-Stats (Grupo 29)
+// =========================================================
+app.get('/api/proxy/aimar/citys', async (req, res) => {
+    try {
+        let response = await fetch('https://sos2526-29.onrender.com/api/v2/citys-stats');
+        let data = [];
+
+        if (response.ok) {
+            data = await response.json();
+        }
+
+        // Si la base de datos de los compañeros está vacía, les hacemos un loadInitialData
+        if (!response.ok || (Array.isArray(data) && data.length === 0)) {
+            console.log("Datos de G29 vacíos. Cargando sus datos iniciales...");
+            await fetch('https://sos2526-29.onrender.com/api/v2/citys-stats/loadInitialData');
+            
+            let secondResponse = await fetch('https://sos2526-29.onrender.com/api/v2/citys-stats');
+            if (secondResponse.ok) {
+                data = await secondResponse.json();
+            }
+        }
+
+        res.json(data);
+    } catch (error) {
+        console.error("Error en el proxy de Aimar (G29):", error);
+        res.status(500).json({ error: "No se pudo conectar con la API de citys-stats a través del proxy" });
+    }
+});
+
 // 3.2 Uso de svelte
 app.use(handler);
 
