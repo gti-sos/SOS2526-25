@@ -83,14 +83,34 @@ app.get('/api/proxy/un-accidents', async (req, res) => {
 // --- PROXY FMI (RIQUEZA) ---
 app.get('/api/proxy/imf-wealth', async (req, res) => {
     try {
-        const opciones = { headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" } };
+        // Configuramos cabeceras que simulan un navegador real de forma completa
+        const opciones = { 
+            headers: { 
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", 
+                "Accept": "application/json",
+                "Referer": "https://www.imf.org/"
+            } 
+        };
+
+        // Petición de los valores (PIB)
         const resData = await fetch("https://www.imf.org/external/datamapper/api/v1/NGDPDPC", opciones);
+        if (!resData.ok) throw new Error(`FMI Datos falló con status: ${resData.status}`);
         const dataIMF = await resData.json();
+
+        // Petición de los nombres de países (Cambiamos a la ruta absoluta más fiable)
         const resCountries = await fetch("https://www.imf.org/external/datamapper/api/v1/countries", opciones);
+        if (!resCountries.ok) throw new Error(`FMI Países falló con status: ${resCountries.status}`);
         const countriesIMF = await resCountries.json();
+
+        // Si todo ha ido bien, devolvemos el JSON
         res.json({ data: dataIMF, countries: countriesIMF });
+        
     } catch (error) {
-        res.status(500).json({ error: "Fallo al contactar con el FMI" });
+        console.error("❌ Error detallado en Proxy FMI:", error.message);
+        res.status(500).json({ 
+            error: "Fallo al contactar con el FMI", 
+            message: error.message 
+        });
     }
 });
 
