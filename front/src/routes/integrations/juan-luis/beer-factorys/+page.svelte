@@ -14,6 +14,7 @@
         try {
             const echarts = await import('echarts');
 
+            // Hacemos el fetch directamente en el front, ¡OpenBrewery no tiene CORS!
             const [resMis, resBrew] = await Promise.all([
                 fetch("/api/v2/social-drinking-behaviors"),
                 fetch("https://api.openbrewerydb.org/v1/breweries?per_page=200")
@@ -23,16 +24,21 @@
             const brewDatos = await safeJson(resBrew);
 
             if (misDatos.length === 0 || brewDatos.length === 0) {
-                message = "⚠️ Faltan datos para cruzar.";
+                message = "⚠️ Faltan datos para cruzar. La API podría estar vacía.";
                 return;
             }
 
+            // Mapeo inteligente de países para sacar más coincidencias
             const fabricasMap = new Map();
             brewDatos.forEach(b => {
                 if (b.country) {
                     let nombre = String(b.country).trim().toLowerCase();
+                    
+                    // Normalizamos Reino Unido y USA
                     if (nombre === "united states") nombre = "united states of america";
-                    if (nombre === "england" || nombre === "scotland") nombre = "united kingdom";
+                    if (nombre === "england" || nombre === "scotland" || nombre === "wales" || nombre === "northern ireland") {
+                        nombre = "united kingdom";
+                    }
                     
                     if (!fabricasMap.has(nombre)) fabricasMap.set(nombre, { total: 0, micro: 0 });
                     
@@ -63,11 +69,11 @@
             });
 
             if (chartData.length === 0) {
-                message = "⚠️ No hay coincidencias.";
+                message = "⚠️ No hay coincidencias de países entre tu BD y las fábricas.";
                 return;
             }
 
-            // Ordenamos para que la gráfica tenga sentido visual
+            // Ordenamos para que la gráfica tenga sentido visual (de más a menos cerveza)
             chartData.sort((a, b) => b.rawInfo.cerveza - a.rawInfo.cerveza);
 
             message = ""; 
@@ -75,14 +81,14 @@
 
             window.addEventListener('resize', () => chart.resize());
 
-            // ¡IMPORTANTE! Forzamos un resize justo al empezar para que ocupe todo el ancho
+            // Forzamos un resize para que ocupe el 100% de la caja
             setTimeout(() => chart.resize(), 100);
 
             verConsumo();
 
         } catch (error) {
             console.error(error);
-            message = "Error crítico al cargar ECharts.";
+            message = "Error crítico al cargar la API de fábricas o ECharts.";
         }
     });
 
@@ -104,18 +110,16 @@
         if (!chart) return;
         chart.setOption({
             backgroundColor: 'transparent',
-            // Dejamos 25% abajo para que quepa el scroll y los nombres largos
             grid: { top: '10%', bottom: '25%', left: '5%', right: '5%', containLabel: true },
             tooltip: { formatter: tooltipHTML, backgroundColor: '#1e293b', textStyle: { color: '#fff' }, borderColor: '#38bdf8' },
             
-            // --- LA BARRA DE SCROLL MÁGICA ---
             dataZoom: [
                 {
                     type: 'slider',
                     show: true,
                     xAxisIndex: [0],
-                    start: 0, // Empieza en el 0%
-                    end: 40,  // Muestra solo el 40% inicial para que respiren las barras
+                    start: 0, 
+                    end: 100, // Lo he puesto al 100% por defecto para que se vean todos de golpe
                     bottom: 10,
                     textStyle: { color: '#cbd5e1' }
                 }
@@ -127,8 +131,8 @@
                 axisLabel: { 
                     color: '#cbd5e1', 
                     rotate: 45, 
-                    interval: 0,         // Le prohibimos saltarse etiquetas
-                    hideOverlap: false,  // Le prohibimos ocultar las que chocan
+                    interval: 0,
+                    hideOverlap: false,
                     fontSize: 11
                 },
                 axisTick: { alignWithLabel: true }
@@ -141,7 +145,7 @@
             },
             series: [{
                 type: 'bar',
-                barMaxWidth: 50, // Barras más anchas pero controladas
+                barMaxWidth: 50,
                 data: chartData.map(d => ({
                     name: d.name, value: d.rawInfo.cerveza, rawInfo: d.rawInfo, itemStyle: { color: '#facc15', borderRadius: [6, 6, 0, 0] }
                 })),
@@ -158,7 +162,6 @@
             grid: { top: '10%', bottom: '15%', left: '5%', right: '5%', containLabel: true },
             tooltip: { formatter: tooltipHTML, backgroundColor: '#1e293b', textStyle: { color: '#fff' }, borderColor: '#38bdf8' },
             
-            // Quitamos el scroll en modo dispersión porque ahí sí queremos ver el panorama completo
             dataZoom: [], 
 
             xAxis: { 
@@ -197,8 +200,8 @@
 
     <div class="card">
         <div class="top-bar">
-            <h2>📊 Animaciones Fluidas con ECharts</h2>
-            <p class="desc">Usa el scroll debajo de la gráfica para navegar por todos los países.</p>
+            <h2>🏭 Fábricas de Cerveza vs Consumo</h2>
+            <p class="desc">Datos extraídos de <strong>Open Brewery DB</strong>. Compara el % de consumo con la cantidad de fábricas por país.</p>
             
             <div class="button-group" class:hidden={!!message}>
                 <button onclick={verConsumo}>🍺 1. Ver Consumo (Barras)</button>
@@ -210,7 +213,6 @@
             <p class="status-msg">{message}</p>
         {/if}
 
-        <!-- Hacemos el contenedor más alto (600px) y quitamos el overflow:hidden -->
         <div class="chart-box" class:hidden={!!message}>
             <div bind:this={chartContainer} style="width: 100%; height: 600px;"></div>
         </div>

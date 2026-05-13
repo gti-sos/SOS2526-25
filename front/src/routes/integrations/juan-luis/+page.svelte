@@ -75,11 +75,11 @@
                 <div class="arrow">Ver Gráfica ➜</div>
             </div>
         </a>
-        <a href="/integrations/juan-luis/unemployment" class="card-link">
+        <a href="/integrations/juan-luis/covid" class="card-link">
             <div class="card">
                 <span class="tag tag-use">Uso Externo (Pública)</span>
-                <h3>Unemployment</h3>
-                <p>Tasa de paro por pais</p>
+                <h3>Covid</h3>
+                <p>Tasa de covid por pais</p>
                 <div class="arrow">Ver Gráfica ➜</div>
             </div>
         </a>

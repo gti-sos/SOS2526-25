@@ -2,11 +2,10 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
-    let message = $state("Descargando históricos del Banco Mundial...");
+    let message = $state("Descargando históricos de la ONU (Naciones Unidas)...");
     let chartContainer;
-    let datosCompletos = $state([]); // Aquí guardaremos todo para no llamar a la API cada vez que cambies de año
+    let datosCompletos = $state([]); 
     
-    // Controles dinámicos
     let availableYears = $state([]);
     let selectedYear = $state("");
 
@@ -22,26 +21,31 @@
             const resMis = await fetch("/api/v2/social-drinking-behaviors");
             const misDatos = await safeJson(resMis);
 
-            // 2. Fetch a la API del Banco Mundial (Traemos datos del 2010 al 2022 de golpe)
-            const resWB = await fetch("https://api.worldbank.org/v2/country/all/indicator/SH.STA.TRAF.P5?format=json&date=2010:2022&per_page=3000");
-            const wbDatos = await safeJson(resWB);
+            // 2. Fetch a nuestro Proxy que ataca a la API de la ONU (UN Statistics Division - SDG)
+            // Indicador 3.6.1: Tasa de mortalidad por accidentes de tráfico
+            const resProxy = await fetch("/api/proxy/un-accidents");
+            const unDatos = await safeJson(resProxy);
 
-            if (misDatos.length === 0 || !wbDatos[1]) {
-                message = "⚠️ Faltan datos para cruzar.";
+            if (misDatos.length === 0 || !unDatos?.data) {
+                message = "⚠️ Faltan datos para cruzar o el proxy de la ONU falló.";
                 return;
             }
 
             // 3. Mapeamos los accidentes por País Y Año
-            // Formato: { "spain_2019": 3.4, "france_2019": 5.1 ... }
+            // La ONU usa "geoAreaName" y "timePeriodStart"
             const accidentesMap = new Map();
-            wbDatos[1].forEach(item => {
-                if (item.country && item.value && item.date) {
-                    let nombre = item.country.value.toLowerCase();
+            unDatos.data.forEach(item => {
+                if (item.geoAreaName && item.value && item.timePeriodStart) {
+                    let nombre = String(item.geoAreaName).toLowerCase();
+                    
+                    // Normalizamos nombres clave para que enganchen con tu base de datos
                     if (nombre.includes("united states")) nombre = "united states of america";
                     if (nombre.includes("united kingdom")) nombre = "united kingdom";
                     if (nombre.includes("russia")) nombre = "russian federation";
+                    if (nombre.includes("bolivia")) nombre = "bolivia";
+                    if (nombre.includes("venezuela")) nombre = "venezuela";
                     
-                    accidentesMap.set(`${nombre}_${item.date}`, item.value);
+                    accidentesMap.set(`${nombre}_${item.timePeriodStart}`, Number(item.value));
                 }
             });
 
@@ -78,26 +82,23 @@
             });
 
             if (cruzados.length === 0) {
-                message = "⚠️ No hay coincidencias de países en el mismo año.";
+                message = "⚠️ No hay coincidencias de países en el mismo año con los datos de la ONU.";
                 return;
             }
 
-            // Guardamos el estado global
             datosCompletos = cruzados;
-            availableYears = Array.from(tempYears).sort().reverse(); // Del más reciente al más antiguo
+            availableYears = Array.from(tempYears).sort().reverse(); 
             selectedYear = availableYears[0]; 
             message = "";
 
-            // Esperamos a que Plotly se cargue desde el CDN
             setTimeout(dibujarGrafica, 300);
 
         } catch (error) {
             console.error(error);
-            message = "Error crítico cargando los datos.";
+            message = "Error crítico cargando los datos de la ONU.";
         }
     });
 
-    // MAGIA REACTIVA: Si el usuario cambia el año en el desplegable, redibujamos
     $effect(() => {
         if (selectedYear && datosCompletos.length > 0 && browser && window.Plotly) {
             dibujarGrafica();
@@ -107,16 +108,12 @@
     function dibujarGrafica() {
         if (!window.Plotly || !chartContainer) return;
 
-        // Filtramos solo los datos del año seleccionado
         const datosFiltrados = datosCompletos.filter(d => d.year === selectedYear);
-        
-        // Ordenamos por tasa de accidentes para que el gráfico quede estético
         datosFiltrados.sort((a, b) => b.accidentesTotales - a.accidentesTotales);
 
         const xNombres = datosFiltrados.map(d => d.country);
         const yAccidentes = datosFiltrados.map(d => d.accidentesTotales);
         
-        // El array "customdata" es el secreto para pasar variables ocultas al recuadro del ratón
         const infoExtra = datosFiltrados.map(d => [
             d.total_alcohol.toFixed(1), // customdata[0]
             d.vino.toFixed(1),          // customdata[1]
@@ -128,43 +125,40 @@
         const trace = {
             x: xNombres,
             y: yAccidentes,
-            type: 'bar', // Cumplimos la regla: Usamos barras
+            type: 'bar', 
             marker: {
-                color: '#ef4444', // Rojo advertencia
+                color: '#ef4444', 
                 opacity: 0.8,
                 line: { color: '#b91c1c', width: 1.5 }
             },
             customdata: infoExtra,
-            // AQUÍ CONFIGURAMOS EL RECUADRO CON TODOS TUS REQUISITOS
             hovertemplate: 
                 '<b>%{x}</b><br><br>' +
-                '🚨 Tasa Accidentes: <b>%{y:.1f}</b><br>' +
+                '🚨 Mortalidad Tráfico (ONU): <b>%{y:.1f}</b><br>' +
                 '🚗 Ratio Coches: %{customdata[3]}<br>' +
                 '🏍️ Ratio Motos: %{customdata[4]}<br>' +
                 '----------------------<br>' +
                 '🍷 Consumo Vino: %{customdata[1]}%<br>' +
                 '🍺 Consumo Cerveza: %{customdata[2]}%<br>' +
                 '🍸 Alcohol Total: %{customdata[0]}%<br>' +
-                '<extra></extra>', // El extra vacío quita textos secundarios por defecto
+                '<extra></extra>', 
         };
 
         const layout = {
-            title: `Impacto del Alcohol en el Tráfico (Año ${selectedYear})`,
+            title: `Impacto del Alcohol en Siniestros Viales (ONU - Año ${selectedYear})`,
             paper_bgcolor: 'transparent',
             plot_bgcolor: 'transparent',
             font: { color: '#cbd5e1' },
             xaxis: { tickangle: 45 },
-            yaxis: { title: 'Tasa de Mortalidad en Tráfico' },
-            margin: { b: 120 } // Margen inferior para que quepan los nombres largos
+            yaxis: { title: 'Muertes en tráfico por 100k hab.' },
+            margin: { b: 120 } 
         };
 
-        // Plotly.react sirve tanto para crear como para actualizar sin parpadeos
         window.Plotly.react(chartContainer, [trace], layout, { responsive: true, displayModeBar: false });
     }
 </script>
 
 <svelte:head>
-    <!-- Cargamos Plotly.js directamente desde su fuente oficial, a prueba de fallos SSR -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 </svelte:head>
 
@@ -177,7 +171,8 @@
         <div class="top-bar">
             <h2>🚦 Tráfico y Consumo (Plotly.js)</h2>
             <p class="desc">
-                Cruce temporal con el <strong>Banco Mundial</strong>. Selecciona un año para ver cómo evoluciona la tasa de accidentes frente a la cuota de alcohol.
+                Cruce temporal global extraído de la <strong>División de Estadística de las Naciones Unidas (UNSD)</strong>. 
+                Selecciona un año para ver la tasa de mortalidad frente a la cuota de alcohol.
             </p>
         </div>
 
@@ -186,7 +181,6 @@
                 <span class="spinner">{message}</span>
             </div>
         {:else}
-            <!-- EL INPUT DEL AÑO -->
             <div class="controls">
                 <label for="yearSelector">📅 Filtrar por Año:</label>
                 <select id="yearSelector" bind:value={selectedYear}>

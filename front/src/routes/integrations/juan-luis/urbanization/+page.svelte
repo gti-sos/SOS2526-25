@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
-    let message = $state("Cargando cartografía mundial y datos...");
+    let message = $state("Descargando censo global de universidades (OpenAlex)...");
     let chartContainer;
     let datosCompletos = $state([]); 
     
@@ -17,56 +17,68 @@
         if (!browser) return;
 
         try {
+            // 1. Cargamos tu base de datos
             const resMis = await fetch("/api/v2/social-drinking-behaviors");
             const misDatos = await safeJson(resMis);
 
-            // API Banco Mundial: Población Urbana (% del total)
-            const resWB = await fetch("https://api.worldbank.org/v2/country/all/indicator/SP.URB.TOTL.IN.ZS?format=json&date=2015:2022&per_page=3000");
-            const wbDatos = await safeJson(resWB);
+            // 2. Cargamos la API de OpenAlex (Catálogo Abierto de Instituciones)
+            // Devuelve el conteo total de Universidades/Instituciones agrupado por país
+            const resUni = await fetch("https://api.openalex.org/institutions?group_by=country_code");
+            const uniDatos = await safeJson(resUni);
 
-            if (misDatos.length === 0 || !wbDatos[1]) {
-                message = "⚠️ Faltan datos para cruzar.";
+            if (misDatos.length === 0 || !uniDatos.group_by) {
+                message = "⚠️ Faltan datos para cruzar o la API está saturada.";
                 return;
             }
 
-            const urbanMap = new Map();
-            wbDatos[1].forEach(item => {
-                if (item.country && item.value !== null && item.date) {
-                    let nombre = item.country.value.toLowerCase();
-                    // Normalización para que Plotly reconozca los países
-                    if (nombre.includes("united states")) nombre = "united states";
-                    if (nombre.includes("united kingdom")) nombre = "united kingdom";
-                    if (nombre.includes("russia")) nombre = "russia";
-                    if (nombre === "korea, rep.") nombre = "south korea";
+            // 3. Mapeamos las universidades por país
+            const uniMap = new Map();
+            uniDatos.group_by.forEach(item => {
+                if (item.key_display_name && item.count) {
+                    let nombre = item.key_display_name.toLowerCase();
                     
-                    urbanMap.set(`${nombre}_${item.date}`, item.value);
+                    // Normalizaciones básicas
+                    if (nombre.includes("united states")) nombre = "united states of america";
+                    if (nombre.includes("united kingdom")) nombre = "united kingdom";
+                    if (nombre.includes("russia")) nombre = "russian federation";
+                    
+                    uniMap.set(nombre, item.count);
                 }
             });
 
+            // 4. Cruzamos con tus datos de consumo
             let tempYears = new Set();
             let cruzados = [];
+            let paisesProcesados = new Set(); // Para evitar duplicados en el mapa
 
             misDatos.forEach(d => {
                 let pais = String(d.country).trim().toLowerCase();
-                if (pais === "united states of america") pais = "united states";
-                if (pais === "russian federation") pais = "russia";
-
                 let anio = String(d.year); 
-                let clave = `${pais}_${anio}`;
                 
-                if (urbanMap.has(clave)) {
+                if (uniMap.has(pais)) {
                     tempYears.add(anio);
-                    cruzados.push({
-                        // Capitalizamos la primera letra para el mapa
-                        country: pais.charAt(0).toUpperCase() + pais.slice(1),
-                        year: anio,
-                        urbanizacion: Number(urbanMap.get(clave).toFixed(1)),
-                        cerveza: Number(d.beer_share) || 0,
-                        vino: Number(d.wine_share) || 0,
-                        licores: Number(d.spirits_share) || 0
-                    });
+                    
+                    // Solo metemos un registro por país y año
+                    let claveUnica = `${pais}_${anio}`;
+                    if (!paisesProcesados.has(claveUnica)) {
+                        paisesProcesados.add(claveUnica);
+                        
+                        cruzados.push({
+                            country: d.country,
+                            year: anio,
+                            universidades: uniMap.get(pais),
+                            cerveza: Number(d.beer_share) || 0,
+                            vino: Number(d.wine_share) || 0,
+                            licores: Number(d.spirits_share) || 0
+                        });
+                    }
                 }
             });
+
+            if (cruzados.length === 0) {
+                message = "⚠️ No hay coincidencias de países con el registro universitario.";
+                return;
+            }
 
             datosCompletos = cruzados;
             availableYears = Array.from(tempYears).sort().reverse(); 
@@ -77,7 +89,7 @@
 
         } catch (error) {
             console.error(error);
-            message = "Error crítico cargando la cartografía.";
+            message = "Error crítico cargando la cartografía y los datos.";
         }
     });
 
@@ -99,56 +111,53 @@
     function dibujarMapa() {
         if (!window.Plotly || !chartContainer) return;
 
-        let datosFiltrados = datosCompletos.filter(d => d.year === selectedYear);
-
-        const xPaises = datosFiltrados.map(d => d.country);
-        const zUrbanizacion = datosFiltrados.map(d => d.urbanizacion);
-        
-        // Datos ocultos para el recuadro interactivo
-        const infoExtra = datosFiltrados.map(d => [d.cerveza, d.vino, d.licores]);
+        const datosFiltrados = datosCompletos.filter(d => d.year === selectedYear);
 
         const trace = {
             type: 'choropleth',
-            locationmode: 'country names', // Magia: Plotly busca el país por su nombre automáticamente
-            locations: xPaises,
-            z: zUrbanizacion,
-            text: xPaises,
-            customdata: infoExtra,
-            colorscale: 'YlGnBu', // Escala de colores (Amarillo -> Verde -> Azul)
+            locationmode: 'country names', // Plotly engancha automáticamente los nombres en inglés
+            locations: datosFiltrados.map(d => d.country),
+            z: datosFiltrados.map(d => d.universidades),
+            text: datosFiltrados.map(d => d.country),
+            customdata: datosFiltrados.map(d => [d.cerveza, d.vino, d.licores]),
+            colorscale: 'Viridis', // Escala de color científica y muy visual
             autocolorscale: false,
             reversescale: true,
             marker: {
-                line: { color: '#1e293b', width: 0.5 } // Bordes de los países
+                line: { color: '#1e293b', width: 0.5 }
             },
             colorbar: {
-                title: 'Nivel Urbano (%)',
+                title: 'Nº Instituciones',
                 tickfont: { color: '#cbd5e1' },
                 titlefont: { color: '#cbd5e1' }
             },
             hovertemplate: 
-                '<b style="font-size:16px;">%{text}</b><br><br>' +
-                '🏙️ <b>Población Urbana:</b> %{z}%<br>' +
+                '<b style="font-size:16px; color:#ffffff;">%{text}</b><br><br>' +
+                '🎓 <b>Universidades Registradas:</b> %{z}<br>' +
                 '-----------------------<br>' +
                 '🍺 Cerveza: %{customdata[0]}%<br>' +
                 '🍷 Vino: %{customdata[1]}%<br>' +
                 '🥃 Licores: %{customdata[2]}%<br>' +
-                '<extra></extra>'
+                '<extra></extra>' // Elimina recuadros secundarios molestos
         };
 
         const layout = {
-            title: { text: `Distribución Demográfica Mundial (${selectedYear})`, font: { color: '#a855f7' } },
+            title: { 
+                text: `Mapa Mundial: Sector Académico vs Consumo (${selectedYear})`, 
+                font: { color: '#a855f7' } 
+            },
             paper_bgcolor: 'transparent',
             plot_bgcolor: 'transparent',
             geo: {
                 showframe: false,
                 showcoastlines: true,
                 coastlinecolor: '#334155',
-                projection: { type: 'robinson' }, // Proyección de mapa estéticamente muy profesional
+                projection: { type: 'robinson' }, // Mapa curvado más estético
                 bgcolor: 'transparent',
                 showocean: true,
-                oceancolor: '#0b1120', // Océano en modo oscuro
+                oceancolor: '#0b1120',
                 showland: true,
-                landcolor: '#1e293b' // Países sin datos en gris oscuro
+                landcolor: '#1e293b'
             },
             margin: { l: 0, r: 0, t: 50, b: 0 }
         };
@@ -168,22 +177,28 @@
 
     <div class="card">
         <div class="top-bar">
-            <h2>🌍 Mapa Cartográfico: Urbanización y Alcohol</h2>
+            <h2>🌍 Mapa Cartográfico: Universidades y Alcohol</h2>
             <p class="desc">
-                Un análisis geoespacial cruzando la cartografía base de <strong>Plotly</strong> con la demografía del <strong>Banco Mundial</strong>. 
-                Los países más oscuros tienen mayor concentración de habitantes en ciudades.
+                Análisis geoespacial cruzando la cartografía de <strong>Plotly</strong> con datos en tiempo real de 
+                <strong>OpenAlex</strong> (Catálogo global de investigación). 
+                Los países más claros tienen mayor concentración de universidades.
             </p>
         </div>
 
         {#if message}
-            <div class="loading-state">{message}</div>
+            <div class="loading-state">
+                <span class="spinner">{message}</span>
+            </div>
         {:else}
             <div class="controls">
-                <label>📅 Año del satélite:</label>
+                <label>📅 Año de consumo:</label>
                 <select bind:value={selectedYear}>
                     {#each availableYears as yr} <option value={yr}>{yr}</option> {/each}
                 </select>
-                <span class="badge">Datos de {datosCompletos.filter(d => d.year === selectedYear).length} países mapeados</span>
+                <span class="badge">
+                    Datos de {datosCompletos.filter(d => d.year === selectedYear).length} países mapeados
+                </span>
+                <span class="source-tag">Fuente: OpenAlex API</span>
             </div>
             
             <div class="chart-box">
@@ -202,17 +217,11 @@
     .card { background: #1e293b; padding: 2rem; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
     .top-bar h2 { color: #a855f7; margin: 0 0 0.5rem 0; }
     .desc { color: #94a3b8; line-height: 1.5; margin-bottom: 1.5rem;}
-    .controls { background: #0b1120; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #334155; display: flex; align-items: center; gap: 1rem;}
+    .controls { background: #0b1120; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #334155; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;}
     .controls label { font-weight: bold; color: #cbd5e1;}
     select { background: #1e293b; color: #a855f7; padding: 0.5rem 1rem; border-radius: 5px; font-weight: bold; border: 1px solid #a855f7; outline: none; cursor: pointer;}
     .badge { background: rgba(168, 85, 247, 0.1); color: #a855f7; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid #a855f7; }
-    .loading-state { color: #facc15; padding: 2rem; text-align: center; border: 2px dashed #facc15; border-radius: 10px;}
-    
-    .chart-box { 
-        background: #0b1120; 
-        border-radius: 12px; 
-        padding: 1rem; 
-        border: 1px solid #334155;
-        overflow: hidden; /* Evita que el mapa sobresalga de la tarjeta */
-    }
+    .source-tag { color: #64748b; font-size: 0.8rem; margin-left: auto; font-weight: bold; }
+    .loading-state { color: #facc15; padding: 2rem; text-align: center; border: 2px dashed #facc15; border-radius: 10px; font-weight: bold; font-size: 1.2rem;}
+    .chart-box { background: #0b1120; border-radius: 12px; padding: 1rem; border: 1px solid #334155; overflow: hidden; }
 </style>

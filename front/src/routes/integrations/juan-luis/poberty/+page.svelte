@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
-    let message = $state("Descargando registros de Pobreza (Banco Mundial)...");
+    let message = $state("Consultando riqueza global a nuestro backend (FMI)...");
     let chartContainer;
     let datosCompletos = $state([]); 
     
@@ -26,42 +26,61 @@
             const resMis = await fetch("/api/v2/social-drinking-behaviors");
             const misDatos = await safeJson(resMis);
 
-            // Banco Mundial: Pobreza Extrema (% de población con < $2.15 al día)
-            const resWB = await fetch("https://api.worldbank.org/v2/country/all/indicator/SI.POV.DDAY?format=json&date=2015:2022&per_page=3000");
-            const wbDatos = await safeJson(resWB);
+            // LLAMADA A TU PROPIO BACKEND (Adiós CORS y bloqueos)
+            const resProxy = await fetch("/api/proxy/imf-wealth");
+            const proxyDatos = await safeJson(resProxy);
+            
+            const fmiDatos = proxyDatos.data;
+            const paisesDatos = proxyDatos.countries;
 
-            if (misDatos.length === 0 || !wbDatos[1]) {
-                message = "⚠️ Faltan datos para cruzar.";
+            if (misDatos.length === 0 || !fmiDatos?.values || !paisesDatos?.countries) {
+                message = "⚠️ Faltan datos o el proxy del backend falló.";
                 return;
             }
 
-            const pobrezaMap = new Map();
-            wbDatos[1].forEach(item => {
-                if (item.country && item.value !== null && item.date) {
-                    let nombre = item.country.value.toLowerCase();
-                    if (nombre.includes("united states")) nombre = "united states of america";
-                    if (nombre.includes("united kingdom")) nombre = "united kingdom";
-                    if (nombre.includes("russia")) nombre = "russian federation";
-                    
-                    pobrezaMap.set(`${nombre}_${item.date}`, item.value);
+            // 1. Diccionario ISO a Nombre (Ej: "ESP" -> "spain")
+            const codeToName = new Map();
+            Object.entries(paisesDatos.countries).forEach(([code, info]) => {
+                // 🔥 EL CORTAFUEGOS: Comprobamos que el label exista antes de tocarlo
+                if (info && info.label) {
+                    codeToName.set(code, info.label.toLowerCase());
                 }
             });
+
+            // 2. Mapeamos la riqueza por País y Año
+            const riquezaMap = new Map();
+            if (fmiDatos.values && fmiDatos.values.NGDPDPC) {
+                Object.entries(fmiDatos.values.NGDPDPC).forEach(([code, yearsData]) => {
+                    let nombre = codeToName.get(code);
+                    if (nombre) {
+                        if (nombre.includes("united states")) nombre = "united states of america";
+                        if (nombre.includes("united kingdom")) nombre = "united kingdom";
+                        if (nombre.includes("russia")) nombre = "russian federation";
+                        
+                        Object.entries(yearsData).forEach(([year, value]) => {
+                            // Guardamos en "Miles de dólares" para que la gráfica respire
+                            riquezaMap.set(`${nombre}_${year}`, value / 1000);
+                        });
+                    }
+                });
+            }
 
             let tempYears = new Set();
             let cruzados = [];
 
+            // 3. Cruzamos con tu BD
             misDatos.forEach(d => {
                 let pais = String(d.country).trim().toLowerCase();
                 let anio = String(d.year); 
                 let clave = `${pais}_${anio}`;
                 
-                if (pobrezaMap.has(clave)) {
+                if (riquezaMap.has(clave)) {
                     tempYears.add(anio);
                     
                     cruzados.push({
                         country: d.country,
                         year: anio,
-                        pobreza: Number(pobrezaMap.get(clave).toFixed(1)),
+                        riqueza: Number(riquezaMap.get(clave).toFixed(1)),
                         cerveza: Number(d.beer_share) || 0,
                         vino: Number(d.wine_share) || 0,
                         licores: Number(d.spirits_share) || 0,
@@ -71,7 +90,7 @@
             });
 
             if (cruzados.length === 0) {
-                message = "⚠️ No hay suficientes coincidencias de datos.";
+                message = "⚠️ No hay coincidencias entre países y el FMI en ese año.";
                 return;
             }
 
@@ -84,7 +103,7 @@
 
         } catch (error) {
             console.error(error);
-            message = "Error crítico cargando los datos.";
+            message = "Error crítico cargando los datos desde el backend.";
         }
     });
 
@@ -97,28 +116,24 @@
         }, 100);
     }
 
-    // Redibujamos si cambias el año
     $effect(() => {
         if (selectedYear && datosCompletos.length > 0 && browser && window.d3) {
             dibujarLollipop();
         }
     });
 
-    // --- EL MOTOR DE D3.JS ---
     function dibujarLollipop() {
         if (!window.d3 || !chartContainer) return;
 
-        // Limpiamos el lienzo anterior
         window.d3.select(chartContainer).selectAll("*").remove();
 
         let datosFiltrados = datosCompletos.filter(d => d.year === selectedYear);
-        datosFiltrados.sort((a, b) => b.pobreza - a.pobreza); // Ordenar de más pobre a menos
+        datosFiltrados.sort((a, b) => b.riqueza - a.riqueza); 
 
         const margin = {top: 30, right: 30, bottom: 90, left: 60};
         const width = chartContainer.clientWidth - margin.left - margin.right;
         const height = 500 - margin.top - margin.bottom;
 
-        // Creamos el SVG
         const svg = window.d3.select(chartContainer)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -126,7 +141,6 @@
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        // Eje X
         const x = window.d3.scaleBand()
             .range([ 0, width ])
             .domain(datosFiltrados.map(d => d.country))
@@ -141,18 +155,16 @@
             .style("fill", "#cbd5e1")
             .style("font-size", "12px");
 
-        // Eje Y
-        const maxPobreza = window.d3.max(datosFiltrados, d => d.pobreza);
+        const maxRiqueza = window.d3.max(datosFiltrados, d => d.riqueza);
         const y = window.d3.scaleLinear()
-            .domain([0, maxPobreza * 1.1]) // Le damos un 10% de aire por arriba
+            .domain([0, maxRiqueza * 1.1]) 
             .range([ height, 0]);
         
         svg.append("g")
-            .call(window.d3.axisLeft(y).tickFormat(d => d + "%"))
+            .call(window.d3.axisLeft(y).tickFormat(d => d + "k$")) // Formato de miles de dólares
             .selectAll("text")
             .style("fill", "#cbd5e1");
 
-        // 1. Dibujamos el "Palo" de la piruleta (Línea)
         svg.selectAll("myline")
             .data(datosFiltrados)
             .enter()
@@ -160,42 +172,38 @@
             .attr("x1", d => x(d.country))
             .attr("x2", d => x(d.country))
             .attr("y1", y(0))
-            .attr("y2", d => y(d.pobreza))
+            .attr("y2", d => y(d.riqueza))
             .attr("stroke", "#475569")
             .attr("stroke-width", "2px");
 
-        // 2. Dibujamos el "Caramelo" de la piruleta (Círculo interactivo)
         svg.selectAll("mycircle")
             .data(datosFiltrados)
             .enter()
             .append("circle")
             .attr("cx", d => x(d.country))
-            .attr("cy", d => y(d.pobreza))
+            .attr("cy", d => y(d.riqueza))
             .attr("r", "8")
-            .style("fill", "#ef4444")
-            .attr("stroke", "#b91c1c")
+            .style("fill", "#10b981") // Verde dinero
+            .attr("stroke", "#047857")
             .attr("stroke-width", "2px")
             .style("cursor", "pointer")
-            // EVENTOS DE RATÓN PARA CONECTAR D3 CON SVELTE
             .on("mouseover", function(event, d) {
                 window.d3.select(this).transition().duration(200).attr("r", 14).style("fill", "#facc15");
                 hoverData = d;
                 tooltipVisible = true;
             })
             .on("mousemove", function(event) {
-                // Actualizamos coordenadas del recuadro
                 tooltipX = event.pageX + 20;
                 tooltipY = event.pageY - 40;
             })
             .on("mouseleave", function(event, d) {
-                window.d3.select(this).transition().duration(200).attr("r", 8).style("fill", "#ef4444");
+                window.d3.select(this).transition().duration(200).attr("r", 8).style("fill", "#10b981");
                 tooltipVisible = false;
             });
     }
 </script>
 
 <svelte:head>
-    <!-- Cargamos D3.js V7 Oficial -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </svelte:head>
 
@@ -206,10 +214,10 @@
 
     <div class="card">
         <div class="top-bar">
-            <h2>🌍 Pobreza Extrema vs Alcohol (D3.js Puro)</h2>
+            <h2>🌍 Riqueza Global vs Alcohol (D3.js Puro)</h2>
             <p class="desc">
-                Cruce de datos con el <strong>Banco Mundial</strong> utilizando un Gráfico de Piruleta (Lollipop Chart). 
-                Construido a bajo nivel con vectores matemáticos SVG de D3.
+                Cruce de datos utilizando el <strong>Fondo Monetario Internacional (FMI)</strong>. 
+                Muestra el PIB per cápita (miles de $) de cada país frente a sus hábitos de consumo con un Lollipop Chart.
             </p>
         </div>
 
@@ -218,7 +226,6 @@
                 <span class="spinner">{message}</span>
             </div>
         {:else}
-            <!-- EL FILTRO DE AÑO -->
             <div class="controls">
                 <label for="yearSelector">📅 Selecciona el Año:</label>
                 <select id="yearSelector" bind:value={selectedYear}>
@@ -236,13 +243,13 @@
     </div>
 </main>
 
-<!-- EL RECUADRO HTML NATIVO DE SVELTE (TOOLTIP) -->
 {#if tooltipVisible && hoverData}
     <div class="d3-tooltip" style="left: {tooltipX}px; top: {tooltipY}px;">
-        <strong class="t-title">{hoverData.country} ({hoverData.year})</strong><br>
+        <strong class="t-title" style="color: #10b981;">{hoverData.country} ({hoverData.year})</strong><br>
         <hr class="t-divider"/>
-        🔴 <b>Pobreza Extrema:</b> {hoverData.pobreza}%<br>
-        <span class="t-sub">(Supervivencia con &lt; $2.15 al día)</span><br><br>        🔵 <b>Alcohol Total:</b> {hoverData.alcoholTotal.toFixed(1)}%<br>
+        💵 <b>PIB per cápita (FMI):</b> {hoverData.riqueza} k$<br>
+        <span class="t-sub">(Miles de Dólares por persona)</span><br><br>        
+        🔵 <b>Alcohol Total:</b> {hoverData.alcoholTotal.toFixed(1)}%<br>
         <hr class="t-divider"/>
         <i>Desglose API Interna:</i><br>
         🍺 Cerveza: <b>{hoverData.cerveza}%</b><br>
@@ -256,19 +263,19 @@
     main { padding: 2rem; max-width: 1100px; margin: auto; }
     .header-nav { margin-bottom: 2rem; }
     
-    .back-btn { color: #ef4444; text-decoration: none; font-weight: bold; border: 1px solid #ef4444; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.3s; }
-    .back-btn:hover { background: rgba(239, 68, 68, 0.2); }
+    .back-btn { color: #10b981; text-decoration: none; font-weight: bold; border: 1px solid #10b981; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.3s; }
+    .back-btn:hover { background: rgba(16, 185, 129, 0.2); }
     
     .card { background: #1e293b; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); border: 1px solid #334155;}
     
-    .top-bar h2 { margin: 0 0 0.5rem 0; color: #ef4444; }
+    .top-bar h2 { margin: 0 0 0.5rem 0; color: #10b981; }
     .desc { color: #94a3b8; margin-top: 0; margin-bottom: 1.5rem; line-height: 1.5; }
 
     .controls { background: #0b1120; padding: 1.5rem; border-radius: 12px; border: 1px solid #334155; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
     .controls label { color: #cbd5e1; font-weight: bold; font-size: 1.1rem; }
-    select { background: #1e293b; color: #ef4444; border: 1px solid #ef4444; padding: 0.6rem 1rem; border-radius: 8px; font-size: 1rem; cursor: pointer; outline: none; font-weight: bold;}
+    select { background: #1e293b; color: #10b981; border: 1px solid #10b981; padding: 0.6rem 1rem; border-radius: 8px; font-size: 1rem; cursor: pointer; outline: none; font-weight: bold;}
     
-    .badge { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid #ef4444; }
+    .badge { background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid #10b981; }
 
     .loading-state { text-align: center; padding: 3rem; color: #facc15; font-size: 1.2rem; border: 2px dashed #facc15; border-radius: 8px;}
     
@@ -279,23 +286,22 @@
         border: 1px solid #334155;
     }
 
-    /* ESTILOS DEL TOOLTIP HTML NATIVO */
     .d3-tooltip {
         position: absolute;
-        pointer-events: none; /* Evita que el ratón "choque" con el recuadro */
+        pointer-events: none; 
         background: rgba(15, 23, 42, 0.95);
         color: white;
         padding: 15px;
         border-radius: 10px;
-        border: 1px solid #ef4444;
+        border: 1px solid #10b981;
         box-shadow: 0 10px 25px rgba(0,0,0,0.8);
         font-size: 14px;
         min-width: 220px;
         z-index: 9999;
-        transition: top 0.1s ease-out, left 0.1s ease-out; /* Movimiento fluido */
+        transition: top 0.1s ease-out, left 0.1s ease-out; 
     }
 
-    .d3-tooltip .t-title { color: #ef4444; font-size: 18px; }
+    .d3-tooltip .t-title { font-size: 18px; }
     .d3-tooltip .t-divider { border-color: #334155; margin: 10px 0; }
     .d3-tooltip .t-sub { font-size: 11px; color: #94a3b8; }
 </style>

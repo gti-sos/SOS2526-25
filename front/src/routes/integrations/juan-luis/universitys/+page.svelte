@@ -15,8 +15,24 @@
     let bbModule; 
     let gaugeModule; 
 
+    // Mapa de nombres de país a códigos ISO para ROR
+    // ROR usa el nombre completo en inglés en el filtro country.country_name
+    const countryNameMap = {
+        "United States": "United States",
+        "United Kingdom": "United Kingdom",
+        "Germany": "Germany",
+        "France": "France",
+        "Spain": "Spain",
+        "Italy": "Italy",
+        "Brazil": "Brazil",
+        "China": "China",
+        "Japan": "Japan",
+        "Australia": "Australia",
+        // ROR acepta el nombre en inglés directamente
+    };
+
     async function safeJson(res) {
-        try { return res.ok ? await res.json() : []; } catch { return []; }
+        try { return res.ok ? await res.json() : null; } catch { return null; }
     }
 
     onMount(async () => {
@@ -27,11 +43,10 @@
             bbModule = billboard.default || billboard.bb; 
             gaugeModule = billboard.gauge; 
 
-            // 2. Traemos tus datos
             const resMis = await fetch("/api/v2/social-drinking-behaviors");
             const datos = await safeJson(resMis);
 
-            if (datos.length === 0) {
+            if (!datos || datos.length === 0) {
                 message = "⚠️ No hay datos en tu API.";
                 return;
             }
@@ -68,10 +83,19 @@
         cuotaCerveza = paisData ? Number(paisData.beer_share) || 0 : 0;
 
         try {
-            const resUni = await fetch(`http://universities.hipolabs.com/search?country=${selectedCountry}`);
-            const uniDatos = await safeJson(resUni);
+            // ✅ ROR API — pública, sin API key, CORS abierto, sin proxy
+            // Filtra por tipo "Education" y país. Devuelve número_of_results directo.
+            // Paginamos page=1 con page_size=1 porque solo necesitamos el total
+            const rorUrl = `https://api.ror.org/v2/organizations?filter=types:funder,country.country_name:${encodeURIComponent(selectedCountry)}&page=1`;
+            
+            // ROR filtra instituciones académicas/educativas
+            const rorUrlEdu = `https://api.ror.org/v2/organizations?filter=types:education,country.country_name:${encodeURIComponent(selectedCountry)}&page=1`;
+            
+            const resRor = await fetch(rorUrlEdu);
+            const rorDatos = await safeJson(resRor);
 
-            numeroUniversidades = uniDatos.length;
+            // ROR devuelve { number_of_results, time_taken, items: [...] }
+            numeroUniversidades = rorDatos?.number_of_results ?? "N/D";
 
             if (chart) {
                 chart.load({
@@ -81,7 +105,6 @@
                 chart = bbModule.generate({
                     data: {
                         columns: [["Cerveza (%)", cuotaCerveza]],
-                        // ¡LA MAGIA AQUÍ! Usamos la función importada en lugar del texto
                         type: gaugeModule() 
                     },
                     gauge: {
@@ -99,7 +122,7 @@
                 });
             }
         } catch (error) {
-            console.error("Error al cruzar datos:", error);
+            console.error("Error al consultar ROR API:", error);
             numeroUniversidades = "Error API";
         } finally {
             isLoading = false;
@@ -108,8 +131,6 @@
 </script>
 
 <svelte:head>
-    <!-- Cargamos el CSS de la librería por CDN en el head. 
-         Así nos saltamos cualquier problema de Vite con los archivos CSS locales -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.min.css" />
 </svelte:head>
 
@@ -122,7 +143,8 @@
         <div class="top-bar">
             <h2>🎓 Consumo vs Universidades (Billboard.js)</h2>
             <p class="desc">
-                Cruce en tiempo real usando la <strong>Hipolabs Universities API</strong> pública. 
+                Cruce en tiempo real usando la <strong>ROR API</strong> (Research Organization Registry) — 
+                registro oficial y abierto de instituciones académicas mundiales.
             </p>
         </div>
 
@@ -137,7 +159,7 @@
                     {/each}
                 </select>
                 {#if isLoading}
-                    <span class="spinner">⏳ Consultando Hipolabs API...</span>
+                    <span class="spinner">⏳ Consultando ROR API...</span>
                 {/if}
             </div>
 
@@ -149,11 +171,12 @@
 
                 <div class="info-col">
                     <div class="info-box">
-                        <h3>Campus Universitarios</h3>
+                        <h3>Instituciones Académicas</h3>
                         <div class="big-number" class:pulse={isLoading}>
                             {numeroUniversidades}
                         </div>
-                        <p class="subtext">Universidades registradas activas en {selectedCountry}</p>
+                        <p class="subtext">Universidades y centros de educación superior en {selectedCountry}</p>
+                        <p class="ror-badge">Fuente: <a href="https://ror.org" target="_blank">ROR.org</a></p>
                     </div>
                 </div>
             </div>
@@ -190,10 +213,13 @@
     .big-number { font-size: 5rem; font-weight: bold; color: #ffffff; text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); margin: 1rem 0; }
     .pulse { opacity: 0.5; }
     .subtext { color: #94a3b8; margin: 0; }
+    
+    .ror-badge { margin-top: 0.75rem; font-size: 0.8rem; color: #64748b; }
+    .ror-badge a { color: #38bdf8; text-decoration: none; }
+    .ror-badge a:hover { text-decoration: underline; }
 
     @keyframes blink { 50% { opacity: 0.5; } }
 
-    /* Forzamos a Billboard.js a verse bien en modo oscuro */
     :global(.bb-gauge-value) { fill: #ffffff !important; font-weight: bold; }
     :global(.bb-chart-arcs-background) { fill: #334155 !important; }
     :global(.bb-text) { fill: #cbd5e1 !important; }

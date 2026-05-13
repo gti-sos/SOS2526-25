@@ -69,7 +69,69 @@ app.get('/api/proxy/g10/protestas', async (req, res) => {
         res.status(500).json({ error: 'Fallo al contactar con la API remota.' });
     }
 });
+// --- PROXY PARA LA OMS (ALCOHOLISMO) ---
+app.get('/api/proxy/oms-alcohol', async (req, res) => {
+    try {
+        // 1. Pedimos los datos de litros a la OMS
+        const resData = await fetch("https://ghoapi.azureedge.net/api/SA_0000001688?$filter=TimeDim eq 2019");
+        const dataOMS = await resData.json();
 
+        // 2. Pedimos el diccionario de países a la OMS
+        const resCountries = await fetch("https://ghoapi.azureedge.net/api/DIMENSION/COUNTRY/DimensionValues");
+        const countriesOMS = await resCountries.json();
+
+        // 3. Devolvemos todo empaquetado al frontend
+        res.json({
+            data: dataOMS,
+            countries: countriesOMS
+        });
+    } catch (error) {
+        console.error("Error en el proxy de la OMS:", error);
+        res.status(500).json({ error: "Fallo al contactar con la API externa de la OMS" });
+    }
+});
+// --- PROXY PARA EL FMI (RIQUEZA GLOBAL) ---
+app.get('/api/proxy/imf-wealth', async (req, res) => {
+    try {
+        const resData = await fetch("https://www.imf.org/external/datamapper/api/v1/NGDPDPC");
+        const dataIMF = await resData.json();
+
+        const resCountries = await fetch("https://www.imf.org/external/datamapper/api/v1/countries");
+        const countriesIMF = await resCountries.json();
+
+        res.json({ data: dataIMF, countries: countriesIMF });
+    } catch (error) {
+        console.error("Error en el proxy del FMI:", error);
+        res.status(500).json({ error: "Fallo al contactar con el FMI" });
+    }
+});
+// --- PROXY PARA LA ONU (ACCIDENTES DE TRÁFICO) ---
+app.get('/api/proxy/un-accidents', async (req, res) => {
+    try {
+        // Obtenemos hasta 5000 registros para asegurarnos de traer todos los países y años
+        const resData = await fetch("https://unstats.un.org/sdgapi/v1/sdg/Indicator/Data?indicator=3.6.1&pageSize=5000");
+        const dataUN = await resData.json();
+        res.json(dataUN);
+    } catch (error) {
+        console.error("Error en el proxy de la ONU:", error);
+        res.status(500).json({ error: "Fallo al contactar con la API de la ONU" });
+    }
+});
+// --- PROXY PARA EL FMI (TASA DE DESEMPLEO) ---
+app.get('/api/proxy/imf-unemployment', async (req, res) => {
+    try {
+        const resData = await fetch("https://www.imf.org/external/datamapper/api/v1/LUR");
+        const dataIMF = await resData.json();
+
+        const resCountries = await fetch("https://www.imf.org/external/datamapper/api/v1/countries");
+        const countriesIMF = await resCountries.json();
+
+        res.json({ data: dataIMF, countries: countriesIMF });
+    } catch (error) {
+        console.error("Error en el proxy del FMI (Desempleo):", error);
+        res.status(500).json({ error: "Fallo al contactar con el FMI" });
+    }
+});
 app.get('/api/proxy/g14/meteorites', async (req, res) => {
     try {
         let response = await fetch('https://meteorite-landings-tvcf.onrender.com/api/v2/meteorite-landings');
