@@ -11,7 +11,7 @@ import { loadAGB } from "./apis/api-AGB.js";
 const app = express();
 
 // =========================================================
-// CABECERAS CORS (¡REQUISITO OBLIGATORIO PARA LA DEFENSA!)
+// CABECERAS CORS (¡REQUISITO OBLIGATORIO PARA LA DEFENSA!) u
 // =========================================================
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
