@@ -7,7 +7,6 @@
 
     <div class="grid-container">
 
-        
         <a href="/integrations/juan-luis/protests" class="card-link">
             <div class="card">
                 <span class="tag tag-int">Integración (Compañeros)</span>
@@ -52,14 +51,16 @@
                 <div class="arrow">Ver Gráfica ➜</div>
             </div>
         </a>
+
         <a href="/integrations/pablo/water-productivities" class="card-link">
             <div class="card">
                 <span class="tag tag-int">Integración Pablo (Externa)</span>
                 <h3 style="color: #0ea5e9;">RestCountries (Demografía)</h3>
-                <p>Análisis: Análisis: ¿Aumenta el estrés hídrico con una mayor densidad de población (hab/km²)? Gráfica mixta vía ApexCharts.(Gráfico Mixto).</p>
+                <p>Análisis: ¿Aumenta el estrés hídrico con una mayor densidad de población (hab/km²)? Gráfica mixta vía ApexCharts.</p>
                 <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
             </div>
         </a>
+
         <a href="/integrations/pablo/olympics-athlete-events" class="card-link">
             <div class="card">
                 <span class="tag tag-int">Integración Pablo (Compañeros)</span>
@@ -68,6 +69,7 @@
                 <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
             </div>
         </a>
+
         <a href="/integrations/pablo/age-specific-fertility-rates" class="card-link">
             <div class="card">
                 <span class="tag tag-int">Integración Pablo (Compañeros)</span>
@@ -75,7 +77,8 @@
                 <p>Análisis: Tasa de Fertilidad vs Temperatura usando AnyChart (Treemap).</p>
                 <div class="arrow" style="color: #ff007f;">Ver Gráfica ➜</div>
             </div>
-        </a><!-- Tarjeta: Integración SOS de Pablo (ESG G28) -->
+        </a>
+
         <a href="/integrations/pablo/company-esg-scores-financial-performances" class="card-link">
             <div class="card">
                 <span class="tag tag-int">Integración Pablo (Compañeros)</span>
@@ -84,7 +87,7 @@
                 <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
             </div>
         </a>
-        <!-- Tarjeta: Integración SOS (Exportaciones G13) - Pablo -->
+
         <a href="/integrations/pablo/exportations-stats" class="card-link">
             <div class="card">
                 <span class="tag tag-int">Integración Pablo (Compañeros)</span>
@@ -93,6 +96,7 @@
                 <div class="arrow" style="color: #f59e0b;">Ver Gráfica ➜</div>
             </div>
         </a>
+
         <a href="/integrations/pablo/openmeteo" class="card-link">
             <div class="card">
                 <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
@@ -101,8 +105,7 @@
                 <div class="arrow" style="color: #3b82f6;">Ver Gráfica ➜</div>
             </div>
         </a>
-        
-      <!-- Tarjeta: Uso Externo de Pablo (SpaceX) -->
+
         <a href="/integrations/pablo/spacex" class="card-link">
             <div class="card">
                 <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
@@ -112,13 +115,16 @@
             </div>
         </a>
 
-        <!-- Tarjeta: Uso Externo Gráfico de Pablo (CoinDesk + C3.js) -->
+        <!-- 👇 AQUÍ ESTÁ LA CORRECCIÓN. SE HAN AÑADIDO LOS CIERRES FALTANTES 👇 -->
         <a href="/integrations/pablo/bitcoin" class="card-link">
             <div class="card">
                 <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
                 <h3 style="color: #facc15;">CoinDesk (Bitcoin)</h3>
                 <p>Análisis: Precio de Bitcoin vs Clima en Alemania usando C3.js (Bar).</p>
                 <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <!-- 👆 CORRECCIÓN TERMINADA 👆 -->
 
         <a href="integrations/juan-luis" class="card-link full-row">
             <div class="card hero-card">
@@ -146,14 +152,16 @@
                 <div class="arrow" style="color: #22c55e;">Ver Gráfica ➜</div>
             </div>
         </a>
-       <a href="/integrations/pablo/openmeteo" class="card-link" data-sveltekit-reload>
-    <div class="card">
-        <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-        <h3 style="color: #0ea5e9;">Open-Meteo (Clima en Vivo)</h3>
-        <p>Correlación: Emisiones de CO2 vs Humedad actual usando Plotly (Scatter).</p>
-        <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
-    </div>
-</a>
+
+        <a href="/integrations/pablo/openmeteo" class="card-link" data-sveltekit-reload>
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #0ea5e9;">Open-Meteo (Clima en Vivo)</h3>
+                <p>Correlación: Emisiones de CO2 vs Humedad actual usando Plotly (Scatter).</p>
+                <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+
         <a href="/integrations/pablo/population" class="card-link" data-sveltekit-reload>
             <div class="card">
                 <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
@@ -162,14 +170,15 @@
                 <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
             </div>
         </a>
+
         <a href="/integrations/pablo/renewables" class="card-link" data-sveltekit-reload>
-    <div class="card">
-        <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-        <h3 style="color: #f43f5e;">ReliefWeb ONU (Desastres)</h3>
-        <p>Correlación: Temperaturas vs Nº de desastres naturales registrados usando Plotly (Scatter).</p>
-        <div class="arrow" style="color: #f43f5e;">Ver Gráfica ➜</div>
-    </div>
-</a>
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #f43f5e;">ReliefWeb ONU (Desastres)</h3>
+                <p>Correlación: Temperaturas vs Nº de desastres naturales registrados usando Plotly (Scatter).</p>
+                <div class="arrow" style="color: #f43f5e;">Ver Gráfica ➜</div>
+            </div>
+        </a>
 
     </div>
 </main>
