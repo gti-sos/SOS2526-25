@@ -18,67 +18,75 @@ test.describe.serial('E2E Llegadas de Turistas Internacionales (AGB)', () => {
     test('1. Limpiar BD, Cargar Iniciales y Listar', async ({ page }) => {
         // A) Borramos todo para empezar con la BD limpia
         await page.locator('.btn-delete-all').click();
-        
+
         // Match exacto con tu Front: "💥 Todos los datos han sido borrados"
         await expect(page.locator('.alert')).toContainText('💥 Todos los datos han sido borrados', { timeout: 10000 });
 
         // B) Cargamos los datos iniciales
         await page.locator('.btn-load').click();
-        
+
         // Match exacto con tu Front: "🔄 Datos iniciales cargados."
         await expect(page.locator('.alert')).toContainText('🔄 Datos iniciales cargados.', { timeout: 10000 });
     });
 
     test('2. Crear un recurso estático', async ({ page }) => {
-    // Generamos un nombre único para que no falle si el dato ya existe
-        const paisTest = "TestCountry" + Math.floor(Math.random() * 1000);
-    
-        await page.goto('/international-tourist-arrivals');
+        const addForm = page.locator('.form-container');
 
-    // Esperamos a que el formulario sea visible
-        await page.waitForSelector('table');
+        // Usamos PlaywrightLand con año fijo, igual que en el test de Juanlu,
+        // para que los tests 3, 4 y 5 puedan encontrarlo de forma predecible
+        await addForm.getByPlaceholder('País').fill('PlaywrightLand');
+        await addForm.getByPlaceholder('Año').fill('2050');
+        // Los placeholders del Svelte real son "Llegadas (Aire)", "Llegadas (Agua)", "Llegadas (Tierra)"
+        await addForm.getByPlaceholder('Llegadas (Aire)').fill('100');
+        await addForm.getByPlaceholder('Llegadas (Agua)').fill('200');
+        await addForm.getByPlaceholder('Llegadas (Tierra)').fill('300');
 
-    // REVISA QUE ESTOS PLACEHOLDERS COINCIDAN CON LOS DE TU TABLA (.svelte)
-    // Si en tu tabla pusiste <input placeholder="Nombre del país"...> cámbialo aquí
-        await page.fill('input[placeholder="Country"]', paisTest);
-        await page.fill('input[placeholder="Year"]', '2025');
-        await page.fill('input[placeholder="Air Arrival"]', '100');
-        await page.fill('input[placeholder="Arrivals Air"]', '200');
-        await page.fill('input[placeholder="Region"]', 'Europe');
+        await addForm.locator('.btn-add').click();
 
-    // Haz clic en el botón de añadir (ajusta el texto si pusiste "Crear" o "Add")
-        await page.click('button:has-text("Añadir")');
+        // Match exacto con el Front
+        await expect(page.locator('.alert')).toContainText('✅ Dato añadido correctamente.', { timeout: 10000 });
 
-    // Verificamos que el nuevo dato aparece
-        await page.waitForTimeout(1000); // Un segundo para que el backend procese
-        await expect(page.locator(`text=${paisTest}`)).toBeVisible();
+        // Buscamos el dato recién creado para confirmar que está en la tabla
+        const searchInput = page.getByPlaceholder('Buscar por País');
+        await searchInput.click();
+        await searchInput.pressSequentially('PlaywrightLand', { delay: 50 });
+        await page.locator('.btn-search').click();
+
+        await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
     });
 
     test('3. Buscar un recurso', async ({ page }) => {
         const searchInput = page.getByPlaceholder('Buscar por País');
-        
+
         // 1. Hacemos clic para enfocar la casilla
         await searchInput.click();
-        
-        // 2. EL ARMA SECRETA: Tecleamos letra a letra como un humano (50 milisegundos por letra)
+
+        // 2. Tecleamos letra a letra como un humano
         await searchInput.pressSequentially('PlaywrightLand', { delay: 50 });
-        
+
         // 3. Hacemos clic en el botón de buscar
         await page.locator('.btn-search').click();
 
         // 4. Comprobamos los resultados
-        await expect(page.locator('.alert')).toContainText('✅ Búsqueda completada', { timeout: 10000 });
+        await expect(page.locator('.alert')).toContainText('✅ Búsqueda completada: Mostrando resultados.', { timeout: 10000 });
         await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
-        
+
         // Limpiamos los filtros al terminar
         await page.locator('.btn-clear').click();
     });
 
     test('4. Editar recurso en vista separada', async ({ page }) => {
+        // Buscamos el recurso para localizarlo en la tabla
+        const searchInput = page.getByPlaceholder('Buscar por País');
+        await searchInput.click();
+        await searchInput.pressSequentially('PlaywrightLand', { delay: 50 });
+        await page.locator('.btn-search').click();
+
+        // Buscamos la fila y le damos a editar
         const row = page.locator('tr').filter({ hasText: 'PlaywrightLand' });
         await row.locator('.btn-edit').click();
 
-        // Comprobamos que estamos en la vista de edición (tu ruta)
+        // Comprobamos que estamos en la vista de edición
         await expect(page).toHaveURL(/.*\/international-tourist-arrivals\/PlaywrightLand\/2050/, { timeout: 10000 });
 
         // Editamos el primer campo numérico (Llegadas por Aire)
@@ -86,22 +94,33 @@ test.describe.serial('E2E Llegadas de Turistas Internacionales (AGB)', () => {
         await page.locator('.btn-update').click();
 
         // Match exacto con tu Front de Edición
-        await expect(page.locator('.alert')).toContainText('✅ Dato actualizado correctamente', { timeout: 10000 });
+        await expect(page.locator('.alert')).toContainText('✅ Dato actualizado correctamente. Volviendo a la tabla...', { timeout: 10000 });
 
         // Esperamos a que vuelva a la tabla automáticamente
         await expect(page).toHaveURL(/.*\/international-tourist-arrivals/, { timeout: 10000 });
 
-        // Comprobamos la edición
+        // Buscamos de nuevo para verificar la edición
+        const searchInput2 = page.getByPlaceholder('Buscar por País');
+        await searchInput2.click();
+        await searchInput2.pressSequentially('PlaywrightLand', { delay: 50 });
+        await page.locator('.btn-search').click();
+
+        // Comprobamos que el valor editado aparece en la tabla
         await expect(page.locator('td', { hasText: '999' })).toBeVisible({ timeout: 10000 });
     });
 
     test('5. Borrar un recurso concreto', async ({ page }) => {
+        // Buscamos el recurso antes de borrarlo
+        const searchInput = page.getByPlaceholder('Buscar por País');
+        await searchInput.click();
+        await searchInput.pressSequentially('PlaywrightLand', { delay: 50 });
+        await page.locator('.btn-search').click();
+
         const row = page.locator('tr').filter({ hasText: 'PlaywrightLand' });
         await row.locator('.btn-delete').click();
 
-        // Match exacto con tu Front
         await expect(page.locator('.alert')).toContainText('🗑️ Recurso borrado con éxito.', { timeout: 10000 });
-        
+
         // Comprobamos que ya no está en la tabla
         await expect(page.locator('td', { hasText: 'PlaywrightLand' })).not.toBeVisible();
     });
