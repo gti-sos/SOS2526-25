@@ -6,170 +6,26 @@
     </div>
 
     <div class="grid-container">
-
         
-        <a href="/integrations/juan-luis/protests" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración (Compañeros)</span>
-                <h3>Protestas (G10)</h3>
-                <p>Análisis: Consumo de Alcohol vs Conflictos Sociales.</p>
-                <div class="arrow">Ver Gráfica ➜</div>
-            </div>
-        </a>
-
-        <a href="/integrations/juan-luis/meteorite-landings" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración (Compañeros)</span>
-                <h3>Meteoritos (G14)</h3>
-                <p>Análisis: Impactos de meteoritos vs Consumo.</p>
-                <div class="arrow">Ver Gráfica ➜</div>
-            </div>
-        </a>
-
-        <a href="/integrations/cocktails" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externo (Pública)</span>
-                <h3>TheCocktailDB</h3>
-                <p>Base de datos de combinados y recetas internacionales.</p>
-                <div class="arrow">Ver Datos ➜</div>
-            </div>
-        </a>
-
-        <a href="/integrations/breweries" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externo (Pública)</span>
-                <h3>Open Brewery DB</h3>
-                <p>Estadísticas de fábricas de cerveza por el mundo.</p>
-                <div class="arrow">Ver Gráfica ➜</div>
-            </div>
-        </a>
-
-        <a href="/integrations/coffee" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externo (Pública)</span>
-                <h3>SampleAPIs - Coffee</h3>
-                <p>La alternativa sin alcohol: Tipos de café y componentes.</p>
-                <div class="arrow">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/water-productivities" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Externa)</span>
-                <h3 style="color: #0ea5e9;">RestCountries (Demografía)</h3>
-                <p>Análisis: Análisis: ¿Aumenta el estrés hídrico con una mayor densidad de población (hab/km²)? Gráfica mixta vía ApexCharts.(Gráfico Mixto).</p>
-                <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/olympics-athlete-events" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #facc15;">Olimpiadas (G30)</h3>
-                <p>Análisis: Atletas Olímpicos vs Temperatura usando Apache ECharts (Rose Chart).</p>
-                <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/age-specific-fertility-rates" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #ff007f;">Fertilidad (G12)</h3>
-                <p>Análisis: Tasa de Fertilidad vs Temperatura usando AnyChart (Treemap).</p>
-                <div class="arrow" style="color: #ff007f;">Ver Gráfica ➜</div>
-            </div>
-        </a><!-- Tarjeta: Integración SOS de Pablo (ESG G28) -->
-        <a href="/integrations/pablo/company-esg-scores-financial-performances" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #10b981;">Sostenibilidad ESG (G28)</h3>
-                <p>Análisis cruzado por año: Clima vs Rendimiento ESG usando Google Charts (Stepped Area).</p>
-                <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <!-- Tarjeta: Integración SOS (Exportaciones G13) - Pablo -->
-        <a href="/integrations/pablo/exportations-stats" class="card-link">
-            <div class="card">
-                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
-                <h3 style="color: #f59e0b;">Exportaciones (G13)</h3>
-                <p>Análisis: Temperatura Media vs Exportaciones usando ZingChart (Area Chart).</p>
-                <div class="arrow" style="color: #f59e0b;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/openmeteo" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #3b82f6;">Open-Meteo (Clima)</h3>
-                <p>Análisis: Previsión actual vs Histórico de España usando Frappe Charts.</p>
-                <div class="arrow" style="color: #3b82f6;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        
-      <!-- Tarjeta: Uso Externo de Pablo (SpaceX) -->
-        <a href="/integrations/pablo/spacex" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #38bdf8;">SpaceX Launches</h3>
-                <p>Análisis: Temperatura global por año vs Nº Lanzamientos usando Chart.js (Bubble).</p>
-                <div class="arrow" style="color: #38bdf8;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-
-        <!-- Tarjeta: Uso Externo Gráfico de Pablo (CoinDesk + C3.js) -->
-        <a href="/integrations/pablo/bitcoin" class="card-link">
-            <div class="card">
-                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #facc15;">CoinDesk (Bitcoin)</h3>
-                <p>Análisis: Precio de Bitcoin vs Clima en Alemania usando C3.js (Bar).</p>
-                <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
-
+        <!-- BOTÓN GIGANTE: JUAN LUIS -->
         <a href="integrations/juan-luis" class="card-link full-row">
-            <div class="card hero-card">
-                <span class="tag tag-use" style="align-self: center;">Panel Principal</span>
+            <div class="card hero-card juanlu-card">
+                <span class="tag tag-juanlu" style="align-self: center;">Panel de Usuario</span>
                 <h3 style="color: #00f2fe; font-size: 2rem;">Integraciones de Juan Luis</h3>
                 <p style="font-size: 1.1rem;">Accede a todos mis análisis cruzados (Protestas, Meteoritos y APIs públicas).</p>
                 <div class="arrow" style="color: #00f2fe; font-size: 1.1rem;">Entrar a mis integraciones ➜</div>
             </div>
         </a>
 
-        <a href="/integrations/pablo/amadeus" class="card-link" data-sveltekit-reload>
-            <div class="card">
-                <span class="tag tag-use">Uso Externa OAuth (Pablo)</span>
-                <h3 style="color: #0ea5e9;">Amadeus (Aviación)</h3>
-                <p>Análisis: Infraestructura Aérea vs CO2 usando Apache ECharts (Rose) vía Proxy OAuth 2.0.</p>
-                <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
+        <!-- BOTÓN GIGANTE: PABLO -->
+        <a href="integrations/pablo" class="card-link full-row">
+            <div class="card hero-card pablo-card">
+                <span class="tag tag-pablo" style="align-self: center;">Panel de Usuario</span>
+                <h3 style="color: #a855f7; font-size: 2rem;">Integraciones de Pablo</h3>
+                <p style="font-size: 1.1rem;">Accede a todos mis análisis cruzados (Olimpiadas, ESG, Exportaciones y más).</p>
+                <div class="arrow" style="color: #a855f7; font-size: 1.1rem;">Entrar a mis integraciones ➜</div>
             </div>
         </a>
-
-        <a href="/integrations/pablo/worldbank" class="card-link" data-sveltekit-reload>
-            <div class="card">
-                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #22c55e;">World Bank (Economía)</h3>
-                <p>Análisis: Riqueza (PIB) vs Emisiones de CO2 usando Highcharts (Column/Line).</p>
-                <div class="arrow" style="color: #22c55e;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-       <a href="/integrations/pablo/openmeteo" class="card-link" data-sveltekit-reload>
-    <div class="card">
-        <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-        <h3 style="color: #0ea5e9;">Open-Meteo (Clima en Vivo)</h3>
-        <p>Correlación: Emisiones de CO2 vs Humedad actual usando Plotly (Scatter).</p>
-        <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
-    </div>
-</a>
-        <a href="/integrations/pablo/population" class="card-link" data-sveltekit-reload>
-            <div class="card">
-                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-                <h3 style="color: #10b981;">RestCountries (Demografía)</h3>
-                <p>Análisis: Población mundial vs Emisiones de CO2 usando ApexCharts (Column/Line).</p>
-                <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
-            </div>
-        </a>
-        <a href="/integrations/pablo/renewables" class="card-link" data-sveltekit-reload>
-    <div class="card">
-        <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
-        <h3 style="color: #f43f5e;">ReliefWeb ONU (Desastres)</h3>
-        <p>Correlación: Temperaturas vs Nº de desastres naturales registrados usando Plotly (Scatter).</p>
-        <div class="arrow" style="color: #f43f5e;">Ver Gráfica ➜</div>
-    </div>
-</a>
 
     </div>
 </main>
@@ -209,30 +65,14 @@
 
     .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: 1fr; /* Una sola columna para que ocupen todo el ancho */
         gap: 2.5rem;
         align-items: stretch; 
     }
 
-    /* --- NUEVAS CLASES PARA EL BOTÓN GIGANTE --- */
     .full-row {
-        grid-column: 1 / -1; /* Ocupa desde la primera línea hasta la última */
+        grid-column: 1 / -1; 
     }
-
-    .hero-card {
-        background: linear-gradient(145deg, rgba(0, 242, 254, 0.1), rgba(168, 85, 247, 0.05));
-        border: 2px solid rgba(0, 242, 254, 0.4) !important;
-        align-items: center; /* Centra el contenido horizontalmente */
-        text-align: center;
-        padding: 3rem 2rem !important; /* Más alto para que destaque */
-    }
-
-    .hero-card:hover {
-        background: linear-gradient(145deg, rgba(0, 242, 254, 0.15), rgba(168, 85, 247, 0.1));
-        border-color: #00f2fe !important;
-        box-shadow: 0 10px 40px rgba(0, 242, 254, 0.2) !important;
-    }
-    /* ------------------------------------------- */
 
     .card-link { 
         display: flex; 
@@ -255,12 +95,37 @@
         justify-content: space-between;
     }
 
-    .card:hover {
-        transform: translateY(-10px);
-        background: rgba(255, 255, 255, 0.08);
-        border-color: #a855f7;
-        box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
+    .hero-card {
+        align-items: center; 
+        text-align: center;
+        padding: 3rem 2rem !important; 
     }
+
+    /* --- ESTILOS ESPECÍFICOS JUAN LUIS (CIAN) --- */
+    .juanlu-card {
+        background: linear-gradient(145deg, rgba(0, 242, 254, 0.1), rgba(0, 242, 254, 0.02));
+        border: 2px solid rgba(0, 242, 254, 0.4) !important;
+    }
+    .juanlu-card:hover {
+        background: linear-gradient(145deg, rgba(0, 242, 254, 0.15), rgba(0, 242, 254, 0.05));
+        border-color: #00f2fe !important;
+        box-shadow: 0 10px 40px rgba(0, 242, 254, 0.2) !important;
+        transform: translateY(-10px);
+    }
+    .tag-juanlu { background: rgba(0, 242, 254, 0.2); color: #00f2fe; border: 1px solid #00f2fe; }
+
+    /* --- ESTILOS ESPECÍFICOS PABLO (MORADO) --- */
+    .pablo-card {
+        background: linear-gradient(145deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.02));
+        border: 2px solid rgba(168, 85, 247, 0.4) !important;
+    }
+    .pablo-card:hover {
+        background: linear-gradient(145deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05));
+        border-color: #a855f7 !important;
+        box-shadow: 0 10px 40px rgba(168, 85, 247, 0.2) !important;
+        transform: translateY(-10px);
+    }
+    .tag-pablo { background: rgba(168, 85, 247, 0.2); color: #a855f7; border: 1px solid #a855f7; }
 
     .tag {
         font-size: 0.75rem;
@@ -273,16 +138,12 @@
         align-self: flex-start;
     }
 
-    .tag-int { background: rgba(168, 85, 247, 0.2); color: #a855f7; border: 1px solid #a855f7; }
-    .tag-use { background: rgba(0, 242, 254, 0.2); color: #00f2fe; border: 1px solid #00f2fe; }
-
     h3 { margin: 0.5rem 0; font-size: 1.5rem; }
-    p { color: #94a3b8; line-height: 1.5; flex-grow: 1; }
+    p { color: #94a3b8; line-height: 1.5; flex-grow: 1; margin-bottom: 0;}
 
     .arrow {
         margin-top: 1.5rem;
         font-weight: bold;
-        color: #a855f7;
         font-size: 0.9rem;
     }
 </style>
