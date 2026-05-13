@@ -41,7 +41,8 @@
             for (const [pais, turistas] of listaPaises) {
                 // 2. API Externa: Hipolabs Universities
                 // Esta API devuelve una lista de universidades por país
-                const resExt = await fetch(`https://universities.hipolabs.com/search?country=${pais.toLowerCase()}`);
+                // Añadimos corsproxy.io por delante para saltarnos el bloqueo
+                const resExt = await fetch(`https://corsproxy.io/?http://universities.hipolabs.com/search?country=${pais.toLowerCase()}`);
                 const dataExt = await safeJson(resExt);
 
                 if (dataExt) {
