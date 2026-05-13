@@ -51,21 +51,21 @@
         <h2 class="section-title">🌐 Integraciones Externas (APIs Internet)</h2>
         <div class="grid">
             <a href="/integrations/aimar/textual" class="card ext-card">
-                <span class="icon">🎓</span>
-                <h3>Oferta Universitaria</h3>
-                <p>Hipolabs API (Uso Textual)</p>
+                <span class="icon">✅</span>
+                <h3>Turismo vs Predicción de Origen</h3>
+                <p>Nationalize.io (Uso Textual)</p>
             </a>
             
             <a href="/integrations/aimar/books" class="card ext-card">
                 <span class="icon">📚</span>
                 <h3>Libros publicados por pais</h3>
-                <p>Chartist.js</p>
+                <p>Open Library(Chartist.js)</p>
             </a>
             
             <a href="/integrations/aimar/cloud" class="card ext-card">
                 <span class="icon">☁️</span>
-                <h3>Densidad País</h3>
-                <p>RestCountries (AnyChart TagCloud)</p>
+                <h3>Turismo vs Infraestructura</h3>
+                <p>Zippopotam (AnyChart TagCloud)</p>
             </a>
         </div>
     </div>

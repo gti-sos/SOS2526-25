@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
-    let message = $state("Cruzando turistas con población local...");
+    let message = $state("Cruzando turistas con datos de probabilidad nacional...");
     let results = $state([]);
     let isLoading = $state(true);
 
@@ -14,8 +14,7 @@
         if (!browser) return;
 
         try {
-            // 1. Tus datos (mantenemos tu ruta intacta)
-            // 1. Tus datos (Ruta absoluta apuntando a Render)
+            // 1. Tus datos (Ruta absoluta a Render)
             const resMis = await fetch("https://sos2526-25.onrender.com/api/v2/international-tourist-arrivals");
             const misDatos = await safeJson(resMis);
 
@@ -24,7 +23,6 @@
                 isLoading = false; return;
             }
 
-            // Agrupamos tus turistas por país para evitar duplicados
             const unicos = new Map();
             misDatos.forEach(d => {
                 let p = String(d.country || "").trim();
@@ -34,43 +32,42 @@
             });
 
             const cruce = [];
-            // Cogemos los 6 países con más turismo
             const listaPaises = Array.from(unicos.entries())
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 6);
 
             for (const [pais, turistas] of listaPaises) {
-                // 2. API Externa: RestCountries (Nativa HTTPS, cero problemas de CORS)
-                // Usamos fullText=true para que la búsqueda sea exacta
-                const resExt = await fetch(`https://restcountries.com/v3.1/name/${pais.toLowerCase()}?fullText=true`);
+                // 2. API EXTERNA: Nationalize.io (¡SIN PROXY Y SIN CORS!)
+                // Analizamos la "nacionalidad" del nombre del país
+                const resExt = await fetch(`https://api.nationalize.io/?name=${pais.toLowerCase()}`);
                 const dataExt = await safeJson(resExt);
 
-                if (dataExt && dataExt.length > 0) {
-                    const infoPais = dataExt[0];
+                if (dataExt && dataExt.country && dataExt.country.length > 0) {
+                    // Cogemos la probabilidad más alta
+                    const topProb = dataExt.country[0];
                     cruce.push({
                         pais: pais,
                         turistas: turistas,
-                        poblacion: infoPais.population || 0,
-                        ejemplo: infoPais.capital ? infoPais.capital[0] : "N/A"
+                        probabilidad: (topProb.probability * 100).toFixed(1),
+                        codigoIso: topProb.country_id
                     });
                 } else {
-                    // Si por algún casual la API no encuentra el país
                     cruce.push({
                         pais: pais,
                         turistas: turistas,
-                        poblacion: 0,
-                        ejemplo: "N/A"
+                        probabilidad: "N/A",
+                        codigoIso: "--"
                     });
                 }
             }
 
             results = cruce;
             isLoading = false;
-            message = results.length === 0 ? "⚠️ No se han encontrado datos poblacionales para estos países." : "";
+            message = results.length === 0 ? "⚠️ Error al cruzar datos." : "";
 
         } catch (e) {
             console.error(e);
-            message = "Error conectando con la API de RestCountries.";
+            message = "Error conectando con la API externa.";
             isLoading = false;
         }
     });
@@ -83,13 +80,13 @@
 
     <div class="card">
         <div class="top-bar">
-            <h2>🌍 Análisis: Turismo vs Población</h2>
-            <p class="desc">Cruce de tus datos con la API de <strong>RestCountries</strong>. ¿Tienen los países más visitados un mayor volumen de población?</p>
+            <h2>🆔 Análisis: Turismo vs Predicción de Origen</h2>
+            <p class="desc">Cruce con <strong>Nationalize.io</strong>. Probabilidad de que el nombre del país sea detectado como origen propio.</p>
         </div>
 
         {#if isLoading}
             <div class="loading-state">
-                <span class="spinner">🌍</span>
+                <span class="spinner">🆔</span>
                 <p>{message}</p>
             </div>
         {:else if message}
@@ -107,12 +104,12 @@
                                 <span class="value">{item.turistas.toLocaleString()}</span>
                             </div>
                             <div class="stat-row">
-                                <span class="label">👥 Población:</span>
-                                <span class="value highlight">{item.poblacion.toLocaleString()}</span>
+                                <span class="label">🎯 Prob. Nombre:</span>
+                                <span class="value highlight">{item.probabilidad}%</span>
                             </div>
                             <div class="example-box">
-                                <span class="small-label">Capital:</span>
-                                <p class="capital-name">{item.ejemplo}</p>
+                                <span class="small-label">Código ISO Sugerido:</span>
+                                <p class="capital-name">Origen: {item.codigoIso}</p>
                             </div>
                         </div>
                     </div>
@@ -138,13 +135,13 @@
     .stat-row { display: flex; justify-content: space-between; margin: 0.8rem 0; }
     .label { color: #94a3b8; }
     .value { font-weight: bold; }
-    .highlight { color: #38bdf8; font-size: 1.2rem; }
+    .highlight { color: #facc15; font-size: 1.2rem; }
     
     .example-box { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #334155; }
     .small-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; }
     .capital-name { font-size: 0.9rem; color: #cbd5e1; font-style: italic; margin-top: 0.3rem; }
 
-    .loading-state { text-align: center; padding: 5rem; color: #facc15; }
+    .loading-state { text-align: center; padding: 5rem; color: #38bdf8; }
     .spinner { font-size: 3rem; display: inline-block; animation: pulse 1.5s infinite; }
     .error-msg { color: #ef4444; text-align: center; padding: 2rem; border: 1px dashed #ef4444; border-radius: 12px; }
     .back-btn { color: #38bdf8; text-decoration: none; border: 1px solid #38bdf8; padding: 0.5rem 1rem; border-radius: 8px; font-weight: bold; }
