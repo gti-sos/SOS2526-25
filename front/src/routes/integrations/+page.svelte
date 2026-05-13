@@ -6,6 +6,120 @@
     </div>
 
     <div class="grid-container">
+
+        
+        <a href="/integrations/juan-luis/protests" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración (Compañeros)</span>
+                <h3>Protestas (G10)</h3>
+                <p>Análisis: Consumo de Alcohol vs Conflictos Sociales.</p>
+                <div class="arrow">Ver Gráfica ➜</div>
+            </div>
+        </a>
+
+        <a href="/integrations/juan-luis/meteorite-landings" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración (Compañeros)</span>
+                <h3>Meteoritos (G14)</h3>
+                <p>Análisis: Impactos de meteoritos vs Consumo.</p>
+                <div class="arrow">Ver Gráfica ➜</div>
+            </div>
+        </a>
+
+        <a href="/integrations/cocktails" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externo (Pública)</span>
+                <h3>TheCocktailDB</h3>
+                <p>Base de datos de combinados y recetas internacionales.</p>
+                <div class="arrow">Ver Datos ➜</div>
+            </div>
+        </a>
+
+        <a href="/integrations/breweries" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externo (Pública)</span>
+                <h3>Open Brewery DB</h3>
+                <p>Estadísticas de fábricas de cerveza por el mundo.</p>
+                <div class="arrow">Ver Gráfica ➜</div>
+            </div>
+        </a>
+
+        <a href="/integrations/coffee" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externo (Pública)</span>
+                <h3>SampleAPIs - Coffee</h3>
+                <p>La alternativa sin alcohol: Tipos de café y componentes.</p>
+                <div class="arrow">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/water-productivities" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración Pablo (Externa)</span>
+                <h3 style="color: #0ea5e9;">RestCountries (Demografía)</h3>
+                <p>Análisis: Análisis: ¿Aumenta el estrés hídrico con una mayor densidad de población (hab/km²)? Gráfica mixta vía ApexCharts.(Gráfico Mixto).</p>
+                <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/olympics-athlete-events" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
+                <h3 style="color: #facc15;">Olimpiadas (G30)</h3>
+                <p>Análisis: Atletas Olímpicos vs Temperatura usando Apache ECharts (Rose Chart).</p>
+                <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/age-specific-fertility-rates" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
+                <h3 style="color: #ff007f;">Fertilidad (G12)</h3>
+                <p>Análisis: Tasa de Fertilidad vs Temperatura usando AnyChart (Treemap).</p>
+                <div class="arrow" style="color: #ff007f;">Ver Gráfica ➜</div>
+            </div>
+        </a><!-- Tarjeta: Integración SOS de Pablo (ESG G28) -->
+        <a href="/integrations/pablo/company-esg-scores-financial-performances" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
+                <h3 style="color: #10b981;">Sostenibilidad ESG (G28)</h3>
+                <p>Análisis cruzado por año: Clima vs Rendimiento ESG usando Google Charts (Stepped Area).</p>
+                <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <!-- Tarjeta: Integración SOS (Exportaciones G13) - Pablo -->
+        <a href="/integrations/pablo/exportations-stats" class="card-link">
+            <div class="card">
+                <span class="tag tag-int">Integración Pablo (Compañeros)</span>
+                <h3 style="color: #f59e0b;">Exportaciones (G13)</h3>
+                <p>Análisis: Temperatura Media vs Exportaciones usando ZingChart (Area Chart).</p>
+                <div class="arrow" style="color: #f59e0b;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/openmeteo" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #3b82f6;">Open-Meteo (Clima)</h3>
+                <p>Análisis: Previsión actual vs Histórico de España usando Frappe Charts.</p>
+                <div class="arrow" style="color: #3b82f6;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        
+      <!-- Tarjeta: Uso Externo de Pablo (SpaceX) -->
+        <a href="/integrations/pablo/spacex" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #38bdf8;">SpaceX Launches</h3>
+                <p>Análisis: Temperatura global por año vs Nº Lanzamientos usando Chart.js (Bubble).</p>
+                <div class="arrow" style="color: #38bdf8;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+
+        <!-- Tarjeta: Uso Externo Gráfico de Pablo (CoinDesk + C3.js) -->
+        <a href="/integrations/pablo/bitcoin" class="card-link">
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #facc15;">CoinDesk (Bitcoin)</h3>
+                <p>Análisis: Precio de Bitcoin vs Clima en Alemania usando C3.js (Bar).</p>
+                <div class="arrow" style="color: #facc15;">Ver Gráfica ➜</div>
+
         <a href="integrations/juan-luis" class="card-link full-row">
             <div class="card hero-card">
                 <span class="tag tag-use" style="align-self: center;">Panel Principal</span>
@@ -14,6 +128,48 @@
                 <div class="arrow" style="color: #00f2fe; font-size: 1.1rem;">Entrar a mis integraciones ➜</div>
             </div>
         </a>
+
+        <a href="/integrations/pablo/amadeus" class="card-link" data-sveltekit-reload>
+            <div class="card">
+                <span class="tag tag-use">Uso Externa OAuth (Pablo)</span>
+                <h3 style="color: #0ea5e9;">Amadeus (Aviación)</h3>
+                <p>Análisis: Infraestructura Aérea vs CO2 usando Apache ECharts (Rose) vía Proxy OAuth 2.0.</p>
+                <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+
+        <a href="/integrations/pablo/worldbank" class="card-link" data-sveltekit-reload>
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #22c55e;">World Bank (Economía)</h3>
+                <p>Análisis: Riqueza (PIB) vs Emisiones de CO2 usando Highcharts (Column/Line).</p>
+                <div class="arrow" style="color: #22c55e;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+       <a href="/integrations/pablo/openmeteo" class="card-link" data-sveltekit-reload>
+    <div class="card">
+        <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+        <h3 style="color: #0ea5e9;">Open-Meteo (Clima en Vivo)</h3>
+        <p>Correlación: Emisiones de CO2 vs Humedad actual usando Plotly (Scatter).</p>
+        <div class="arrow" style="color: #0ea5e9;">Ver Gráfica ➜</div>
+    </div>
+</a>
+        <a href="/integrations/pablo/population" class="card-link" data-sveltekit-reload>
+            <div class="card">
+                <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+                <h3 style="color: #10b981;">RestCountries (Demografía)</h3>
+                <p>Análisis: Población mundial vs Emisiones de CO2 usando ApexCharts (Column/Line).</p>
+                <div class="arrow" style="color: #10b981;">Ver Gráfica ➜</div>
+            </div>
+        </a>
+        <a href="/integrations/pablo/renewables" class="card-link" data-sveltekit-reload>
+    <div class="card">
+        <span class="tag tag-use">Uso Externa Gráfica (Pablo)</span>
+        <h3 style="color: #f43f5e;">ReliefWeb ONU (Desastres)</h3>
+        <p>Correlación: Temperaturas vs Nº de desastres naturales registrados usando Plotly (Scatter).</p>
+        <div class="arrow" style="color: #f43f5e;">Ver Gráfica ➜</div>
+    </div>
+</a>
 
     </div>
 </main>
