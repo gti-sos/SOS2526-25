@@ -39,10 +39,9 @@
                 .slice(0, 6);
 
             for (const [pais, turistas] of listaPaises) {
-                // 2. API Externa: Hipolabs Universities
-                // Esta API devuelve una lista de universidades por país
-                // Añadimos corsproxy.io por delante para saltarnos el bloqueo
-                const resExt = await fetch(`https://corsproxy.io/?http://universities.hipolabs.com/search?country=${pais.toLowerCase()}`);
+                // 2. API Externa: Hipolabs Universities (vía AllOrigins Proxy)
+                const urlExterna = `http://universities.hipolabs.com/search?country=${pais.toLowerCase()}`;
+                const resExt = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(urlExterna)}`);
                 const dataExt = await safeJson(resExt);
 
                 if (dataExt) {
