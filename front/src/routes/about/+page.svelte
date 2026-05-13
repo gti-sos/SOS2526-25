@@ -12,7 +12,7 @@
             <h3>Juan Luis Rodríguez</h3>
             <p>Datos: social-drinking-behaviors</p>
             <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/ID_DEL_VIDEO" title="Vídeo Juan Luis" allowfullscreen></iframe>
+                <iframe src="https://youtu.be/WR0GNDIub8o" title="Vídeo Juan Luis" allowfullscreen></iframe>
             </div>
             <a href="https://youtu.be/G8kIyDLSDHI" target="_blank" class="btn">🔗 Ver en YouTube</a>
         </div>
