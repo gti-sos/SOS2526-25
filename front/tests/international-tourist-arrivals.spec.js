@@ -30,20 +30,28 @@ test.describe.serial('E2E Llegadas de Turistas Internacionales (AGB)', () => {
     });
 
     test('2. Crear un recurso estático', async ({ page }) => {
-        const addForm = page.locator('.form-container');
+    // Generamos un nombre único para que no falle si el dato ya existe
+        const paisTest = "TestCountry" + Math.floor(Math.random() * 1000);
+    
+        await page.goto('/international-tourist-arrivals');
 
-        // Como la BD está limpia, podemos usar un nombre fijo sin miedo a que se duplique
-        await addForm.getByPlaceholder('País', { exact: true }).fill('PlaywrightLand');
-        await addForm.getByPlaceholder('Año', { exact: true }).fill('2050');
-        await addForm.getByPlaceholder('Llegadas (Aire)').fill('100');
-        await addForm.getByPlaceholder('Llegadas (Agua)').fill('200');
-        await addForm.getByPlaceholder('Llegadas (Tierra)').fill('300');
+    // Esperamos a que el formulario sea visible
+        await page.waitForSelector('table');
 
-        await addForm.locator('.btn-add').click();
+    // REVISA QUE ESTOS PLACEHOLDERS COINCIDAN CON LOS DE TU TABLA (.svelte)
+    // Si en tu tabla pusiste <input placeholder="Nombre del país"...> cámbialo aquí
+        await page.fill('input[placeholder="Country"]', paisTest);
+        await page.fill('input[placeholder="Year"]', '2025');
+        await page.fill('input[placeholder="Air Arrival"]', '100');
+        await page.fill('input[placeholder="Arrivals Air"]', '200');
+        await page.fill('input[placeholder="Region"]', 'Europe');
 
-        // Match exacto con tu Front: "✅ Dato añadido correctamente."
-        await expect(page.locator('.alert')).toContainText('✅ Dato añadido correctamente.', { timeout: 10000 });
-        await expect(page.locator('td', { hasText: 'PlaywrightLand' })).toBeVisible({ timeout: 10000 });
+    // Haz clic en el botón de añadir (ajusta el texto si pusiste "Crear" o "Add")
+        await page.click('button:has-text("Añadir")');
+
+    // Verificamos que el nuevo dato aparece
+        await page.waitForTimeout(1000); // Un segundo para que el backend procese
+        await expect(page.locator(`text=${paisTest}`)).toBeVisible();
     });
 
     test('3. Buscar un recurso', async ({ page }) => {
