@@ -90,21 +90,6 @@ app.get('/api/proxy/oms-alcohol', async (req, res) => {
         res.status(500).json({ error: "Fallo al contactar con la API externa de la OMS" });
     }
 });
-// --- PROXY PARA EL FMI (RIQUEZA GLOBAL) ---
-app.get('/api/proxy/imf-wealth', async (req, res) => {
-    try {
-        const resData = await fetch("https://www.imf.org/external/datamapper/api/v1/NGDPDPC");
-        const dataIMF = await resData.json();
-
-        const resCountries = await fetch("https://www.imf.org/external/datamapper/api/v1/countries");
-        const countriesIMF = await resCountries.json();
-
-        res.json({ data: dataIMF, countries: countriesIMF });
-    } catch (error) {
-        console.error("Error en el proxy del FMI:", error);
-        res.status(500).json({ error: "Fallo al contactar con el FMI" });
-    }
-});
 // --- PROXY PARA LA ONU (ACCIDENTES DE TRÁFICO) ---
 app.get('/api/proxy/un-accidents', async (req, res) => {
     try {
@@ -117,18 +102,28 @@ app.get('/api/proxy/un-accidents', async (req, res) => {
         res.status(500).json({ error: "Fallo al contactar con la API de la ONU" });
     }
 });
-// --- PROXY PARA EL FMI (TASA DE DESEMPLEO) ---
-app.get('/api/proxy/imf-unemployment', async (req, res) => {
+// --- PROXY PARA EL FMI (RIQUEZA GLOBAL) ---
+app.get('/api/proxy/imf-wealth', async (req, res) => {
     try {
-        const resData = await fetch("https://www.imf.org/external/datamapper/api/v1/LUR");
+        // Disfrazamos la petición simulando ser un navegador Google Chrome
+        const opciones = {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "application/json"
+            }
+        };
+
+        const resData = await fetch("https://www.imf.org/external/datamapper/api/v1/NGDPDPC", opciones);
+        if (!resData.ok) throw new Error(`FMI Data respondió con status: ${resData.status}`);
         const dataIMF = await resData.json();
 
-        const resCountries = await fetch("https://www.imf.org/external/datamapper/api/v1/countries");
+        const resCountries = await fetch("https://www.imf.org/external/datamapper/api/v1/countries", opciones);
+        if (!resCountries.ok) throw new Error(`FMI Countries respondió con status: ${resCountries.status}`);
         const countriesIMF = await resCountries.json();
 
         res.json({ data: dataIMF, countries: countriesIMF });
     } catch (error) {
-        console.error("Error en el proxy del FMI (Desempleo):", error);
+        console.error("❌ Error en el proxy del FMI:", error.message);
         res.status(500).json({ error: "Fallo al contactar con el FMI" });
     }
 });
