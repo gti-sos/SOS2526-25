@@ -13,7 +13,7 @@ const app = express();
 // =========================================================
 // CABECERAS CORS (¡REQUISITO OBLIGATORIO PARA LA DEFENSA!)
 // Esto abre vuestra API para que los navegadores de los otros 
-// grupos no bloqueen las peticiones por el Same Origin Policy (SOP)[cite: 2].
+// grupos no bloqueen las peticiones por el Same Origin Policy (SOP).
 // =========================================================
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -102,6 +102,7 @@ app.get('/api/proxy/pablo/aids', async (req, res) => {
         res.status(500).json({ error: "No se pudo conectar con la API de AIDS a través del proxy" });
     }
 });
+
 // PROXY para Pablo -> API Bitcoin (Blockchain.info)
 app.get('/api/proxy/pablo/bitcoin', async (req, res) => {
     // Usamos una API súper estable que nos da los últimos 6 años de precios
@@ -114,6 +115,36 @@ app.get('/api/proxy/pablo/bitcoin', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "No se pudo conectar con la API de Bitcoin" });
+    }
+});
+
+// =========================================================
+// PROXY PARA AIMAR -> API Citys-Stats (Grupo 29)
+// =========================================================
+app.get('/api/proxy/aimar/citys', async (req, res) => {
+    try {
+        let response = await fetch('https://sos2526-29.onrender.com/api/v2/citys-stats');
+        let data = [];
+
+        if (response.ok) {
+            data = await response.json();
+        }
+
+        // Si la base de datos de los compañeros está vacía, les hacemos un loadInitialData automático
+        if (!response.ok || (Array.isArray(data) && data.length === 0)) {
+            console.log("Datos de G29 vacíos. Cargando sus datos iniciales...");
+            await fetch('https://sos2526-29.onrender.com/api/v2/citys-stats/loadInitialData');
+            
+            let secondResponse = await fetch('https://sos2526-29.onrender.com/api/v2/citys-stats');
+            if (secondResponse.ok) {
+                data = await secondResponse.json();
+            }
+        }
+
+        res.json(data);
+    } catch (error) {
+        console.error("Error en el proxy de Aimar (G29):", error);
+        res.status(500).json({ error: "No se pudo conectar con la API de citys-stats a través del proxy" });
     }
 });
 
