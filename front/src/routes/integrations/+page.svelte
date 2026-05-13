@@ -27,6 +27,16 @@
             </div>
         </a>
 
+        <!-- BOTÓN GIGANTE: AIMAR -->
+        <a href="integrations/aimar" class="card-link full-row">
+            <div class="card hero-card aimar-card">
+                <span class="tag tag-aimar" style="align-self: center;">Panel de Usuario</span>
+                <h3 style="color: #10b981; font-size: 2rem;">Integraciones de Aimar</h3>
+                <p style="font-size: 1.1rem;">Accede a todos mis análisis cruzados y visualizaciones interactivas.</p>
+                <div class="arrow" style="color: #10b981; font-size: 1.1rem;">Entrar a mis integraciones ➜</div>
+            </div>
+        </a>
+        
     </div>
 </main>
 
@@ -126,6 +136,19 @@
         transform: translateY(-10px);
     }
     .tag-pablo { background: rgba(168, 85, 247, 0.2); color: #a855f7; border: 1px solid #a855f7; }
+
+    /* --- ESTILOS ESPECÍFICOS AIMAR (VERDE ESMERALDA) --- */
+    .aimar-card {
+        background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02));
+        border: 2px solid rgba(16, 185, 129, 0.4) !important;
+    }
+    .aimar-card:hover {
+        background: linear-gradient(145deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+        border-color: #10b981 !important;
+        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.2) !important;
+        transform: translateY(-10px);
+    }
+    .tag-aimar { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
 
     .tag {
         font-size: 0.75rem;
