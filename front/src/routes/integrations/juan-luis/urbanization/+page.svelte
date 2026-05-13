@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
 
-    let message = $state("Descargando censo global de universidades (OpenAlex)...");
+    let message = $state("Consultando los archivos globales de la Fundación Nobel...");
     let chartContainer;
     let datosCompletos = $state([]); 
     
@@ -17,56 +17,60 @@
         if (!browser) return;
 
         try {
-            // 1. Cargamos tu base de datos
+            // 1. Cargamos tu base de datos local
             const resMis = await fetch("/api/v2/social-drinking-behaviors");
             const misDatos = await safeJson(resMis);
 
-            // 2. Cargamos la API de OpenAlex (Catálogo Abierto de Instituciones)
-            // Devuelve el conteo total de Universidades/Instituciones agrupado por país
-            const resUni = await fetch("https://api.openalex.org/institutions?group_by=country_code");
-            const uniDatos = await safeJson(resUni);
+            // 2. Cargamos la API Oficial de los Premios Nobel
+            const resNobel = await fetch("https://api.nobelprize.org/v1/laureate.json");
+            const nobelDatos = await safeJson(resNobel);
 
-            if (misDatos.length === 0 || !uniDatos.group_by) {
-                message = "⚠️ Faltan datos para cruzar o la API está saturada.";
+            if (misDatos.length === 0 || !nobelDatos.laureates) {
+                message = "⚠️ Faltan datos para cruzar o la API Nobel no responde.";
                 return;
             }
 
-            // 3. Mapeamos las universidades por país
-            const uniMap = new Map();
-            uniDatos.group_by.forEach(item => {
-                if (item.key_display_name && item.count) {
-                    let nombre = item.key_display_name.toLowerCase();
+            // 3. Filtramos y mapeamos los Premios Nobel (Solo del 2000 en adelante)
+            const premiosMap = new Map();
+            
+            nobelDatos.laureates.forEach(laureado => {
+                if (laureado.bornCountry && laureado.prizes) {
+                    let nombre = laureado.bornCountry.toLowerCase();
                     
-                    // Normalizaciones básicas
-                    if (nombre.includes("united states")) nombre = "united states of america";
+                    // Normalizaciones de países para que encajen con tu base de datos
+                    if (nombre.includes("usa") || nombre.includes("united states")) nombre = "united states of america";
                     if (nombre.includes("united kingdom")) nombre = "united kingdom";
                     if (nombre.includes("russia")) nombre = "russian federation";
-                    
-                    uniMap.set(nombre, item.count);
+
+                    laureado.prizes.forEach(premio => {
+                        // Filtramos estrictamente del año 2000 hacia arriba
+                        if (parseInt(premio.year) >= 2000) {
+                            premiosMap.set(nombre, (premiosMap.get(nombre) || 0) + 1);
+                        }
+                    });
                 }
             });
 
             // 4. Cruzamos con tus datos de consumo
             let tempYears = new Set();
             let cruzados = [];
-            let paisesProcesados = new Set(); // Para evitar duplicados en el mapa
+            let paisesProcesados = new Set();
 
             misDatos.forEach(d => {
                 let pais = String(d.country).trim().toLowerCase();
                 let anio = String(d.year); 
                 
-                if (uniMap.has(pais)) {
+                if (premiosMap.has(pais)) {
                     tempYears.add(anio);
-                    
-                    // Solo metemos un registro por país y año
                     let claveUnica = `${pais}_${anio}`;
+                    
                     if (!paisesProcesados.has(claveUnica)) {
                         paisesProcesados.add(claveUnica);
                         
                         cruzados.push({
                             country: d.country,
                             year: anio,
-                            universidades: uniMap.get(pais),
+                            premiosGanados: premiosMap.get(pais),
                             cerveza: Number(d.beer_share) || 0,
                             vino: Number(d.wine_share) || 0,
                             licores: Number(d.spirits_share) || 0
@@ -76,7 +80,7 @@
             });
 
             if (cruzados.length === 0) {
-                message = "⚠️ No hay coincidencias de países con el registro universitario.";
+                message = "⚠️ No hay coincidencias de países galardonados en tu BD.";
                 return;
             }
 
@@ -89,7 +93,7 @@
 
         } catch (error) {
             console.error(error);
-            message = "Error crítico cargando la cartografía y los datos.";
+            message = "Error crítico cargando la cartografía de los Nobel.";
         }
     });
 
@@ -115,36 +119,36 @@
 
         const trace = {
             type: 'choropleth',
-            locationmode: 'country names', // Plotly engancha automáticamente los nombres en inglés
+            locationmode: 'country names',
             locations: datosFiltrados.map(d => d.country),
-            z: datosFiltrados.map(d => d.universidades),
+            z: datosFiltrados.map(d => d.premiosGanados),
             text: datosFiltrados.map(d => d.country),
             customdata: datosFiltrados.map(d => [d.cerveza, d.vino, d.licores]),
-            colorscale: 'Viridis', // Escala de color científica y muy visual
+            colorscale: 'YlOrBr', // Escala de amarillo a marrón (color oro)
             autocolorscale: false,
-            reversescale: true,
+            reversescale: false,
             marker: {
                 line: { color: '#1e293b', width: 0.5 }
             },
             colorbar: {
-                title: 'Nº Instituciones',
+                title: 'Nº Premios Nobel',
                 tickfont: { color: '#cbd5e1' },
                 titlefont: { color: '#cbd5e1' }
             },
             hovertemplate: 
                 '<b style="font-size:16px; color:#ffffff;">%{text}</b><br><br>' +
-                '🎓 <b>Universidades Registradas:</b> %{z}<br>' +
+                '🏆 <b>Nobel (S. XXI):</b> %{z}<br>' +
                 '-----------------------<br>' +
                 '🍺 Cerveza: %{customdata[0]}%<br>' +
                 '🍷 Vino: %{customdata[1]}%<br>' +
                 '🥃 Licores: %{customdata[2]}%<br>' +
-                '<extra></extra>' // Elimina recuadros secundarios molestos
+                '<extra></extra>'
         };
 
         const layout = {
             title: { 
-                text: `Mapa Mundial: Sector Académico vs Consumo (${selectedYear})`, 
-                font: { color: '#a855f7' } 
+                text: `Mapa Mundial: Premios Nobel vs Alcohol (${selectedYear})`, 
+                font: { color: '#eab308' } 
             },
             paper_bgcolor: 'transparent',
             plot_bgcolor: 'transparent',
@@ -152,7 +156,7 @@
                 showframe: false,
                 showcoastlines: true,
                 coastlinecolor: '#334155',
-                projection: { type: 'robinson' }, // Mapa curvado más estético
+                projection: { type: 'robinson' },
                 bgcolor: 'transparent',
                 showocean: true,
                 oceancolor: '#0b1120',
@@ -177,11 +181,10 @@
 
     <div class="card">
         <div class="top-bar">
-            <h2>🌍 Mapa Cartográfico: Universidades y Alcohol</h2>
+            <h2>🌍 Mapa Cartográfico: Premios Nobel y Alcohol</h2>
             <p class="desc">
-                Análisis geoespacial cruzando la cartografía de <strong>Plotly</strong> con datos en tiempo real de 
-                <strong>OpenAlex</strong> (Catálogo global de investigación). 
-                Los países más claros tienen mayor concentración de universidades.
+                Análisis geoespacial cruzando la cartografía de <strong>Plotly</strong> con la API de la 
+                <strong>Fundación Nobel</strong>. Se muestran los países con galardonados desde el <strong>año 2000</strong>.
             </p>
         </div>
 
@@ -198,7 +201,7 @@
                 <span class="badge">
                     Datos de {datosCompletos.filter(d => d.year === selectedYear).length} países mapeados
                 </span>
-                <span class="source-tag">Fuente: OpenAlex API</span>
+                <span class="source-tag">Fuente: Nobel Prize API</span>
             </div>
             
             <div class="chart-box">
@@ -212,15 +215,15 @@
     :global(body) { background: #0f172a; color: white; margin: 0; font-family: sans-serif; }
     main { padding: 2rem; max-width: 1100px; margin: auto; }
     .header-nav { margin-bottom: 2rem; }
-    .back-btn { color: #a855f7; text-decoration: none; font-weight: bold; border: 1px solid #a855f7; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.3s;}
-    .back-btn:hover { background: rgba(168, 85, 247, 0.2); }
+    .back-btn { color: #eab308; text-decoration: none; font-weight: bold; border: 1px solid #eab308; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.3s;}
+    .back-btn:hover { background: rgba(234, 179, 8, 0.2); }
     .card { background: #1e293b; padding: 2rem; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-    .top-bar h2 { color: #a855f7; margin: 0 0 0.5rem 0; }
+    .top-bar h2 { color: #eab308; margin: 0 0 0.5rem 0; }
     .desc { color: #94a3b8; line-height: 1.5; margin-bottom: 1.5rem;}
     .controls { background: #0b1120; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #334155; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;}
     .controls label { font-weight: bold; color: #cbd5e1;}
-    select { background: #1e293b; color: #a855f7; padding: 0.5rem 1rem; border-radius: 5px; font-weight: bold; border: 1px solid #a855f7; outline: none; cursor: pointer;}
-    .badge { background: rgba(168, 85, 247, 0.1); color: #a855f7; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid #a855f7; }
+    select { background: #1e293b; color: #eab308; padding: 0.5rem 1rem; border-radius: 5px; font-weight: bold; border: 1px solid #eab308; outline: none; cursor: pointer;}
+    .badge { background: rgba(234, 179, 8, 0.1); color: #eab308; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid #eab308; }
     .source-tag { color: #64748b; font-size: 0.8rem; margin-left: auto; font-weight: bold; }
     .loading-state { color: #facc15; padding: 2rem; text-align: center; border: 2px dashed #facc15; border-radius: 10px; font-weight: bold; font-size: 1.2rem;}
     .chart-box { background: #0b1120; border-radius: 12px; padding: 1rem; border: 1px solid #334155; overflow: hidden; }
