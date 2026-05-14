@@ -29,6 +29,8 @@
                 <a href="/api/v2/social-drinking-behaviors" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v2/social-drinking-behaviors/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
                 <a href="/analytics/social-drinking-behaviors" class="btn btn-analytics">📊 Analytics</a>
+                <a href="https://youtu.be/NJFMib1LggM?si=XpBDgcHGywGzW3M-" class="btn btn-frontend">🎥 VideoYT</a>
+
             </div>
         </div>
 
