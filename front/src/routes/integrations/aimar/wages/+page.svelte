@@ -58,7 +58,7 @@
             message = "";
             isLoading = false;
 
-            // EL TRUCO ANTIMAGIA DE SVELTE 5: Clonamos el array para que C3.js lo lea como un array normal
+            // Clonamos el array para evitar problemas de reactividad con C3.js
             const columnasLimpias = JSON.parse(JSON.stringify([paises, turistas, salarios]));
 
             c3.generate({
@@ -66,15 +66,18 @@
                 data: {
                     x: 'x',
                     columns: columnasLimpias,
-                    type: 'spline', 
+                    type: 'scatter', // <--- CAMBIO PRINCIPAL: Gráfico de Dispersión (Puntos)
                     axes: {
                         'Tus Turistas': 'y', 
                         'Salario Medio (€)': 'y2' 
                     },
                     colors: {
                         'Tus Turistas': '#38bdf8', 
-                        'Salario Medio (€)': '#f43f5e' 
+                        'Salario Medio (€)': '#facc15' // Amarillo/Dorado para los euros
                     }
+                },
+                point: {
+                    r: 8 // Hacemos los puntos más grandes para que parezcan burbujas
                 },
                 axis: {
                     x: { type: 'category' },
@@ -88,7 +91,10 @@
                         tick: { format: function (d) { return d + " €"; } }
                     }
                 },
-                grid: { y: { show: true } },
+                grid: { 
+                    y: { show: true },
+                    x: { show: true } // Añadimos grid X para guiar el ojo hacia las burbujas
+                },
                 tooltip: {
                     format: {
                         title: function (x) { return 'País: ' + paises[x + 1]; }
@@ -115,10 +121,10 @@
 
     <div class="card">
         <div class="top-bar">
-            <h2>🌍 Turistas vs Salario Medio (C3.js Spline)</h2>
+            <h2>🌍 Turistas vs Salarios (C3.js Scatter)</h2>
             <p class="desc">
-                Integración con SOS-24 usando Doble Escala.<br> 
-                ¿Viajan más turistas a países con salarios altos o bajos?
+                Integración con SOS-24 usando <strong>Gráfico de Dispersión</strong> con Doble Escala.<br> 
+                Ni líneas ni barras: comparativa por posicionamiento de puntos.
             </p>
         </div>
 
@@ -150,15 +156,18 @@
     .hidden { display: none !important; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    /* FORZAR LA APARICIÓN DE LAS LÍNEAS DE C3.JS */
-    :global(path.c3-line) {
-        fill: none !important;
-        stroke-width: 3px !important;
-        opacity: 1 !important;
-    }
+    /* CSS GLOBAL C3.JS - PUNTOS DE DISPERSIÓN */
     :global(circle.c3-circle) {
-        r: 4 !important;
+        opacity: 0.9 !important;
+        stroke: #0b1120 !important;
+        stroke-width: 2px !important;
+    }
+    
+    /* EFECTO HOVER EN LAS BURBUJAS */
+    :global(circle.c3-circle:hover) {
         opacity: 1 !important;
+        r: 12 !important;
+        transition: all 0.2s ease-in-out;
     }
 
     /* CSS GLOBAL C3.JS - TEXTOS DE LOS EJES */
@@ -167,7 +176,7 @@
     :global(.c3-legend-item text) { fill: #f8fafc !important; font-size: 14px; }
     :global(.c3-grid line) { stroke: #334155 !important; stroke-dasharray: 4; }
 
-    /* ARREGLO DEL TOOLTIP Y EL CUADRO BLANCO */
+    /* ARREGLO DEL TOOLTIP */
     :global(.c3-tooltip-container) { background: transparent !important; }
     :global(.c3-tooltip) { background-color: #1e293b !important; color: white !important; border: 1px solid #38bdf8 !important; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important; opacity: 0.95; }
     :global(.c3-tooltip th) { background-color: #0f172a !important; color: #38bdf8 !important; border-bottom: 1px solid #334155 !important; padding: 8px !important; }

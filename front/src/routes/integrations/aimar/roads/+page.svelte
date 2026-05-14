@@ -14,7 +14,6 @@
         if (!browser) return;
 
         try {
-            // Importamos la nueva librería ApexCharts
             const ApexCharts = (await import('apexcharts')).default;
 
             const resMis = await fetch("/api/v2/international-tourist-arrivals");
@@ -44,7 +43,6 @@
                 }
             });
 
-            // Agrupamos para evitar duplicados
             const paisesUnicos = new Map();
             misDatos.forEach(d => {
                 let nombrePais = d.country;
@@ -73,7 +71,6 @@
                 isLoading = false; return;
             }
 
-            // Preparamos las 3 listas de datos que necesita el gráfico mixto
             let labels = chartData.map(d => d.name);
             let seriesTuristas = chartData.map(d => d.myTourists);
             let seriesMuertes = chartData.map(d => d.value);
@@ -81,30 +78,35 @@
             isLoading = false;
             message = "";
 
-            // Configuración de ApexCharts (Gráfico Mixto con Doble Eje)
+            // CONFIGURACIÓN ESTRICTA: Gráfico de ÁREA (Sin mezclas, sin barras, sin scatter)
             const options = {
                 series: [
-                    { name: 'Tus Turistas', type: 'column', data: seriesTuristas },
-                    { name: 'Fallecidos Tráfico', type: 'line', data: seriesMuertes }
+                    { name: 'Tus Turistas', data: seriesTuristas },
+                    { name: 'Fallecidos Tráfico', data: seriesMuertes }
                 ],
                 chart: {
                     height: 500,
-                    type: 'line',
+                    type: 'area', // <--- TIPO ÚNICO PARA TODO EL GRÁFICO
                     background: 'transparent',
                     toolbar: { show: false },
                     fontFamily: 'Segoe UI, sans-serif'
                 },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                },
                 stroke: {
-                    width: [0, 4], // 0 grosor para las columnas, 4 para la línea
-                    curve: 'smooth'
+                    width: 3, 
+                    curve: 'smooth' // Hace que las montañas sean onduladas y no anguladas
                 },
-                colors: ['#38bdf8', '#f43f5e'], // Azul neón para turistas, Rosa neón para muertes
+                colors: ['#38bdf8', '#f43f5e'],
                 theme: { mode: 'dark' },
-                dataLabels: {
-                    enabled: true,
-                    enabledOnSeries: [1], // Solo mostrar los números encima de la línea roja
-                    background: { foreColor: '#0f172a', borderRadius: 4, padding: 4 }
-                },
+                dataLabels: { enabled: false }, // Apagamos los números flotantes para que el área se vea limpia
                 labels: labels,
                 xaxis: {
                     type: 'category',
@@ -114,12 +116,10 @@
                 },
                 yaxis: [
                     {
-                        // Eje Y Izquierdo (Turistas)
                         title: { text: 'Nº de Turistas', style: { color: '#38bdf8', fontSize: '14px', fontWeight: 600 } },
                         labels: { style: { colors: '#38bdf8' } }
                     },
                     {
-                        // Eje Y Derecho (Muertes)
                         opposite: true,
                         title: { text: 'Fallecidos (SOS-11)', style: { color: '#f43f5e', fontSize: '14px', fontWeight: 600 } },
                         labels: { style: { colors: '#f43f5e' } }
@@ -133,7 +133,7 @@
                 },
                 grid: {
                     borderColor: '#334155',
-                    strokeDashArray: 4, // Líneas de fondo punteadas
+                    strokeDashArray: 4,
                     padding: { top: 10, bottom: 10 }
                 }
             };
@@ -155,8 +155,8 @@
 
     <div class="card">
         <div class="top-bar">
-            <h2>📊 Seguridad Vial vs Turistas (ApexCharts)</h2>
-            <p class="desc">Gráfico Mixto con doble escala: Barras (Eje izquierdo) y Línea (Eje derecho).</p>
+            <h2>📊 Seguridad Vial vs Turistas (ApexCharts Área)</h2>
+            <p class="desc">Gráfico de <strong>Área Suavizada</strong> con doble escala para comparar volumen sin distorsión de datos.</p>
         </div>
 
         {#if isLoading}

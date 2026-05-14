@@ -42,7 +42,7 @@
             <a href="/integrations/aimar/roads" class="card group-card">
                 <span class="icon">🚗</span>
                 <h3>Seguridad Vial</h3>
-                <p>SOS-11 (ApexCharts Mixto)</p>
+                <p>SOS-11 (ApexCharts Área)</p>
             </a>
         </div>
     </div>
