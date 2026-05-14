@@ -59,6 +59,8 @@
                 <a href="/api/v2/average-annual-temperatures" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v2/average-annual-temperatures/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
                 <a href="/analytics/average-annual-temperatures" class="btn btn-analytics">📊 Analytics</a>
+                <a href="https://youtu.be/ntFfq8pha7U" class="btn btn-frontend">🎥 VideoYT</a>
+
             </div>
         </div>
     </div>
