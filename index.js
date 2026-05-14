@@ -208,7 +208,7 @@ app.get('/api/proxy/aimar/citys', async (req, res) => {
     }
 });
 
-// --- OTROS PROXIES (BITCOIN, AMADEUS, OPENAQ, RELIEFWEB) ---
+// --- OTROS PROXIES (BITCOIN, AIRQUALITY) ---
 app.get('/api/proxy/pablo/bitcoin', async (req, res) => {
     try {
         const response = await fetch('https://api.blockchain.info/charts/market-price?timespan=6years&format=json');
@@ -223,11 +223,12 @@ app.get('/api/proxy/pablo/airquality', async (req, res) => {
         const data = await response.json();
         res.json(data);
     } catch (error) {
-        console.error("Error en el proxy ReliefWeb:", error);
-        res.status(500).json({ error: 'Fallo al contactar con la API de la ONU.' });
+        console.error("Error en el proxy AirQuality:", error);
+        res.status(500).json({ error: 'Fallo al contactar con la API externa.' });
     }
 });
 
+// --- PROXY GITHUB OAUTH ---
 app.get('/api/proxy/pablo/github-token', async (req, res) => {
     const { code } = req.query;
     try {
@@ -238,7 +239,6 @@ app.get('/api/proxy/pablo/github-token', async (req, res) => {
                 'Accept': 'application/json' 
             },
             body: JSON.stringify({
-                // Las claves ahora se leen de forma segura desde las variables de entorno
                 client_id: process.env.GITHUB_CLIENT_ID,
                 client_secret: process.env.GITHUB_CLIENT_SECRET,
                 code: code
@@ -250,8 +250,8 @@ app.get('/api/proxy/pablo/github-token', async (req, res) => {
         console.error("Error en OAuth:", e);
         res.status(500).json({ error: 'OAuth token exchange failed' });
     }
-    } catch (error) { res.status(500).send(error); }
 });
+
 // ============================================================================
 // PROXY PARA INTEGRACIÓN EXTERNA: API PÚBLICA NASA POWER (Radiación Solar)
 // ============================================================================
