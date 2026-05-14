@@ -168,6 +168,16 @@ app.get('/api/proxy/pablo/airquality', async (req, res) => {
     const countryCode = req.query.countryCode || 'ES';
     // Cambiamos a /v2/latest que es mucho más fiable
     const url = `https://api.openaq.org/v2/latest?country=${countryCode}&limit=1`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error("Error en proxy OpenAQ:", error);
+        res.status(500).json({ error: "Error conectando con OpenAQ" });
+    }
+});
 // --- PROXY MARIO (G17 WATER) ---
 app.get('/api/proxy/mario/water-productivities', async (req, res) => {
     try {
