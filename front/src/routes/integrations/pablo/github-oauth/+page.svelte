@@ -16,7 +16,7 @@
     //   https://github.com/settings/developers → New OAuth App
     //   Homepage URL:    https://sos2526-25.onrender.com
     //   Callback URL:    https://sos2526-25.onrender.com/integrations/pablo/github-oauth
-    const CLIENT_ID = "Ov23liXXXXXXXXXXXXXX"; // ← sustituye por tu client_id real
+    const CLIENT_ID = "Ov23liWBusmOSmJz17Jr"; // ← sustituye por tu client_id real
     const PROXY_URL = "/api/proxy/pablo/github-token"; // proxy en tu backend para el intercambio de código → token
 
     // ─── Arranque ───────────────────────────────────────────────────────────────
