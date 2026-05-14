@@ -24,7 +24,7 @@
             
             const tempData = years.map(y => temp.find(t => t.year == y)?.temperature || 0);
             // Dividimos entre 1000 para escalar visualmente las llegadas
-            const arrivalsData = years.map(y => (arrivals.find(a => a.year == y)?.air_arrival || 0) / 1000); 
+            const arrivalsData = years.map(y => (arrivals.find(a => a.year == y)?.air_arrival || 0)); 
             const drinksData = years.map(y => drinks.find(d => d.year == y)?.total_liter || 0);
 
             message = "";
@@ -32,12 +32,12 @@
             Highcharts.chart(chartContainer, {
                 chart: { type: 'column' }, // TIPO 1: COLUMNAS
                 title: { text: 'Análisis Integrado: Alemania (SOS2526-25)' },
-                subtitle: { text: 'Comparativa de Temperatura, Llegadas (x1000) y Litros de Alcohol' },
+                subtitle: { text: 'Comparativa de Temperatura, Llegadas y Litros de Alcohol' },
                 xAxis: { categories: years, crosshair: true },
                 yAxis: { min: 0, title: { text: 'Valores Mixtos' } },
                 series: [
                     { name: 'Temperatura ºC (Pablo)', data: tempData },
-                    { name: 'Llegadas Aéreas x1000 (Aimar)', data: arrivalsData },
+                    { name: 'Llegadas Aéreas (Aimar)', data: arrivalsData },
                     { name: 'Consumo Alcohol L. (Juanlu)', data: drinksData }
                 ]
             });
