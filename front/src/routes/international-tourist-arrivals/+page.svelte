@@ -27,9 +27,9 @@
 
         if (searchParams.country) { query.append("country", searchParams.country); filtrosUsados.push(`país '${searchParams.country}'`); }
         if (searchParams.year) { query.append("year", searchParams.year); filtrosUsados.push(`año '${searchParams.year}'`); }
-        if (searchParams.air_arrival) { query.append("air_arrival", searchParams.air_arrival); filtrosUsados.push(`llegadas por aire '${searchParams.air_arrival}'`); }
-        if (searchParams.water_arrival) { query.append("water_arrival", searchParams.water_arrival); filtrosUsados.push(`llegadas por agua '${searchParams.water_arrival}'`); }
-        if (searchParams.land_arrival) { query.append("land_arrival", searchParams.land_arrival); filtrosUsados.push(`llegadas por tierra '${searchParams.land_arrival}'`); }
+        if (searchParams.air_arrival) { query.append("air_arrival", searchParams.air_arrival); filtrosUsados.push(`aire '${searchParams.air_arrival}'`); }
+        if (searchParams.water_arrival) { query.append("water_arrival", searchParams.water_arrival); filtrosUsados.push(`agua '${searchParams.water_arrival}'`); }
+        if (searchParams.land_arrival) { query.append("land_arrival", searchParams.land_arrival); filtrosUsados.push(`tierra '${searchParams.land_arrival}'`); }
         
         // Rangos
         if (searchParams.from) { query.append("from", searchParams.from); filtrosUsados.push(`desde '${searchParams.from}'`); }
@@ -177,10 +177,16 @@
         <p class="subtitle">Rellena uno o varios campos para buscar.</p>
         <form onsubmit={(e) => { e.preventDefault(); searchArrivals(); }}>
             <div class="input-group">
-                <input type="text" placeholder="Buscar por País" bind:value={searchParams.country}>
-                <input type="number" placeholder="Año exacto" bind:value={searchParams.year}>
-                <input type="number" placeholder="Desde año (from)" bind:value={searchParams.from}>
-                <input type="number" placeholder="Hasta año (to)" bind:value={searchParams.to}>
+                <input type="text" placeholder="País" bind:value={searchParams.country}>
+                <input type="number" placeholder="Año" bind:value={searchParams.year}>
+                <input type="number" placeholder="Desde (Año)" bind:value={searchParams.from}>
+                <input type="number" placeholder="Hasta (Año)" bind:value={searchParams.to}>
+                
+                <input type="number" placeholder="Llegadas (Aire)" bind:value={searchParams.air_arrival}>
+                <input type="number" placeholder="Llegadas (Agua)" bind:value={searchParams.water_arrival}>
+                <input type="number" placeholder="Llegadas (Tierra)" bind:value={searchParams.land_arrival}>
+            </div>
+            <div class="search-actions">
                 <button type="submit" class="btn-search">Buscar</button>
                 <button type="button" class="btn-clear" onclick={clearSearch}>Limpiar Filtros</button>
             </div>
@@ -244,8 +250,12 @@
     .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 1.5rem; margin-bottom: 2rem; backdrop-filter: blur(10px); }
     .search-container { border-left: 4px solid #a855f7; }
     .alert { background: rgba(0, 242, 254, 0.2); border-left: 4px solid #00f2fe; padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; }
-    .input-group { display: flex; flex-wrap: wrap; gap: 1rem; }
+    
+    .input-group { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
     input { flex: 1 1 120px; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.3); color: white; }
+    
+    /* Separé los botones de búsqueda abajo para que no se apelotonen con los 7 inputs */
+    .search-actions { display: flex; gap: 1rem; justify-content: flex-end; }
     
     .btn-add { background: #00f2fe; color: #000; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
     .btn-search { background: #a855f7; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: bold; }
