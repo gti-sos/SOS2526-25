@@ -21,8 +21,7 @@
             const resMis = await fetch("/api/v2/social-drinking-behaviors");
             const misDatos = await safeJson(resMis);
 
-            // NUEVA API: disease.sh (Open Disease Data API)
-            // Devuelve estadísticas globales acumuladas de COVID-19 por país. ¡Ni CORS ni keys!
+            // API: disease.sh
             const resCovid = await fetch("https://disease.sh/v3/covid-19/countries");
             const covidDatos = await safeJson(resCovid);
 
@@ -31,19 +30,15 @@
                 return;
             }
 
-            // 1. Mapeamos Casos de COVID por Millón
             const covidMap = new Map();
             covidDatos.forEach(c => {
                 if (c.country && c.casesPerOneMillion) {
                     let nombre = c.country.toLowerCase();
-                    
-                    // Adaptamos los nombres que usa disease.sh a tu base de datos
                     if (nombre === "usa") nombre = "united states of america";
                     if (nombre === "uk") nombre = "united kingdom";
                     if (nombre === "s. korea") nombre = "south korea";
                     if (nombre === "russia") nombre = "russian federation";
 
-                    // Dividimos entre 1000 para que sea "Miles de casos" y la gráfica mixta se lea bien
                     covidMap.set(nombre, c.casesPerOneMillion / 1000);
                 }
             });
@@ -52,7 +47,6 @@
             let cruzados = [];
             let paisesProcesados = new Set();
 
-            // 2. Cruzamos con tus datos de consumo
             misDatos.forEach(d => {
                 let pais = String(d.country).trim().toLowerCase();
                 let anio = String(d.year); 
@@ -66,8 +60,7 @@
                         cruzados.push({
                             country: d.country,
                             year: anio,
-                            casosCovid: Number(covidMap.get(pais).toFixed(1)),
-                            alcoholTotal: (Number(d.beer_share) || 0) + (Number(d.wine_share) || 0) + (Number(d.spirits_share) || 0)
+                            casosCovid: Number(covidMap.get(pais).toFixed(1))
                         });
                     }
                 }
@@ -111,30 +104,35 @@
 
         let datosFiltrados = datosCompletos.filter(d => d.year === selectedYear);
         
-        // Cogemos el Top 15 países con MÁS incidencia de COVID
+        // Reducimos al Top 8 para que el gráfico de porcentaje no se sature de colores
         datosFiltrados.sort((a, b) => b.casosCovid - a.casosCovid);
-        datosFiltrados = datosFiltrados.slice(0, 15);
+        datosFiltrados = datosFiltrados.slice(0, 8);
 
+        // ESTRUCTURA CORREGIDA PARA EL GRÁFICO PERCENTAGE
         const data = {
             labels: datosFiltrados.map(d => d.country),
             datasets: [
-                { name: "COVID (Miles/1M hab.)", type: "bar", values: datosFiltrados.map(d => d.casosCovid) },
-                { name: "Alcohol Total (%)", type: "line", values: datosFiltrados.map(d => d.alcoholTotal) }
+                {
+                    name: "Casos COVID (Miles/1M hab.)",
+                    values: datosFiltrados.map(d => d.casosCovid)
+                }
             ]
         };
 
         if (chartInstance) {
-            chartInstance.update(data);
-        } else {
-            chartInstance = new window.frappe.Chart(chartContainer, {
-                data: data,
-                title: `Top 15: Incidencia COVID-19 vs Consumo (${selectedYear})`,
-                type: 'axis-mixed', 
-                height: 400,
-                colors: ['#ef4444', '#38bdf8'],
-                tooltipOptions: { formatTooltipY: d => d }
-            });
+            // Frappe a veces se lía al actualizar gráficos de porcentaje, lo destruimos y creamos de cero
+            chartInstance.destroy();
         }
+
+        chartInstance = new window.frappe.Chart(chartContainer, {
+            data: data,
+            title: `Proporción COVID en el Top 8 de países (${selectedYear})`,
+            type: 'percentage', 
+            height: 300, // Un poco más bajo queda mejor para percentage charts
+            // Le damos una paleta de 8 colores distintos para cada trozo
+            colors: ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6'],
+            tooltipOptions: { formatTooltipY: d => d + ' mil' }
+        });
     }
 </script>
 
@@ -149,8 +147,8 @@
 
     <div class="card">
         <div class="top-bar">
-            <h2>🦠 Salud y Consumo (Frappe Charts)</h2>
-            <p class="desc">Cruce mundial con la incidencia histórica de COVID-19 extraída de <strong>disease.sh</strong>. Compara casos confirmados con los hábitos de consumo.</p>
+            <h2>🦠 Distribución COVID (Frappe Charts)</h2>
+            <p class="desc">Proporción de incidencia histórica de COVID-19 en los países más afectados, usando <strong>disease.sh</strong>.</p>
         </div>
 
         {#if message}
@@ -163,8 +161,7 @@
                 </select>
             </div>
             <div class="chart-box">
-                <!-- Frappe necesita fondo blanco/claro por defecto -->
-                <div bind:this={chartContainer} style="background: white; border-radius: 8px; padding: 10px;"></div>
+                <div bind:this={chartContainer} style="background: white; border-radius: 8px; padding: 20px;"></div>
             </div>
         {/if}
     </div>
