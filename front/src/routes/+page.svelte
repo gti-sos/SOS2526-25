@@ -44,7 +44,7 @@
                 <a href="/api/v1/international-tourist-arrivals" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v1/international-tourist-arrivals/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
                 <a href="/analytics/international-tourist-arrivals" class="btn btn-analytics">📊 Analytics</a>
-                <a href="https://youtu.be/91d4TfUHsJk" class="btn btn-frontend">🎥 VideoYT</a>
+                <a href="https://youtu.be/H6JZyALET00" class="btn btn-frontend">🎥 VideoYT</a>
 
             </div>
         </div>
