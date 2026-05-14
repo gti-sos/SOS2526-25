@@ -29,7 +29,7 @@
                 <a href="/api/v2/social-drinking-behaviors" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v2/social-drinking-behaviors/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
                 <a href="/analytics/social-drinking-behaviors" class="btn btn-analytics">📊 Analytics</a>
-                <a href="https://youtu.be/NJFMib1LggM?si=XpBDgcHGywGzW3M-" class="btn btn-frontend">🎥 VideoYT</a>
+                <a href="https://youtu.be/e4XnJ53qOF4?si=juWRwTTkardWrAsf" class="btn btn-frontend">🎥 VideoYT</a>
 
             </div>
         </div>
@@ -44,6 +44,8 @@
                 <a href="/api/v1/international-tourist-arrivals" target="_blank" class="btn btn-api">⚙️ Base API</a>
                 <a href="/api/v1/international-tourist-arrivals/docs" target="_blank" class="btn btn-postman">📚 Postman Docs</a>
                 <a href="/analytics/international-tourist-arrivals" class="btn btn-analytics">📊 Analytics</a>
+                <a href="https://youtu.be/91d4TfUHsJk" class="btn btn-frontend">🎥 VideoYT</a>
+
             </div>
         </div>
 

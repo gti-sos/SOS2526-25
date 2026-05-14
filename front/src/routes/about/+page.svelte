@@ -14,16 +14,16 @@
             <div class="video-container">
                 <iframe src="https://youtu.be/NJFMib1LggM?si=XpBDgcHGywGzW3M-" title="Vídeo Juan Luis" allowfullscreen></iframe>
             </div>
-            <a href="https://youtu.be/NJFMib1LggM?si=XpBDgcHGywGzW3M-" target="_blank" class="btn">🔗 Ver en YouTube</a>
+            <a href="https://youtu.be/e4XnJ53qOF4?si=juWRwTTkardWrAsf" target="_blank" class="btn">🔗 Ver en YouTube</a>
         </div>
 
         <div class="card">
             <h3>Aimar García</h3>
             <p>Datos: international-tourist-arrivals</p>
             <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/ID_DEL_VIDEO" title="Vídeo Aimar" allowfullscreen></iframe>
+                <iframe src="https://youtu.be/91d4TfUHsJk" title="Vídeo Aimar" allowfullscreen></iframe>
             </div>
-            <a href="https://youtu.be/ID_DEL_VIDEO" target="_blank" class="btn">🔗 Ver en YouTube</a>
+            <a href="https://youtu.be/91d4TfUHsJk" target="_blank" class="btn">🔗 Ver en YouTube</a>
         </div>
 
         <div class="card">
