@@ -42,7 +42,6 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-external">Open-Meteo</span>
-                        <span class="card-lib">Frappe Charts</span>
                     </div>
                     <h3>Clima Histórico vs Actual</h3>
                     <p>Comparativa de temperaturas en España con previsión meteorológica</p>
@@ -60,7 +59,6 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-external">SpaceX</span>
-                        <span class="card-lib">Chart.js</span>
                     </div>
                     <h3>Lanzamientos vs Temperatura</h3>
                     <p>Correlación anual entre misiones SpaceX y temperatura global</p>
@@ -78,7 +76,6 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-external">NASA POWER</span>
-                        <span class="card-lib">C3.js</span>
                     </div>
                     <h3>Radiación Solar Global</h3>
                     <p>Comparativa multinacional: Temperatura vs Radiación solar</p>
@@ -90,23 +87,6 @@
             </div>
         </a>
 
-        <a href="/integrations/pablo/amadeus" class="card-link">
-            <div class="card external">
-                <div class="card-accent" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);"></div>
-                <div class="card-content">
-                    <div class="card-header">
-                        <span class="tag tag-external">Amadeus</span>
-                        <span class="card-lib">ECharts</span>
-                    </div>
-                    <h3>Aviación vs CO2</h3>
-                    <p>Infraestructura aérea y su relación con emisiones contaminantes</p>
-                    <div class="card-footer">
-                        <span class="card-date">OAuth 2.0</span>
-                        <span class="arrow-link">Explorar →</span>
-                    </div>
-                </div>
-            </div>
-        </a>
 
         <a href="/integrations/pablo/worldbank" class="card-link">
             <div class="card external">
@@ -114,7 +94,6 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-external">World Bank</span>
-                        <span class="card-lib">Highcharts</span>
                     </div>
                     <h3>PIB vs Emisiones</h3>
                     <p>Riqueza económica y su impacto en emisiones de CO2</p>
@@ -132,7 +111,6 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-external">RestCountries</span>
-                        <span class="card-lib">ApexCharts</span>
                     </div>
                     <h3>Demografía y Clima</h3>
                     <p>Población mundial y su correlación con emisiones</p>
@@ -144,23 +122,6 @@
             </div>
         </a>
 
-        <a href="/integrations/pablo/renewables" class="card-link">
-            <div class="card external">
-                <div class="card-accent" style="background: linear-gradient(135deg, #ef4444, #f87171);"></div>
-                <div class="card-content">
-                    <div class="card-header">
-                        <span class="tag tag-external">ReliefWeb</span>
-                        <span class="card-lib">Plotly</span>
-                    </div>
-                    <h3>Desastres Naturales</h3>
-                    <p>Temperaturas extremas vs eventos catastróficos registrados</p>
-                    <div class="card-footer">
-                        <span class="card-date">ONU Data</span>
-                        <span class="arrow-link">Explorar →</span>
-                    </div>
-                </div>
-            </div>
-        </a>
     </div>
 
     <!-- Sección: Integraciones con Compañeros -->
@@ -176,12 +137,10 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-internal">Externa</span>
-                        <span class="card-lib">ApexCharts</span>
                     </div>
                     <h3>Estrés Hídrico</h3>
                     <p>Densidad poblacional vs Recursos hídricos disponibles</p>
                     <div class="card-footer">
-                        <span class="card-date">Mixto</span>
                         <span class="arrow-link">Ver →</span>
                     </div>
                 </div>
@@ -193,7 +152,6 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-internal">Grupo 30</span>
-                        <span class="card-lib">ECharts Rose</span>
                     </div>
                     <h3>Olimpiadas y Clima</h3>
                     <p>Rendimiento atlético vs condiciones térmicas</p>
@@ -210,12 +168,10 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-internal">Grupo 12</span>
-                        <span class="card-lib">AnyChart</span>
                     </div>
                     <h3>Fertilidad Global</h3>
                     <p>Tasas de natalidad y su vínculo con temperaturas</p>
                     <div class="card-footer">
-                        <span class="card-date">Treemap</span>
                         <span class="arrow-link">Ver →</span>
                     </div>
                 </div>
@@ -232,7 +188,6 @@
                     <h3>Sostenibilidad ESG</h3>
                     <p>Rendimiento empresarial vs indicadores climáticos</p>
                     <div class="card-footer">
-                        <span class="card-date">Stepped Area</span>
                         <span class="arrow-link">Ver →</span>
                     </div>
                 </div>
@@ -244,12 +199,10 @@
                 <div class="card-content">
                     <div class="card-header">
                         <span class="tag tag-internal">Grupo 13</span>
-                        <span class="card-lib">ZingChart</span>
                     </div>
                     <h3>Exportaciones</h3>
                     <p>Comercio internacional y temperatura media global</p>
                     <div class="card-footer">
-                        <span class="card-date">Área Chart</span>
                         <span class="arrow-link">Ver →</span>
                     </div>
                 </div>

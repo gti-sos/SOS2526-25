@@ -1,207 +1,189 @@
 <script>
     import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
 
     // SVELTE 5 RUNES
-    let message = $state("Cargando e integrando bases de datos...");
-    let chartElement;
-    let chartInstance = $state(null);
-    
-    let allCrossedData = $state([]); 
-    let availableYears = $state([]); 
-    let selectedYear = $state("Todos"); 
-
-    $effect(() => {
-        if (chartInstance && allCrossedData.length > 0) {
-            actualizarGrafica(selectedYear);
-        }
-    });
+    let message = $state("Cargando métricas globales de CO₂...");
+    let fallbackActivado = $state(false);
 
     onMount(async () => {
-        try {
-            const ApexCharts = (await import('apexcharts')).default;
+        if (!browser) return;
 
-            // 1. Llamamos a TU API y al Proxy del G17
-            const resMis = await fetch('/api/v2/average-annual-temperatures');
-            console.log("Debug: Entrando en la api de Pablo...");
-            const resG17 = await fetch('/api/proxy/g17/water-productivities');
-
-            if (!resMis.ok) throw new Error("Fallo en API propia (Temperaturas).");
-            if (!resG17.ok) throw new Error("Fallo en la API del compañero (Productividad Agua).");
-
-            const misDatos = await resMis.json();
-            const g17Datos = await resG17.json();
-
-            let tempCrossed = [];
-            let yearsSet = new Set(); 
-
-            // 2. Cruzamos los datos
-            misDatos.forEach(mi => {
-                // Buscamos el mismo país y año en los datos del G17
-                let aguaDelPais = g17Datos.filter(g => 
-                    String(mi.country).trim().toLowerCase() === String(g.country).trim().toLowerCase() &&
-                    String(mi.year) === String(g.year)
-                );
-
-                if (aguaDelPais.length > 0) {
-                    // Tomamos el primer registro coincidente
-                    let datosAgua = aguaDelPais[0]; 
-                    
-                    // Buscamos la propiedad numérica de su API (ej. water_productivity)
-                    // Si no sabes el nombre exacto del campo de su API, esto pilla el primer número que no sea el año
-                    let valorAgua = datosAgua.water_productivity || datosAgua.productivity || Object.values(datosAgua).find(v => typeof v === 'number' && v !== datosAgua.year) || 0;
-
-                    tempCrossed.push({
-                        country: mi.country,
-                        year: String(mi.year),
-                        
-                        // MIS CAMPOS (Pablo)
-                        x: Number(mi.temperature) || 0,        // Eje X: Temperatura
-                        miCo2: Number(mi.co2_emission) || 0,   
-                        miLluvia: Number(mi.precipitation) || 0,  
-                        
-                        // SUS CAMPOS (G17)
-                        y: Number(valorAgua),                  // Eje Y: Productividad del agua
-                    });
-                    
-                    yearsSet.add(String(mi.year));
-                }
-            });
-
-            if (tempCrossed.length === 0) {
-                message = "⚠️ No hay coincidencias exactas de País y Año entre ambas APIs. Revisa que tengan países en común.";
-                return;
-            }
-
-            allCrossedData = tempCrossed;
-            availableYears = Array.from(yearsSet).sort(); 
-            message = ""; 
-
-            // 3. Configuración del Gráfico ApexCharts
-            const options = {
-                series: [], 
-                chart: {
-                    type: 'scatter',
-                    height: 500,
-                    background: 'transparent',
-                    animations: { enabled: true, easing: 'easeinout', speed: 800 },
-                    toolbar: { show: true }
-                },
-                title: { text: 'Relación: Temperatura Media vs Productividad del Agua', style: { color: '#fff' } },
-                xaxis: { 
-                    title: { text: 'Temperatura Media (ºC)', style: { color: '#00f2fe' } },
-                    labels: { style: { colors: '#9ca3af' }, formatter: (val) => val.toFixed(1) + ' ºC' },
-                    tickAmount: 8
-                },
-                yaxis: { 
-                    title: { text: 'Productividad del Agua', style: { color: '#10b981' } },
-                    labels: { style: { colors: '#9ca3af' } }
-                },
-                theme: { mode: 'dark' },
-                markers: { size: 9, hover: { size: 14 } },
-                colors: ['#00f2fe'],
-                
-                // TOOLTIP PROFESIONAL A DOS COLUMNAS
-                tooltip: {
-                    custom: function({ series, seriesIndex, dataPointIndex, w }) {
-                        let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-                        return `
-                            <div style="padding: 15px; background: #1f2937; border: 1px solid #00f2fe; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-                                <strong style="color: #00f2fe; font-size: 1.2rem;">🌍 ${data.country} (${data.year})</strong>
-                                <hr style="border-color: #374151; margin: 10px 0;" />
-                                
-                                <div style="display: flex; gap: 20px;">
-                                    <div style="color: #e2e8f0; font-size: 0.95rem;">
-                                        <strong style="color: #00f2fe;">🌡️ Mis Datos (Clima)</strong><br/>
-                                        🔥 <b>Temp. Media:</b> ${data.x} ºC<br/>
-                                        ☁️ <b>Emisiones CO2:</b> ${data.miCo2}<br/>
-                                        🌧️ <b>Precipitación:</b> ${data.miLluvia}
-                                    </div>
-                                    
-                                    <div style="border-left: 1px solid #374151; padding-left: 15px; color: #e2e8f0; font-size: 0.95rem;">
-                                        <strong style="color: #10b981;">💧 Datos G17 (Agua)</strong><br/>
-                                        📈 <b>Productividad:</b> ${data.y}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-            };
-
-            chartInstance = new ApexCharts(chartElement, options);
-            chartInstance.render();
-
-            actualizarGrafica("Todos");
-
-        } catch (e) {
-            console.error("Error capturado:", e);
-            message = e.message;
-        }
+        // Cargamos G2Plot (AntV) desde su CDN oficial
+        const script = document.createElement('script');
+        script.src = "https://unpkg.com/@antv/g2plot@2.4.31/dist/g2plot.min.js";
+        script.onload = () => { loadAndDraw(); };
+        document.head.appendChild(script);
     });
 
-    function actualizarGrafica(filtroAno) {
-        let datosFiltrados = allCrossedData;
-        if (filtroAno !== "Todos") {
-            datosFiltrados = allCrossedData.filter(d => d.year === filtroAno);
+    async function loadAndDraw() {
+        try {
+            const origin = browser ? window.location.origin : '';
+            
+            // 1. Fetch a tu API de Temperaturas y CO2
+            const resTemp = await fetch(`${origin}/api/v2/average-annual-temperatures`);
+            let rawData = resTemp.ok ? await resTemp.json() : [];
+            let dataTemp = Array.isArray(rawData) ? rawData : (rawData.data || []);
+
+            let chartData = [];
+
+            if (dataTemp.length > 0) {
+                // Extraemos el último registro de CO2 por cada país
+                const uniqueCountries = [...new Set(dataTemp.map(d => d.country))];
+                
+                uniqueCountries.forEach(country => {
+                    // Ordenamos por año descendente para coger el dato más reciente
+                    const records = dataTemp.filter(d => d.country === country).sort((a,b) => b.year - a.year);
+                    if (records.length > 0 && records[0].co2_emission) {
+                        chartData.push({
+                            country: country,
+                            co2: parseFloat(records[0].co2_emission)
+                        });
+                    }
+                });
+                
+                // Ordenamos de mayor a menor contaminación y cogemos los 12 primeros 
+                // para que la "Rosa" quede estéticamente equilibrada
+                chartData = chartData.sort((a, b) => b.co2 - a.co2).slice(0, 12);
+            }
+
+            // 2. MODO RESPALDO (Fallback)
+            if (chartData.length < 3) {
+                fallbackActivado = true;
+                chartData = [
+                    { country: "China", co2: 10500 },
+                    { country: "USA", co2: 5000 },
+                    { country: "India", co2: 2500 },
+                    { country: "Rusia", co2: 1700 },
+                    { country: "Japón", co2: 1100 },
+                    { country: "Alemania", co2: 700 },
+                    { country: "Corea Sur", co2: 600 },
+                    { country: "Canadá", co2: 550 }
+                ];
+            }
+
+            message = "";
+
+            // 3. Dibujar la gráfica con AntV G2Plot
+            setTimeout(() => {
+                const container = document.getElementById('rose-chart');
+                if (!container) return;
+
+                const rosePlot = new window.G2Plot.Rose(container, {
+                    data: chartData,
+                    xField: 'country', // La categoría (Los pétalos)
+                    yField: 'co2',     // El valor (La longitud del pétalo)
+                    seriesField: 'country', // Para que cada pétalo tenga un color distinto
+                    radius: 0.9,       // Tamaño general de la rosa
+                    innerRadius: 0.15, // Crea un hueco en el centro tipo "Donut"
+                    theme: 'dark',     // Modo oscuro nativo
+                    legend: { 
+                        position: 'bottom',
+                    },
+                    label: {
+                        offset: -15, // Pone el texto dentro del pétalo
+                        style: {
+                            fill: '#ffffff',
+                            fontSize: 13,
+                            fontWeight: 'bold',
+                            shadowBlur: 4,
+                            shadowColor: 'rgba(0, 0, 0, 0.8)'
+                        }
+                    },
+                    tooltip: {
+                        formatter: (datum) => {
+                            return { name: 'Emisiones Totales', value: datum.co2 + ' Mt CO₂' };
+                        }
+                    },
+                    animation: {
+                        appear: {
+                            animation: 'wave-in', // Animación de entrada circular
+                            duration: 1500
+                        }
+                    }
+                });
+
+                rosePlot.render();
+            }, 150);
+
+        } catch(e) {
+            console.error(e);
+            message = "❌ Error: " + e.message;
         }
-        chartInstance.updateSeries([{ name: 'Países', data: datosFiltrados }]);
     }
 </script>
 
 <main>
     <div class="header-nav">
-        <a href="/integrations" class="back-btn">⬅ Volver a Integraciones de Pablo</a>
+        <a href="/integrations" class="back-btn" data-sveltekit-reload>⬅ Volver al Panel</a>
     </div>
 
     <div class="card">
         <div class="top-bar">
-            <h2>🌍 Clima vs Productividad Hídrica (G17)</h2>
-            
-            {#if availableYears.length > 0}
-                <div class="filtro">
-                    <label for="year-select">Filtrar por Año: </label>
-                    <select id="year-select" bind:value={selectedYear}>
-                        <option value="Todos">Mostrar Todos ({allCrossedData.length} cruces)</option>
-                        {#each availableYears as ano}
-                            <option value={ano}>{ano}</option>
-                        {/each}
-                    </select>
-                </div>
-            {/if}
+            <h2>🌸 Emisiones Globales de CO₂</h2>
+            <p class="subtitle">Gráfico de Rosa de Nightingale usando <b>AntV G2Plot</b>.</p>
         </div>
+
+        {#if fallbackActivado}
+            <div class="fallback-warning">
+                ⚠️ Modo Respaldo: No se detectaron suficientes datos en la API. Usando top de países simulado.
+            </div>
+        {/if}
 
         {#if message}
             <p class="status-msg">{message}</p>
         {/if}
 
         <div class="chart-box" class:hidden={!!message}>
-            <div bind:this={chartElement}></div>
+            <div id="rose-chart" style="height: 550px; width: 100%;"></div>
+        </div>
+        
+        <div class="info-box">
+            <p>💡 <strong>¿Cómo interpretar este Gráfico de Rosa?</strong></p>
+            <ul>
+                <li>🍰 <strong>Ángulo Constante:</strong> A diferencia de un gráfico de tarta, todos los "pétalos" tienen exactamente el mismo ancho.</li>
+                <li>📏 <strong>Longitud Variable:</strong> Es el <i>largo</i> (radio) de cada porción lo que indica la cantidad de CO₂ emitido.</li>
+                <li>🏆 <strong>Visualización de Rankings:</strong> Es ideal para ver de un vistazo rápido la enorme desproporción entre los mayores emisores mundiales y el resto.</li>
+            </ul>
         </div>
     </div>
 </main>
 
 <style>
     :global(body) { background: #0f172a; color: white; margin: 0; font-family: 'Segoe UI', sans-serif; }
-    main { padding: 2rem; max-width: 1100px; margin: auto; }
+    main { padding: 2rem; max-width: 1000px; margin: auto; }
     
-    .header-nav { margin-bottom: 2rem; }
-    .back-btn { color: #00f2fe; text-decoration: none; font-weight: bold; border: 1px solid #00f2fe; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.3s; }
-    .back-btn:hover { background: rgba(0, 242, 254, 0.2); }
+    .header-nav { margin-bottom: 1.5rem; }
+    .back-btn { color: #c084fc; text-decoration: none; font-weight: bold; border: 1px solid #c084fc; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.3s; }
+    .back-btn:hover { background: rgba(192, 132, 252, 0.2); }
     
     .card { background: #1e293b; padding: 2rem; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
     
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-    h2 { margin: 0; color: #10b981; }
-    
-    .filtro label { font-weight: bold; margin-right: 0.5rem; color: #9ca3af; }
-    select { 
-        background: #0f172a; color: #00f2fe; border: 1px solid #00f2fe; 
-        padding: 0.5rem 1rem; border-radius: 8px; font-size: 1rem; cursor: pointer; outline: none;
-    }
-    select:focus { box-shadow: 0 0 10px rgba(0, 242, 254, 0.5); }
+    .top-bar { text-align: center; margin-bottom: 1.5rem; }
+    h2 { margin: 0 0 0.5rem 0; color: #c084fc; font-size: 2rem;}
+    .subtitle { color: #94a3b8; margin: 0; }
     
     .status-msg { color: #facc15; font-size: 1.2rem; text-align: center; border: 2px dashed #facc15; padding: 1rem; border-radius: 8px; }
     
-    .chart-box { background: #0f172a; border-radius: 10px; padding: 1rem; }
+    .fallback-warning {
+        background-color: rgba(239, 68, 68, 0.15);
+        border: 1px solid #ef4444;
+        color: #fca5a5;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .chart-box { background: #0f172a; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; }
     .hidden { display: none; }
+    
+    .info-box {
+        padding: 1.5rem;
+        background: rgba(192, 132, 252, 0.08);
+        border-radius: 12px;
+        border: 1px solid rgba(192, 132, 252, 0.2);
+    }
+    .info-box p { margin: 0 0 1rem 0; color: #f3e8ff; font-size: 1.1rem;}
+    .info-box ul { margin: 0; padding-left: 1.5rem; color: #d8b4fe; line-height: 1.8;}
 </style>
