@@ -89,92 +89,38 @@ app.get('/api/proxy/g14/meteorites', async (req, res) => {
 });
 
 
-// PROXY para Pablo (G25) -> API Water Productivities de Mario (G17)
-app.get('/api/proxy/mario/water-productivities', async (req, res) => {
-    // URL real de la API de Mario en Render
-    const remoteUrl = 'https://sos2526-17.onrender.com/api/v1/water-productivities';
-});
-
-
-// PROXY para Pablo -> API AIDS (Grupo 21)
-app.get('/api/proxy/pablo/aids', async (req, res) => {
-    // AÑADIMOS LOS PARÁMETROS AQUÍ para evitar el límite de 10 registros
-    const remoteUrl = 'https://sos2526-21.onrender.com/api/v1/aids-deaths-stats?country=Afghanistan&year=2015';
+app.get('/api/proxy/g17/water-productivities', async (req, res) => {
     try {
-        const response = await fetch(remoteUrl);
-        if (!response.ok) throw new Error("Error conectando con la API del Grupo 17");
-        
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error("Proxy Mario G17 Error:", error);
-        res.status(500).json({ error: "No se pudo conectar con la API de Mario a través del proxy" });
-    }
-});
-// PROXY para Pablo -> API Bitcoin (Blockchain.info)
-app.get('/api/proxy/pablo/bitcoin', async (req, res) => {
-    // Usamos una API súper estable que nos da los últimos 6 años de precios
-    const remoteUrl = 'https://api.blockchain.info/charts/market-price?timespan=6years&sampled=true&format=json';
-    try {
-        const response = await fetch(remoteUrl);
-        if (!response.ok) throw new Error("Error en API remota Bitcoin");
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "No se pudo conectar con la API de Bitcoin" });
-    }
-});
+        let response = await fetch('https://sos2526-17.onrender.com/api/v1/water-productivities');
+        let data;
 
-// PROXY para Pablo -> API de Amadeus (Aviación) - Flujo OAuth 2.0 Completo
-app.get('/api/proxy/pablo/amadeus', async (req, res) => {
-    // Buscaremos por la capital del país para ver su infraestructura aérea
-    const keyword = req.query.keyword || 'MADRID';
+        if (response.ok) {
+            data = await response.json();
+        }
 
-    // 1. CREDENCIALES DE TU APP (Puedes crearlas gratis en developers.amadeus.com)
-    // Si las dejas vacías, el código es perfectamente válido para que el profesor vea 
-    // la arquitectura OAuth, y el frontend usará el Modo Respaldo.
-    const clientId = 'TU_API_KEY_AMADEUS';
-    const clientSecret = 'TU_API_SECRET_AMADEUS';
-
-    try {
-        // ========================================================
-        // PASO 1: AUTENTICACIÓN OAUTH 2.0 (Obtener Token Temporal)
-        // ========================================================
-        const tokenParams = new URLSearchParams();
-        tokenParams.append('grant_type', 'client_credentials');
-        tokenParams.append('client_id', clientId);
-        tokenParams.append('client_secret', clientSecret);
-
-        const tokenResponse = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: tokenParams
-        });
-
-        if (!tokenResponse.ok) throw new Error("Fallo al obtener el Token OAuth de Amadeus");
-        const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token; // ¡El Token dinámico generado!
-
-        // ========================================================
-        // PASO 2: CONSUMIR LA API USANDO EL TOKEN OAUTH
-        // ========================================================
-        // Buscamos infraestructura de aeropuertos asociada a esa ciudad
-        const apiResponse = await fetch(`https://test.api.amadeus.com/v1/reference-data/locations?subType=AIRPORT&keyword=${keyword}`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
+        // Si falla o viene vacío, intentamos despertar su API con loadInitialData
+        if (!response.ok || (Array.isArray(data) && data.length === 0)) {
+            console.log("G17 (Agua): Detectado error o datos vacíos. Cargando datos iniciales...");
+            
+            await fetch("https://sos2526-17.onrender.com/api/v1/water-productivities/loadInitialData");
+            
+            let secondResponse = await fetch('https://sos2526-17.onrender.com/api/v1/water-productivities');
+            
+            if (secondResponse.ok) {
+                data = await secondResponse.json();
+            } else {
+                data = [];
             }
-        });
+        }
+        
+        res.json(data);
 
-        const data = await apiResponse.json();
-        res.json(data); // Devolvemos los datos al frontend
     } catch (error) {
-        console.error("Error OAuth Amadeus:", error);
-        res.status(500).json({ error: "Error en el flujo OAuth de Amadeus" });
+        console.error("Error en el proxy G17:", error);
+        res.status(500).json({ error: 'Fallo al contactar con la API remota de Productividad del Agua.' });
     }
 });
+
 // PROXY para Pablo -> API de Calidad del Aire (OpenAQ) - VERSIÓN ROBUSTA
 app.get('/api/proxy/pablo/airquality', async (req, res) => {
     const countryCode = req.query.countryCode || 'ES';
@@ -217,17 +163,63 @@ app.get('/api/proxy/pablo/github-token', async (req, res) => {
     try {
         const r = await fetch('https://github.com/login/oauth/access_token', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Accept': 'application/json' 
+            },
             body: JSON.stringify({
-                client_id: 'TU_CLIENT_ID',
-                client_secret: 'TU_CLIENT_SECRET',
-                code
+                // Las claves ahora se leen de forma segura desde las variables de entorno
+                client_id: process.env.GITHUB_CLIENT_ID,
+                client_secret: process.env.GITHUB_CLIENT_SECRET,
+                code: code
             })
         });
         const data = await r.json();
-        res.json(data); // devuelve { access_token, token_type, scope }
+        res.json(data); 
     } catch (e) {
+        console.error("Error en OAuth:", e);
         res.status(500).json({ error: 'OAuth token exchange failed' });
+    }
+});
+// ============================================================================
+// PROXY PARA INTEGRACIÓN EXTERNA: API PÚBLICA NASA POWER (Radiación Solar)
+// ============================================================================
+app.get('/api/proxy/pablo/nasa-power', async (req, res) => {
+    const lat = parseFloat(req.query.lat);
+    const lon = parseFloat(req.query.lon);
+    
+    if (isNaN(lat) || isNaN(lon)) {
+        return res.status(400).json({ error: "Los parámetros 'lat' y 'lon' son obligatorios." });
+    }
+
+    try {
+        const url = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=ALLSKY_SFC_SW_DWN&community=re&longitude=${lon}&latitude=${lat}&format=json`;
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Error HTTP de la NASA: ${response.status}`);
+        
+        const data = await response.json();
+
+        // LOS MESES EN LA NASA ESTÁN EN INGLÉS (JAN, FEB, MAR...)
+        const monthly = data.properties.parameter.ALLSKY_SFC_SW_DWN;
+        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
+        let annualSum = 0;
+        months.forEach((month, i) => {
+            const dailyAvg = monthly[month] || 0;     // El dato viene en kWh/m²/día
+            annualSum += dailyAvg * daysInMonth[i];   // Multiplicamos por los días del mes
+        });
+
+        res.json({ 
+            lat: lat, 
+            lon: lon, 
+            solar_radiation: Math.round(annualSum)
+        });
+
+    } catch (error) {
+        console.error("Error en proxy NASA POWER:", error.message);
+        res.status(500).json({ error: "No se pudo conectar con la API de NASA POWER." });
     }
 });
 
