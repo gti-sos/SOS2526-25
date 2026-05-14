@@ -56,15 +56,15 @@
                 <p>Nationalize.io (Uso Textual)</p>
             </a>
             
-            <a href="/integrations/aimar/books" class="card ext-card">
-                <span class="icon">📚</span>
-                <h3>Libros publicados por pais</h3>
-                <p>Open Library(Chartist.js)</p>
+            <a href="/integrations/aimar/meals" class="card ext-card">
+                <span class="icon">🥘</span>
+                <h3>Turismo vs Atractivo Gastronómico</h3>
+                <p>TheMealDB(Chartist.js)</p>
             </a>
             
             <a href="/integrations/aimar/cloud" class="card ext-card">
                 <span class="icon">☁️</span>
-                <h3>Turismo vs Infraestructura</h3>
+                <h3>Turistas vs Latitud Geográfica</h3>
                 <p>Zippopotam (AnyChart TagCloud)</p>
             </a>
         </div>

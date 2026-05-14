@@ -3,7 +3,7 @@
     import { browser } from '$app/environment';
 
     let chartContainer;
-    let message = $state("Generando nube de infraestructura logística...");
+    let message = $state("Cruzando Turistas con datos geográficos (Zippopotam)...");
     let isLoading = $state(true);
 
     async function safeJson(res) {
@@ -14,120 +14,137 @@
         if (!browser) return;
 
         try {
-            // 1. Tus datos (Ruta absoluta a Render)
-            const resMis = await fetch("https://sos2526-25.onrender.com/api/v2/international-tourist-arrivals");
-            const misDatos = await safeJson(resMis);
+            // 1. Obtener datos
+            const resMis = await fetch("/api/v2/international-tourist-arrivals");
+            let misDatos = await safeJson(resMis);
 
             if (!misDatos || misDatos.length === 0) {
-                message = "⚠️ No hay datos de turistas. Carga el initialData.";
-                isLoading = false; return;
+                await fetch("/api/v2/international-tourist-arrivals/loadInitialData");
+                const resRetry = await fetch("/api/v2/international-tourist-arrivals");
+                misDatos = await safeJson(resRetry);
             }
 
+            // 2. Agrupar por país
             const unicos = new Map();
-            misDatos.forEach(d => {
-                let p = String(d.country || "").trim();
-                let t = Number(d.air_arrival) || Number(d.arrivals_air) || 0;
-                if (!unicos.has(p)) unicos.set(p, t);
-                else unicos.set(p, unicos.get(p) + t);
-            });
+            if (misDatos) {
+                misDatos.forEach(d => {
+                    let p = String(d.country || "").trim();
+                    let t = Number(d.air_arrival) || Number(d.arrivals_air) || 0;
+                    if (!unicos.has(p)) unicos.set(p, t);
+                    else unicos.set(p, unicos.get(p) + t);
+                });
+            }
 
-            const listaPaises = Array.from(unicos.entries())
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10); // Cogemos 10 para que la nube se vea llena
-
-            const cpMapping = {
-                "Spain": { iso: "ES", cp: "28001" },
-                "France": { iso: "FR", cp: "75001" },
-                "USA": { iso: "US", cp: "90210" },
-                "Germany": { iso: "DE", cp: "10115" },
-                "Italy": { iso: "IT", cp: "00118" },
-                "Mexico": { iso: "MX", cp: "01000" }
+            // 3. Diccionario
+            const zipMapping = {
+                "Spain": { cc: "es", zip: "41001" },
+                "Germany": { cc: "de", zip: "10115" },
+                "France": { cc: "fr", zip: "75001" },
+                "Italy": { cc: "it", zip: "00184" },
+                "Mexico": { cc: "mx", zip: "01000" },
+                "USA": { cc: "us", zip: "90210" },
+                "Canada": { cc: "ca", zip: "K1A" }
             };
 
             const chartData = [];
 
-            for (const [pais, turistas] of listaPaises) {
-                const conf = cpMapping[pais] || { iso: "ES", cp: "28001" };
-                
-                // 2. API EXTERNA: Zippopotam.us (SIN PROXY)
-                const resExt = await fetch(`https://api.zippopotam.us/${conf.iso}/${conf.cp}`);
-                const dataExt = await safeJson(resExt);
+            const listaPaises = Array.from(unicos.entries())
+                .filter(([pais, _]) => zipMapping[pais])
+                .slice(0, 10);
 
-                chartData.push({
-                    x: pais,
-                    value: turistas, // Define el TAMAÑO en la nube
-                    puntos: dataExt && dataExt.places ? dataExt.places.length : 0,
-                    lugar: dataExt && dataExt.places ? dataExt.places[0]["place name"] : "N/A"
-                });
+            for (const [pais, turistas] of listaPaises) {
+                const config = zipMapping[pais];
+                
+                // 4. API Externa
+                const resZippo = await fetch(`https://api.zippopotam.us/${config.cc}/${config.zip}`);
+                const dataZippo = await safeJson(resZippo);
+                
+                if (dataZippo && dataZippo.places) {
+                    const infoGeo = dataZippo.places[0];
+                    const lat = parseFloat(infoGeo.latitude);
+                    
+                    // LÓGICA DE COLOR REAL POR LATITUD
+                    let colorWord = "#38bdf8"; // Sur -> Azul (Ej: Mexico, USA sur)
+                    if (lat >= 45) colorWord = "#f43f5e"; // Norte -> Rojo (Ej: Canada, Alemania)
+                    else if (lat >= 35) colorWord = "#facc15"; // Centro -> Amarillo (Ej: España, Italia)
+
+                    chartData.push({
+                        x: pais,
+                        value: turistas, 
+                        latitud: lat,
+                        lugar: infoGeo["place name"],
+                        estado: infoGeo["state"],
+                        fill: colorWord // AnyChart usa esto para pintar cada palabra correctamente
+                    });
+                }
             }
 
             const initChart = () => {
-                anychart.onDocumentReady(() => {
-                    chartContainer.innerHTML = ''; 
-                    const chart = anychart.tagCloud(chartData);
-                    
-                    chart.angles([0, -45, 90]);
-                    chart.colorRange(false);
-                    chart.background().fill("transparent");
-                    
-                    // Paleta de colores atractiva
-                    chart.palette(["#38bdf8", "#fb7185", "#c084fc", "#4ade80", "#fbbf24"]);
+                if (!window.anychart) return;
+                
+                // Limpieza drástica para evitar el solapamiento del que te quejabas
+                chartContainer.innerHTML = '';
 
-                    // TOOLTIP con el cruce
-                    chart.tooltip().useHtml(true);
-                    chart.tooltip().format(function() {
-                        return `🛬 Turistas: <b style="color:#38bdf8">${this.getData("value").toLocaleString()}</b><br/>
-                                📍 Puntos en zona: <b style="color:#fb7185">${this.getData("puntos")}</b><br/>
-                                🏙️ Referencia: <i>${this.getData("lugar")}</i>`;
-                    });
-
-                    chart.container(chartContainer);
-                    chart.draw();
-                    isLoading = false;
-                    message = "";
+                const chart = anychart.tagCloud(chartData);
+                chart.background().fill("transparent");
+                chart.angles([0]); 
+                chart.fontFamily('Segoe UI, sans-serif');
+                
+                chart.tooltip().useHtml(true);
+                chart.tooltip().format(function() {
+                    return `
+                        <div style="font-family: sans-serif; padding: 5px;">
+                            <span style="color: #38bdf8; font-weight: bold; font-size: 14px;">${this.x}</span><br/>
+                            <hr style="border: 0.1px solid #444; margin: 5px 0;">
+                            🛬 Turistas (Acumulado): <b>${this.value.toLocaleString()}</b><br/>
+                            🌍 Latitud (Zippo): <b>${this.getData('latitud')}°</b><br/>
+                            📍 Ref. Postal: <b>${this.getData('lugar')} (${this.getData('estado')})</b>
+                        </div>
+                    `;
                 });
+
+                chart.container(chartContainer);
+                chart.draw();
+                isLoading = false;
+                message = "";
             };
 
             if (window.anychart) {
                 initChart();
             } else {
-                let script = document.getElementById('anychart-script');
-                if (!script) {
-                    script = document.createElement('script');
-                    script.id = 'anychart-script';
-                    script.src = "https://cdn.anychart.com/releases/8.11.0/js/anychart-bundle.min.js";
-                    document.head.appendChild(script);
-                }
-                script.addEventListener('load', initChart);
+                const script = document.createElement('script');
+                script.src = "https://cdn.anychart.com/releases/8.11.0/js/anychart-bundle.min.js";
+                document.head.appendChild(script);
+                script.onload = initChart;
             }
 
         } catch (e) {
             console.error(e);
-            message = "Error cargando la Nube de Etiquetas.";
+            message = "Error en la nube geográfica.";
             isLoading = false;
         }
     });
 </script>
 
 <main>
-    <div class="header-nav">
-        <a href="/integrations/aimar" class="back-btn">⬅ Volver al Panel</a>
-    </div>
+    <div class="header-nav"><a href="/integrations/aimar" class="back-btn">⬅ Volver al panel</a></div>
 
     <div class="card">
         <div class="top-bar">
-            <h2>☁️ Nube: Turismo vs Infraestructura (Zippopotam)</h2>
-            <p class="desc">El tamaño de la palabra indica el volumen de turistas. El tooltip muestra datos de geolocalización externa.</p>
+            <h2>☁️ Nube: Turistas vs Latitud Geográfica</h2>
+            <p class="desc">Cruce de datos con <strong>Zippopotam API</strong>. Tamaño: Turistas | Color: Latitud (Norte=Rojo, Centro=Amarillo, Sur=Azul).</p>
         </div>
 
-        {#if isLoading || message}
+        {#if isLoading}
             <div class="loading-state">
-                {#if isLoading}<span class="spinner">☁️</span><br><br>{/if}
-                {message}
+                <span class="spinner">🌍</span>
+                <p>{message}</p>
             </div>
+        {:else if message}
+            <div class="error-msg">{message}</div>
         {/if}
 
-        <div class="chart-box" class:hidden={isLoading || (message && message.includes("Error"))}>
+        <div class="chart-box" style:display={isLoading || message ? 'none' : 'block'}>
             <div bind:this={chartContainer} style="width: 100%; height: 500px;"></div>
         </div>
     </div>
@@ -136,13 +153,14 @@
 <style>
     :global(body) { background: #0f172a; color: white; margin: 0; font-family: 'Segoe UI', sans-serif; }
     main { padding: 2rem; max-width: 1000px; margin: auto; }
-    .card { background: #1e293b; padding: 2rem; border-radius: 24px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-    .top-bar h2 { color: #38bdf8; margin: 0; }
-    .desc { color: #94a3b8; margin-top: 0.5rem; margin-bottom: 2rem; }
+    .card { background: #1e293b; padding: 2rem; border-radius: 24px; border: 1px solid #334155; }
+    .top-bar h2 { color: #38bdf8; margin: 0; font-size: 1.8rem; }
+    .desc { color: #94a3b8; margin-bottom: 2rem; }
     .loading-state { text-align: center; padding: 5rem; color: #38bdf8; }
-    .spinner { font-size: 3rem; display: inline-block; animation: pulse 1.5s infinite; }
+    .spinner { font-size: 3rem; display: inline-block; animation: rotate 2s linear infinite; }
     .chart-box { background: #0b1120; border-radius: 16px; padding: 1rem; border: 1px solid #334155; }
-    .hidden { display: none !important; }
     .back-btn { color: #38bdf8; text-decoration: none; border: 1px solid #38bdf8; padding: 0.5rem 1rem; border-radius: 8px; font-weight: bold; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    :global(.anychart-ui-support) { color: white !important; }
 </style>
