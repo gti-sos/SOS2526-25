@@ -79,7 +79,19 @@ let PSAdata_initial = [
     { country: "El Salvador", year: 1969, co2_emission: 2.1, precipitation: 1800.0, temperature: 24.1 },
     { country: "Greece", year: 2020, co2_emission: 60.2, precipitation: 650.0, temperature: 17.5 },
     { country: "Afghanistan", year: 2002, co2_emission: 1.5, precipitation: 300.0, temperature: 12.8 },
-    { country: "Estonia", year: 2007, co2_emission: 18.2, precipitation: 700.0, temperature: 5.5 }
+    { country: "Estonia", year: 2007, co2_emission: 18.2, precipitation: 700.0, temperature: 5.5 },
+
+    // --- DATOS EXACTOS PARA CRUZAR CON EL GRUPO 17 (Productividad del Agua) ---
+    { country: "United Arab Emirates", year: 1981, co2_emission: 45.2, precipitation: 85.5, temperature: 27.4 },
+    { country: "Spain", year: 2000, co2_emission: 286.5, precipitation: 590.2, temperature: 13.8 },
+    { country: "Angola", year: 1988, co2_emission: 14.2, precipitation: 1010.4, temperature: 21.8 },
+    { country: "Barbados", year: 1963, co2_emission: 1.5, precipitation: 1250.0, temperature: 26.2 },
+    { country: "Albania", year: 1991, co2_emission: 7.4, precipitation: 1480.2, temperature: 11.4 },
+    { country: "Afghanistan", year: 2000, co2_emission: 0.8, precipitation: 295.5, temperature: 12.6 },
+    { country: "Afghanistan", year: 2014, co2_emission: 8.5, precipitation: 315.2, temperature: 13.5 },
+    { country: "Afghanistan", year: 2016, co2_emission: 8.9, precipitation: 327.5, temperature: 13.7 },
+    { country: "Argentina", year: 1977, co2_emission: 85.6, precipitation: 595.4, temperature: 14.6 },
+    { country: "Denmark", year: 1971, co2_emission: 62.1, precipitation: 745.8, temperature: 7.6 }
 ];
 export const loadPSA = (app) => {
 

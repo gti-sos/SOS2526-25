@@ -1,130 +1,207 @@
 <script>
     import { onMount } from 'svelte';
-    import { browser } from '$app/environment';
 
-    let message = $state("Conectando con el servidor de Mario (G17) vía Proxy...");
-    let fallbackActivado = $state(false);
+    // SVELTE 5 RUNES
+    let message = $state("Cargando e integrando bases de datos...");
+    let chartElement;
+    let chartInstance = $state(null);
+    
+    let allCrossedData = $state([]); 
+    let availableYears = $state([]); 
+    let selectedYear = $state("Todos"); 
 
-    onMount(async () => {
-        if (!browser) return;
-        const script = document.createElement('script');
-        script.src = "https://cdn.jsdelivr.net/npm/apexcharts";
-        script.onload = () => { loadAndDraw(); };
-        document.head.appendChild(script);
+    $effect(() => {
+        if (chartInstance && allCrossedData.length > 0) {
+            actualizarGrafica(selectedYear);
+        }
     });
 
-    async function loadAndDraw() {
+    onMount(async () => {
         try {
-            const origin = browser ? window.location.origin : '';
-            
-            // 1. Fetch a TU API LOCAL (Grupo 25)
-            // ⚠️ CAMBIA ESTO por tu ruta real
-            const resLocal = await fetch(`${origin}/api/v1/TU-API-AQUI`); 
-            let dataLocal = resLocal.ok ? await resLocal.json() : [];
+            const ApexCharts = (await import('apexcharts')).default;
 
-            // 2. Fetch a la API de Mario (Grupo 17) a través de tu PROXY
-            const resMario = await fetch(`${origin}/api/proxy/mario/water-productivities`);
-            let dataMario = resMario.ok ? await resMario.json() : [];
+            // 1. Llamamos a TU API y al Proxy del G17
+            const resMis = await fetch('/api/v2/average-annual-temperatures');
+            console.log("Debug: Entrando en la api de Pablo...");
+            const resG17 = await fetch('/api/proxy/g17/water-productivities');
 
-            let categories = [];
-            let seriesLocal = [];
-            let seriesWaterStress = []; // Dato de Mario
+            if (!resMis.ok) throw new Error("Fallo en API propia (Temperaturas).");
+            if (!resG17.ok) throw new Error("Fallo en la API del compañero (Productividad Agua).");
 
-            // 3. CRUZAR LOS DATOS (por País)
-            if (dataLocal.length > 0 && dataMario.length > 0) {
-                const validLocal = dataLocal.filter(d => d && d.country); 
-                const uniqueCountries = [...new Set(validLocal.map(d => d.country))];
-                
-                uniqueCountries.forEach(countryName => {
-                    // Buscamos si Mario tiene el mismo país
-                    const marioCountryData = dataMario.find(m => 
-                        m.country.toLowerCase() === countryName.toLowerCase()
-                    );
+            const misDatos = await resMis.json();
+            const g17Datos = await resG17.json();
+
+            let tempCrossed = [];
+            let yearsSet = new Set(); 
+
+            // 2. Cruzamos los datos
+            misDatos.forEach(mi => {
+                // Buscamos el mismo país y año en los datos del G17
+                let aguaDelPais = g17Datos.filter(g => 
+                    String(mi.country).trim().toLowerCase() === String(g.country).trim().toLowerCase() &&
+                    String(mi.year) === String(g.year)
+                );
+
+                if (aguaDelPais.length > 0) {
+                    // Tomamos el primer registro coincidente
+                    let datosAgua = aguaDelPais[0]; 
                     
-                    if (marioCountryData) {
-                        const miDato = validLocal.find(d => d.country === countryName);
+                    // Buscamos la propiedad numérica de su API (ej. water_productivity)
+                    // Si no sabes el nombre exacto del campo de su API, esto pilla el primer número que no sea el año
+                    let valorAgua = datosAgua.water_productivity || datosAgua.productivity || Object.values(datosAgua).find(v => typeof v === 'number' && v !== datosAgua.year) || 0;
+
+                    tempCrossed.push({
+                        country: mi.country,
+                        year: String(mi.year),
                         
-                        categories.push(countryName);
-                        // ⚠️ CAMBIA 'mi_variable' por el nombre del campo en tu base de datos
-                        seriesLocal.push(miDato.mi_variable || 0); 
-                        seriesWaterStress.push(marioCountryData.waterStress || 0);
-                    }
-                });
+                        // MIS CAMPOS (Pablo)
+                        x: Number(mi.temperature) || 0,        // Eje X: Temperatura
+                        miCo2: Number(mi.co2_emission) || 0,   
+                        miLluvia: Number(mi.precipitation) || 0,  
+                        
+                        // SUS CAMPOS (G17)
+                        y: Number(valorAgua),                  // Eje Y: Productividad del agua
+                    });
+                    
+                    yearsSet.add(String(mi.year));
+                }
+            });
+
+            if (tempCrossed.length === 0) {
+                message = "⚠️ No hay coincidencias exactas de País y Año entre ambas APIs. Revisa que tengan países en común.";
+                return;
             }
 
-            // MODO RESPALDO (Por si no hay coincidencias de países entre tu API y la suya)
-            if (categories.length === 0) {
-                fallbackActivado = true;
-                categories = ["Spain", "Afghanistan", "Denmark", "Argentina"];
-                seriesLocal = [50, 20, 80, 45]; // Tus datos simulados
-                seriesWaterStress = [42.5, 65.2, 18.4, 12.1]; // Datos de estrés de Mario
-            }
-
+            allCrossedData = tempCrossed;
+            availableYears = Array.from(yearsSet).sort(); 
             message = ""; 
 
-            // Renderizamos la gráfica mixta
-            setTimeout(() => {
-                const chartContainer = document.querySelector("#apex-chart");
-                if (!chartContainer) return; 
+            // 3. Configuración del Gráfico ApexCharts
+            const options = {
+                series: [], 
+                chart: {
+                    type: 'scatter',
+                    height: 500,
+                    background: 'transparent',
+                    animations: { enabled: true, easing: 'easeinout', speed: 800 },
+                    toolbar: { show: true }
+                },
+                title: { text: 'Relación: Temperatura Media vs Productividad del Agua', style: { color: '#fff' } },
+                xaxis: { 
+                    title: { text: 'Temperatura Media (ºC)', style: { color: '#00f2fe' } },
+                    labels: { style: { colors: '#9ca3af' }, formatter: (val) => val.toFixed(1) + ' ºC' },
+                    tickAmount: 8
+                },
+                yaxis: { 
+                    title: { text: 'Productividad del Agua', style: { color: '#10b981' } },
+                    labels: { style: { colors: '#9ca3af' } }
+                },
+                theme: { mode: 'dark' },
+                markers: { size: 9, hover: { size: 14 } },
+                colors: ['#00f2fe'],
+                
+                // TOOLTIP PROFESIONAL A DOS COLUMNAS
+                tooltip: {
+                    custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                        let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                        return `
+                            <div style="padding: 15px; background: #1f2937; border: 1px solid #00f2fe; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                                <strong style="color: #00f2fe; font-size: 1.2rem;">🌍 ${data.country} (${data.year})</strong>
+                                <hr style="border-color: #374151; margin: 10px 0;" />
+                                
+                                <div style="display: flex; gap: 20px;">
+                                    <div style="color: #e2e8f0; font-size: 0.95rem;">
+                                        <strong style="color: #00f2fe;">🌡️ Mis Datos (Clima)</strong><br/>
+                                        🔥 <b>Temp. Media:</b> ${data.x} ºC<br/>
+                                        ☁️ <b>Emisiones CO2:</b> ${data.miCo2}<br/>
+                                        🌧️ <b>Precipitación:</b> ${data.miLluvia}
+                                    </div>
+                                    
+                                    <div style="border-left: 1px solid #374151; padding-left: 15px; color: #e2e8f0; font-size: 0.95rem;">
+                                        <strong style="color: #10b981;">💧 Datos G17 (Agua)</strong><br/>
+                                        📈 <b>Productividad:</b> ${data.y}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            };
 
-                const options = {
-                    series: [
-                        { name: 'Mi Variable (G25)', type: 'column', data: seriesLocal }, 
-                        { name: 'Estrés Hídrico (Mario G17)', type: 'line', data: seriesWaterStress }
-                    ],
-                    chart: { height: 450, type: 'line', foreColor: '#cbd5e1', toolbar: { show: false } },
-                    stroke: { width: [0, 4] },
-                    title: { text: 'Mis Datos vs Estrés Hídrico (G17)', align: 'center', style: { color: '#0ea5e9', fontSize: '16px' } },
-                    dataLabels: { enabled: true, enabledOnSeries: [1] },
-                    labels: categories,
-                    colors: ['#3b82f6', '#0ea5e9'],
-                    yaxis: [
-                        { title: { text: 'Mi Variable', style: { color: '#3b82f6' } } }, 
-                        { opposite: true, title: { text: 'Estrés Hídrico (%)', style: { color: '#0ea5e9' } } }
-                    ],
-                    theme: { mode: 'dark' },
-                    tooltip: { shared: true, intersect: false }
-                };
-                const chart = new window.ApexCharts(chartContainer, options);
-                chart.render();
-            }, 100);
+            chartInstance = new ApexCharts(chartElement, options);
+            chartInstance.render();
 
-        } catch (error) { 
-            message = "❌ Error general: " + error.message; 
+            actualizarGrafica("Todos");
+
+        } catch (e) {
+            console.error("Error capturado:", e);
+            message = e.message;
         }
+    });
+
+    function actualizarGrafica(filtroAno) {
+        let datosFiltrados = allCrossedData;
+        if (filtroAno !== "Todos") {
+            datosFiltrados = allCrossedData.filter(d => d.year === filtroAno);
+        }
+        chartInstance.updateSeries([{ name: 'Países', data: datosFiltrados }]);
     }
 </script>
 
 <main>
-    <a href="/integrations" class="back-btn" data-sveltekit-reload>⬅ Volver al Panel</a>
-    <h2>🌍 Mi API vs Mario G17 (Pablo)</h2>
-    <p class="subtitle">Integración con <b>Water Productivities (G17)</b> vía Proxy usando <b>ApexCharts</b>.</p>
+    <div class="header-nav">
+        <a href="/integrations" class="back-btn">⬅ Volver a Integraciones de Pablo</a>
+    </div>
 
-    {#if fallbackActivado}
-        <div class="fallback-warning">
-            ⚠️ Modo Respaldo: Ningún país de tu BD coincidió con los de Mario, o hay un error de conexión. Usando datos de prueba.
+    <div class="card">
+        <div class="top-bar">
+            <h2>🌍 Clima vs Productividad Hídrica (G17)</h2>
+            
+            {#if availableYears.length > 0}
+                <div class="filtro">
+                    <label for="year-select">Filtrar por Año: </label>
+                    <select id="year-select" bind:value={selectedYear}>
+                        <option value="Todos">Mostrar Todos ({allCrossedData.length} cruces)</option>
+                        {#each availableYears as ano}
+                            <option value={ano}>{ano}</option>
+                        {/each}
+                    </select>
+                </div>
+            {/if}
         </div>
-    {/if}
 
-    {#if message}
-        <div class="alert">{message}</div>
-    {/if}
+        {#if message}
+            <p class="status-msg">{message}</p>
+        {/if}
 
-    <div class="card" class:hidden={!!message}>
-        <div id="apex-chart"></div>
+        <div class="chart-box" class:hidden={!!message}>
+            <div bind:this={chartElement}></div>
+        </div>
     </div>
 </main>
 
-<!-- (Los mismos estilos de antes) -->
 <style>
-    :global(body) { background-color: #0f172a; color: white; font-family: sans-serif; margin: 0; }
-    main { max-width: 1000px; margin: 0 auto; padding: 2rem; }
-    h2 { color: #0ea5e9; text-align: center; margin-bottom: 0.5rem; }
-    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 2rem; }
-    .back-btn { color: #94a3b8; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 1rem; }
-    .back-btn:hover { color: #0ea5e9; }
-    .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-    .alert { background: rgba(14, 165, 233, 0.2); border-left: 4px solid #0ea5e9; padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; text-align: center; color: #0ea5e9; font-weight: bold;}
-    .fallback-warning { background-color: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.8rem; border-radius: 8px; text-align: center; margin-bottom: 1.5rem; }
+    :global(body) { background: #0f172a; color: white; margin: 0; font-family: 'Segoe UI', sans-serif; }
+    main { padding: 2rem; max-width: 1100px; margin: auto; }
+    
+    .header-nav { margin-bottom: 2rem; }
+    .back-btn { color: #00f2fe; text-decoration: none; font-weight: bold; border: 1px solid #00f2fe; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.3s; }
+    .back-btn:hover { background: rgba(0, 242, 254, 0.2); }
+    
+    .card { background: #1e293b; padding: 2rem; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+    
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    h2 { margin: 0; color: #10b981; }
+    
+    .filtro label { font-weight: bold; margin-right: 0.5rem; color: #9ca3af; }
+    select { 
+        background: #0f172a; color: #00f2fe; border: 1px solid #00f2fe; 
+        padding: 0.5rem 1rem; border-radius: 8px; font-size: 1rem; cursor: pointer; outline: none;
+    }
+    select:focus { box-shadow: 0 0 10px rgba(0, 242, 254, 0.5); }
+    
+    .status-msg { color: #facc15; font-size: 1.2rem; text-align: center; border: 2px dashed #facc15; padding: 1rem; border-radius: 8px; }
+    
+    .chart-box { background: #0f172a; border-radius: 10px; padding: 1rem; }
     .hidden { display: none; }
 </style>

@@ -130,6 +130,54 @@ app.get('/api/proxy/g14/meteorites', async (req, res) => {
     }
 });
 
+
+app.get('/api/proxy/g17/water-productivities', async (req, res) => {
+    try {
+        let response = await fetch('https://sos2526-17.onrender.com/api/v1/water-productivities');
+        let data;
+
+        if (response.ok) {
+            data = await response.json();
+        }
+
+        // Si falla o viene vacío, intentamos despertar su API con loadInitialData
+        if (!response.ok || (Array.isArray(data) && data.length === 0)) {
+            console.log("G17 (Agua): Detectado error o datos vacíos. Cargando datos iniciales...");
+            
+            await fetch("https://sos2526-17.onrender.com/api/v1/water-productivities/loadInitialData");
+            
+            let secondResponse = await fetch('https://sos2526-17.onrender.com/api/v1/water-productivities');
+            
+            if (secondResponse.ok) {
+                data = await secondResponse.json();
+            } else {
+                data = [];
+            }
+        }
+        
+        res.json(data);
+
+    } catch (error) {
+        console.error("Error en el proxy G17:", error);
+        res.status(500).json({ error: 'Fallo al contactar con la API remota de Productividad del Agua.' });
+    }
+});
+
+// PROXY para Pablo -> API de Calidad del Aire (OpenAQ) - VERSIÓN ROBUSTA
+app.get('/api/proxy/pablo/airquality', async (req, res) => {
+    const countryCode = req.query.countryCode || 'ES';
+    // Cambiamos a /v2/latest que es mucho más fiable
+    const url = `https://api.openaq.org/v2/latest?country=${countryCode}&limit=1`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error("Error en proxy OpenAQ:", error);
+        res.status(500).json({ error: "Error conectando con OpenAQ" });
+    }
+});
 // --- PROXY MARIO (G17 WATER) ---
 app.get('/api/proxy/mario/water-productivities', async (req, res) => {
     try {
@@ -170,7 +218,7 @@ app.get('/api/proxy/aimar/citys', async (req, res) => {
     }
 });
 
-// --- OTROS PROXIES (BITCOIN, AMADEUS, OPENAQ, RELIEFWEB) ---
+// --- OTROS PROXIES (BITCOIN, AIRQUALITY) ---
 app.get('/api/proxy/pablo/bitcoin', async (req, res) => {
     try {
         const response = await fetch('https://api.blockchain.info/charts/market-price?timespan=6years&format=json');
@@ -184,7 +232,76 @@ app.get('/api/proxy/pablo/airquality', async (req, res) => {
         const response = await fetch(`https://api.openaq.org/v2/latest?country=${req.query.countryCode || 'ES'}&limit=1`);
         const data = await response.json();
         res.json(data);
-    } catch (error) { res.status(500).send(error); }
+    } catch (error) {
+        console.error("Error en el proxy AirQuality:", error);
+        res.status(500).json({ error: 'Fallo al contactar con la API externa.' });
+    }
+});
+
+// --- PROXY GITHUB OAUTH ---
+app.get('/api/proxy/pablo/github-token', async (req, res) => {
+    const { code } = req.query;
+    try {
+        const r = await fetch('https://github.com/login/oauth/access_token', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Accept': 'application/json' 
+            },
+            body: JSON.stringify({
+                client_id: process.env.GITHUB_CLIENT_ID,
+                client_secret: process.env.GITHUB_CLIENT_SECRET,
+                code: code
+            })
+        });
+        const data = await r.json();
+        res.json(data); 
+    } catch (e) {
+        console.error("Error en OAuth:", e);
+        res.status(500).json({ error: 'OAuth token exchange failed' });
+    }
+});
+
+// ============================================================================
+// PROXY PARA INTEGRACIÓN EXTERNA: API PÚBLICA NASA POWER (Radiación Solar)
+// ============================================================================
+app.get('/api/proxy/pablo/nasa-power', async (req, res) => {
+    const lat = parseFloat(req.query.lat);
+    const lon = parseFloat(req.query.lon);
+    
+    if (isNaN(lat) || isNaN(lon)) {
+        return res.status(400).json({ error: "Los parámetros 'lat' y 'lon' son obligatorios." });
+    }
+
+    try {
+        const url = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=ALLSKY_SFC_SW_DWN&community=re&longitude=${lon}&latitude=${lat}&format=json`;
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Error HTTP de la NASA: ${response.status}`);
+        
+        const data = await response.json();
+
+        // LOS MESES EN LA NASA ESTÁN EN INGLÉS (JAN, FEB, MAR...)
+        const monthly = data.properties.parameter.ALLSKY_SFC_SW_DWN;
+        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
+        let annualSum = 0;
+        months.forEach((month, i) => {
+            const dailyAvg = monthly[month] || 0;     // El dato viene en kWh/m²/día
+            annualSum += dailyAvg * daysInMonth[i];   // Multiplicamos por los días del mes
+        });
+
+        res.json({ 
+            lat: lat, 
+            lon: lon, 
+            solar_radiation: Math.round(annualSum)
+        });
+
+    } catch (error) {
+        console.error("Error en proxy NASA POWER:", error.message);
+        res.status(500).json({ error: "No se pudo conectar con la API de NASA POWER." });
+    }
 });
 
 // 3.2 Uso de svelte
