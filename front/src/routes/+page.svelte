@@ -13,6 +13,8 @@
             <a href="https://sos2526-25.onrender.com/" target="_blank" class="btn btn-api">🚀 Render Deployment</a>
             <a href="/analytics" class="btn btn-analytics">📈 Gráfica Grupal</a>
             <a href="/integrations" class="btn btn-analytics">📈 Integraciones grupales</a>
+            <a href="/about" class="btn btn-analytics"> 👷 👷 👷 Sobre nuestro trabajo</a>
+
         </div>
     </header>
 

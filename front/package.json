@@ -33,8 +33,10 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
-    "apexcharts": "^5.10.6",
+    "apexcharts": "^5.11.0",
     "billboard.js": "^3.18.0",
+    "c3": "^0.7.20",
+    "chart.js": "^4.5.1",
     "d3": "^7.9.0",
     "dotenv": "^17.4.2",
     "echarts": "^6.0.0",
@@ -43,6 +45,7 @@
     "leaflet": "^1.9.4",
     "plotly.js-dist-min": "^3.5.1",
     "sigma": "^3.0.3",
-    "vizzu": "^0.18.0"
+    "vizzu": "^0.18.0",
+    "zingchart": "^2.9.16-1"
   }
 }
